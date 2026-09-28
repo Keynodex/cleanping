@@ -1,0 +1,10 @@
+//! Adapters for the ports: files, SQLite, HTTP. No business rules here.
+
+pub mod clock;
+pub mod http_rewriter;
+pub mod paths;
+pub mod private_fs;
+pub mod proxy_env;
+pub mod secrets_file;
+pub mod sqlite_db;
+pub mod sqlite_repositories;

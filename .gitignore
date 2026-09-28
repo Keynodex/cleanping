@@ -1,0 +1,19 @@
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+
+# Local runtime data — never commit
+*.db
+*.db-wal
+*.db-shm
+secrets.json
+
+# Rust
+/target
+
+# Test fixture written by the Python release (fake data only)
+!crates/cleanping-core/tests/fixtures/*.db

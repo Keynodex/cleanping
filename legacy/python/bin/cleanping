@@ -1,0 +1,6 @@
+#!/bin/sh
+# cleanping — run the app from this repo checkout.
+# Author: dev · Date: 2026-09-28 · Purpose: dev/launcher entry point for cleanping
+# Usage: bin/cleanping
+repo_dir=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+PYTHONPATH="$repo_dir/src${PYTHONPATH:+:$PYTHONPATH}" exec python3 -m cleanping "$@"
