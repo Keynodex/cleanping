@@ -57,6 +57,11 @@ binary or the code before writing it (`cleanping COMMAND --help`, a run in a thr
 public item of `cleanping-core` needs a doc comment: the crate has `#![warn(missing_docs)]`, CI turns
 warnings into errors, and CI also builds the docs with `-D warnings` so a broken link fails.
 
+## Current tasking
+
+`TASKING.md` lists what is planned next, in order. Read it before starting work, and delete a task from it
+when its pull request is merged.
+
 ## Rules that matter here
 
 - Naming: the product is **CleanPing** in prose (docs, help text, release notes). The command, crate
