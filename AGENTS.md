@@ -1,4 +1,4 @@
-# cleanping — agent notes
+# CleanPing — agent notes
 
 Prompt polisher: rewrites rough text with an OpenAI-compatible API. Rust workspace (CLI + shell key)
 with Clean Architecture layout; the older tkinter desktop window still lives in `legacy/python/`
@@ -33,6 +33,9 @@ Minimum Rust is 1.89 (`rust-version`, checked in CI).
 Dependencies point inward: infrastructure -> application -> domain. Keep files under ~150 lines.
 
 ## Rules that matter here
+
+- Naming: the product is **CleanPing** in prose (docs, help text, release notes). The command, crate
+  names, file paths, URLs and the `cleanping:` message prefix stay lowercase.
 
 - Tests first; ported behavior is specified by the Python tests in `legacy/python/tests`.
 - Never print, log or pass API keys on a command line. `CredentialInput`'s `Debug` redacts the key.

@@ -19,7 +19,7 @@ Fixes go into the latest release. Older releases are not patched.
 
 ## What is in scope
 
-cleanping handles API keys and sends your text to the AI provider you chose, so these matter most:
+CleanPing handles API keys and sends your text to the AI provider you chose, so these matter most:
 
 - an API key or your text going anywhere other than the provider you configured
   (redirects, proxies, URL parsing, the `http://` loopback exception);

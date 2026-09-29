@@ -1,4 +1,4 @@
-# cleanping shell integration for zsh.
+# CleanPing shell integration for zsh.
 #
 #   Add to ~/.zshrc:   eval "$(cleanping init zsh)"
 #
@@ -7,7 +7,7 @@
 # Change the key by setting CLEANPING_KEYBIND before the eval line, e.g. CLEANPING_KEYBIND='^[r'.
 #
 # Privacy: the whole command line is sent to your configured AI provider when you press the key.
-# Nothing is saved to cleanping's history from here (--no-history).
+# Nothing is saved to CleanPing's history from here (--no-history).
 
 typeset -g _CLEANPING_ORIGINAL="" _CLEANPING_RESULT=""
 

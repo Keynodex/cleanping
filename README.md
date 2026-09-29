@@ -1,4 +1,4 @@
-# cleanping
+# CleanPing
 
 Rewrite rough text into clean, clear text with any OpenAI-compatible API, from your terminal.
 
@@ -67,7 +67,7 @@ cleanping --copy "rough text"      # also copies to the clipboard (wl-copy, xcli
 
 Text that starts with a word that is also a command (`keys`, `prompt`, `history`, `edit`, `init`) can be passed after `--`, or piped in. Any other text, including `help me fix this`, is rewritten as it is.
 
-If you have several keys, pick one with `cleanping keys use NAME` or `-c NAME`. cleanping never guesses between keys, so your text cannot go to a provider you did not choose. With a single saved key it just uses it.
+If you have several keys, pick one with `cleanping keys use NAME` or `-c NAME`. CleanPing never guesses between keys, so your text cannot go to a provider you did not choose. With a single saved key it just uses it.
 
 ## The shell key (zsh and bash)
 
@@ -79,13 +79,13 @@ eval "$(cleanping init zsh)"     # or: eval "$(cleanping init bash)"
 
 Type a rough line at the prompt (do not press Enter), then press **Ctrl-X Ctrl-P**. The line is replaced by the rewrite. Press the same keys again, without editing, to get your original back. To use a different key, set `CLEANPING_KEYBIND` before that line (zsh: `'^[r'`, bash: `'\er'`).
 
-The whole command line is sent to your AI provider when you press the key, so do not use it on lines that contain secrets. The line is sent over stdin, never as a command-line argument, and nothing is written to cleanping's history from the shell key.
+The whole command line is sent to your AI provider when you press the key, so do not use it on lines that contain secrets. The line is sent over stdin, never as a command-line argument, and nothing is written to CleanPing's history from the shell key.
 
 **The reply has to look like what it replaces.** A reply is only put on your command line if it has no more lines than your text, is not much longer (about twice as long plus a short sentence), and does not pad itself with long runs of spaces or tabs. Otherwise the line is left alone and you see a message. This stops a reply from pushing a command out of sight above a harmless-looking end. It is still a rewrite by an AI, so read the line before you press Enter.
 
 ## Fix your message inside Claude Code and Codex
 
-Claude Code and Codex open the program named in `$VISUAL` when you press **Ctrl+G** ("edit in editor"). Point it at cleanping, for example in `~/.zshrc` or `~/.bashrc`:
+Claude Code and Codex open the program named in `$VISUAL` when you press **Ctrl+G** ("edit in editor"). Point it at CleanPing, for example in `~/.zshrc` or `~/.bashrc`:
 
 ```sh
 export VISUAL="cleanping edit"
@@ -134,20 +134,20 @@ Exit codes: `0` ok, `1` the request failed (network, provider, storage), `2` bad
 
 Each rewrite is saved to a local history in the database above: your text, the result, the system prompt and the model, on your machine only. It has no expiry and is never trimmed automatically. Nothing is saved with `--no-history`, and never from the shell key or `cleanping edit`.
 
-Look at it with `cleanping history list`. Delete it with `cleanping history clear --yes`, or trim it with `cleanping history purge --older-than 30`. Deleted text is overwritten and the database file is rebuilt, so it cannot be read back from the file (backups and disk snapshots you made yourself are out of cleanping's reach). Deleting a key does not delete the history that used it.
+Look at it with `cleanping history list`. Delete it with `cleanping history clear --yes`, or trim it with `cleanping history purge --older-than 30`. Deleted text is overwritten and the database file is rebuilt, so it cannot be read back from the file (backups and disk snapshots you made yourself are out of CleanPing's reach). Deleting a key does not delete the history that used it.
 
-If you delete the database file to start over, saved API keys stay in `secrets.json`. cleanping will not reuse such a key for a new address without you typing it again; remove `~/.config/cleanping/secrets.json` as well for a fully clean slate.
+If you delete the database file to start over, saved API keys stay in `secrets.json`. CleanPing will not reuse such a key for a new address without you typing it again; remove `~/.config/cleanping/secrets.json` as well for a fully clean slate.
 
 ## Safety
 
-- Your text goes over an encrypted connection to the provider you chose, and that provider can read it. cleanping is not end-to-end encrypted. If the text must never leave your computer, use a local model such as Ollama: then nothing is sent anywhere.
+- Your text goes over an encrypted connection to the provider you chose, and that provider can read it. CleanPing is not end-to-end encrypted. If the text must never leave your computer, use a local model such as Ollama: then nothing is sent anywhere.
 - API URLs must be `https://`; plain `http://` is accepted only for `localhost`, `127.0.0.1` and `::1`.
 - HTTP redirects are never followed, so a key and your text cannot be forwarded to another host.
 - Error messages never include the server's response body.
 - `cleanping edit` will not send text that looks like an API key, token, private key or password unless you press **S** on the screen; with `--yes` it never does. The check is a best guess and cannot catch everything, so it does not replace judgment about what you paste. The screen only ever names the kind of secret, never shows it.
 - Replies are cleaned before they are shown: terminal control characters, text-direction overrides and zero-width or other invisible characters are removed, so a reply cannot move your cursor, rewrite the screen or hide text in it.
 - Input is capped at 200,000 bytes, and refused before any request is made. A reply larger than 1 MB is refused.
-- `HTTP_PROXY`, `HTTPS_PROXY` and `ALL_PROXY` (and `NO_PROXY`) are honored for remote providers. Only `http://` and `https://` proxies are supported: if one of these variables is set to anything else (for example a `socks5://` address) or to something that does not parse, cleanping stops and sends nothing, rather than quietly connecting without the proxy. Local providers are always reached directly, never through a proxy.
+- `HTTP_PROXY`, `HTTPS_PROXY` and `ALL_PROXY` (and `NO_PROXY`) are honored for remote providers. Only `http://` and `https://` proxies are supported: if one of these variables is set to anything else (for example a `socks5://` address) or to something that does not parse, CleanPing stops and sends nothing, rather than quietly connecting without the proxy. Local providers are always reached directly, never through a proxy.
 - `localhost` is trusted to mean this machine, as your system resolves it. Use `127.0.0.1` if you want to be sure.
 - TLS uses a built-in copy of Mozilla's root certificates, not your system's. A company proxy that inspects TLS with its own certificate authority will not be trusted.
 
