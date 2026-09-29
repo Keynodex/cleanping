@@ -35,6 +35,15 @@ Minimum Rust is 1.89 (`rust-version`, checked in CI).
   are pure (state and keys in, styled lines out), `terminal` is crossterm on `/dev/tty` only (never
   stdin/stdout: a host app pipes them), `session` is the key/reply loop, `job` the background request
   (never saved to history), `file` reads and writes the host's temp file
+- `crates/cleanping-cli/src/setup` — `cleanping setup`: every question goes through the `Console` trait
+  and every outside contact (ask a local server, `ollama pull`, the connection test) through `Tools`, so
+  the steps (`provider`, `system_prompt`, `check`, `flow`, `usage`) are tested with scripted answers;
+  `tests/setup.rs` also drives the real binary in a terminal. Rules: keys are read by `secret_input.rs`
+  (crossterm raw mode on `/dev/tty`: a star per character, Ctrl-C and Esc cancel, the terminal is always
+  restored; a prompt library that only turns echo off leaves typing off after Ctrl-C, so do not go back
+  to one) and never printed; nothing is downloaded or run without a yes; a model name starting with `-` is never
+  passed to `ollama`; setup prints the profile lines and never edits the user's files; tests must never
+  reach a real provider (answer "n" to the connection test unless a fake server is used).
 
 Dependencies point inward: infrastructure -> application -> domain. Keep files under ~150 lines.
 

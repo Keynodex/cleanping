@@ -203,6 +203,11 @@ impl Sandbox {
         self.secret_store().get(name).unwrap().is_some()
     }
 
+    /// The key stored under this name, for tests that check what was typed. Test keys only.
+    pub fn secret_value(&self, name: &str) -> Option<String> {
+        self.secret_store().get(name).unwrap()
+    }
+
     /// Save a keyless credential that points at a local fake server.
     pub fn add_local(&self, name: &str, server: &FakeServer) {
         let out = self.run(

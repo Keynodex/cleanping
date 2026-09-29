@@ -16,7 +16,9 @@ mod no_history;
 mod output;
 mod prompt;
 mod rewrite;
+mod secret_input;
 mod services;
+mod setup;
 
 use clap::Parser;
 use cleanping_core::domain::errors::Result;
@@ -29,6 +31,7 @@ fn execute(cli: &Cli) -> Result<()> {
         // Shell start-up runs this on every new terminal: no database, no files.
         Some(Command::Init { shell }) => output::write(init::script(*shell)),
         Some(Command::Edit(args)) => edit::run(&Services::open()?, args),
+        Some(Command::Setup) => setup::run(&Services::open()?),
         Some(Command::Keys { action }) => keys::run(&Services::open()?, action),
         Some(Command::Prompt { action }) => prompt::run(&Services::open()?, action),
         Some(Command::History { action }) => history::run(&Services::open()?, action),

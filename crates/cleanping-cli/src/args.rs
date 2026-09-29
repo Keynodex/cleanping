@@ -75,6 +75,9 @@ pub enum Command {
     /// Fix the text in FILE with the AI, then review it. Set `VISUAL="cleanping edit"` so the
     /// editor key of Claude Code or Codex (Ctrl+G) opens it.
     Edit(EditArgs),
+    /// Guided setup: pick the AI, save its key, choose a system prompt and test the connection.
+    /// Run it again later for a small menu.
+    Setup,
     /// Print shell integration: add `eval "$(cleanping init zsh)"` to your shell's rc file.
     Init {
         #[arg(value_enum)]
@@ -95,7 +98,7 @@ pub struct EditArgs {
     pub yes: bool,
 }
 
-#[derive(Clone, Copy, ValueEnum)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, ValueEnum)]
 pub enum Shell {
     Zsh,
     Bash,

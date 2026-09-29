@@ -39,7 +39,17 @@ This installs a `cleanping` binary into `~/.cargo/bin`. An `npm` package is plan
 
 ## First run
 
-Save a key. You are asked for it with a hidden prompt (nothing is shown as you paste). It is never taken from an argument, so it does not land in your shell history:
+**The quickest way** is the guided setup:
+
+```sh
+cleanping setup
+```
+
+It asks which AI you want, takes your key (shown only as stars while you type or paste it), lets you pick a system prompt, offers to test the connection, and ends by printing the lines to add for Claude Code or Codex and for your shell. It does not change any of your files. Run it again later for a small menu to change the provider, the prompt, or to test again. If you pick a local model (Ollama), it checks that Ollama is running and asks before downloading the model with Ollama's own `ollama pull`; it never installs Ollama for you.
+
+Prefer to do it by hand? The same steps as separate commands:
+
+Save a key. You are asked for it with a hidden prompt (you see one star per character, never the key; Backspace and Ctrl-U edit, Ctrl-C or Esc cancel and save nothing). It is never taken from an argument, so it does not land in your shell history:
 
 ```sh
 cleanping keys add --provider OpenAI
@@ -73,7 +83,7 @@ echo "plz fix teh login pgae" | cleanping
 cleanping --copy "rough text"      # also copies to the clipboard (wl-copy, xclip, xsel or pbcopy)
 ```
 
-Text that starts with a word that is also a command (`keys`, `prompt`, `history`, `edit`, `init`) can be passed after `--`, or piped in. Any other text, including `help me fix this`, is rewritten as it is.
+Text that starts with a word that is also a command (`keys`, `prompt`, `history`, `edit`, `setup`, `init`) can be passed after `--`, or piped in. Any other text, including `help me fix this`, is rewritten as it is.
 
 If you have several keys, pick one with `cleanping keys use NAME` or `-c NAME`. CleanPing never guesses between keys, so your text cannot go to a provider you did not choose. With a single saved key it just uses it.
 
@@ -129,6 +139,7 @@ It works with Claude Code and Codex, as tested. Other apps that run `$VISUAL FIL
 | `cleanping history list [--limit N]` | Show your newest rewrites, one line each |
 | `cleanping history clear --yes` | Delete every saved rewrite |
 | `cleanping history purge --older-than DAYS` | Delete rewrites older than DAYS days |
+| `cleanping setup` | Guided setup: pick the AI, save its key, choose a system prompt, test the connection. Needs a terminal; run it again for a menu |
 | `cleanping init zsh\|bash` | Print the shell integration |
 
 Exit codes: `0` ok, `1` the request failed (network, provider, storage), `2` bad input (empty, too long, invalid URL), `3` no usable key. The one exception is the `edit` screen: when an edit fails there, it shows why and exits `0` with the file untouched, so the app that opened it keeps your text. With `--yes` the codes above apply.
@@ -170,10 +181,9 @@ To report a security problem, see [SECURITY.md](SECURITY.md).
 
 Planned, not built yet, and the order may change:
 
-1. **`cleanping setup`**: a first-run guide to pick a provider, enter your key (shown masked), set your system prompt, and optionally install a free local model with Ollama.
-2. **Grok Build** as an editor host for `cleanping edit` (not tested yet).
-3. **A browser extension** for web text boxes. Every website's editor behaves differently and sites change without notice, so each one needs its own testing and an update can break it.
-4. Windows support.
+1. **Grok Build** as an editor host for `cleanping edit` (not tested yet).
+2. **A browser extension** for web text boxes. Every website's editor behaves differently and sites change without notice, so each one needs its own testing and an update can break it.
+3. Windows support.
 
 ## Documentation
 

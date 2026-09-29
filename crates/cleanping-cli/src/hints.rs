@@ -4,7 +4,8 @@ use cleanping_core::domain::errors::CleanpingError;
 use cleanping_core::domain::local_server::LocalFix;
 use cleanping_core::domain::models::Credential;
 
-pub const ADD_FIRST_KEY: &str = "Add one: cleanping keys add --provider OpenAI";
+pub const ADD_FIRST_KEY: &str =
+    "Add one: cleanping keys add --provider OpenAI (or run the guided setup: cleanping setup)";
 pub const CHOOSE_A_KEY: &str = "Choose one: cleanping keys use NAME (or pass -c NAME).";
 pub const SEE_KEYS: &str = "See: cleanping keys list";
 
