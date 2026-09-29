@@ -41,6 +41,6 @@ impl Console for StdConsole {
     }
 
     fn ask_secret(&mut self, question: &str) -> Result<String> {
-        rpassword::prompt_password(question).map_err(|_| stopped())
+        crate::secret_input::read_secret(question)
     }
 }

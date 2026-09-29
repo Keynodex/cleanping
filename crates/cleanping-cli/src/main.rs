@@ -16,6 +16,7 @@ mod no_history;
 mod output;
 mod prompt;
 mod rewrite;
+mod secret_input;
 mod services;
 mod setup;
 

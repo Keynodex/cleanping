@@ -9,6 +9,7 @@ use crate::args::{AddArgs, KeysAction};
 use crate::connection;
 use crate::input;
 use crate::output;
+use crate::secret_input;
 use crate::services::Services;
 
 fn invalid(message: &str) -> CleanpingError {
@@ -26,9 +27,8 @@ fn preset(label: &str) -> Result<&'static ProviderPreset> {
 /// else one line from a pipe when asked to, else nothing (a local model needs none).
 fn read_key(from_stdin: bool) -> Result<String> {
     if input::stdin_is_a_terminal() {
-        return rpassword::prompt_password("API key (hidden; Enter to skip for a local model): ")
-            .map(|key| key.trim().to_string())
-            .map_err(|_| invalid("Could not read the key."));
+        return secret_input::read_secret("API key (hidden; Enter to skip for a local model): ")
+            .map(|key| key.trim().to_string());
     }
     if from_stdin {
         return input::read_key_line();
