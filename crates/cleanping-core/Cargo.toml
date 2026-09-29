@@ -1,6 +1,6 @@
 [package]
 name = "cleanping-core"
-description = "Core logic for cleanping: validation, version history, storage and the rewrite use case."
+description = "Core logic for CleanPing: validation, version history, storage and the rewrite use case."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

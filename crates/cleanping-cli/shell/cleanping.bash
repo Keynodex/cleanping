@@ -1,4 +1,4 @@
-# cleanping shell integration for bash 4+.
+# CleanPing shell integration for bash 4+.
 #
 #   Add to ~/.bashrc:   eval "$(cleanping init bash)"
 #
@@ -7,7 +7,7 @@
 # Change the key by setting CLEANPING_KEYBIND before the eval line, e.g. CLEANPING_KEYBIND='\er'.
 #
 # Privacy: the whole command line is sent to your configured AI provider when you press the key.
-# Nothing is saved to cleanping's history from here (--no-history).
+# Nothing is saved to CleanPing's history from here (--no-history).
 
 if (( BASH_VERSINFO[0] < 4 )); then
   echo "cleanping: the shell key needs bash 4 or newer (this is bash ${BASH_VERSION})." >&2
