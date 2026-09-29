@@ -55,6 +55,15 @@ impl Pty {
         String::from_utf8_lossy(&self.screen.lock().unwrap()).to_string()
     }
 
+    /// What the program printed, with colors and cursor movements removed.
+    pub fn plain_screen(&self) -> String {
+        strip_escapes(&self.screen())
+    }
+
+    pub fn wait_for_text(&self, needle: &str, timeout: Duration) -> bool {
+        self.wait_until(timeout, || self.plain_screen().contains(needle))
+    }
+
     /// Poll until `condition` holds; false on timeout.
     pub fn wait_until(&self, timeout: Duration, condition: impl Fn() -> bool) -> bool {
         let started = Instant::now();
@@ -86,4 +95,37 @@ impl Pty {
             std::thread::sleep(Duration::from_millis(20));
         }
     }
+}
+
+/// Drop terminal control sequences (CSI, OSC, charset selection), keeping the visible text.
+fn strip_escapes(raw: &str) -> String {
+    let mut out = String::new();
+    let mut chars = raw.chars().peekable();
+    while let Some(c) = chars.next() {
+        if c != '\u{1b}' {
+            out.push(c);
+            continue;
+        }
+        match chars.next() {
+            Some('[') => {
+                for next in chars.by_ref() {
+                    if ('@'..='~').contains(&next) {
+                        break;
+                    }
+                }
+            }
+            Some(']') => {
+                while let Some(next) = chars.next() {
+                    if next == '\u{7}' || (next == '\u{1b}' && chars.next_if_eq(&'\\').is_some()) {
+                        break;
+                    }
+                }
+            }
+            Some('(' | ')') => {
+                chars.next();
+            }
+            _ => {}
+        }
+    }
+    out
 }

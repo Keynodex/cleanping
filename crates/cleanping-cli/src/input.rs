@@ -20,9 +20,13 @@ fn too_long() -> CleanpingError {
 
 /// Everything on stdin, capped. Refuses invalid UTF-8 and oversized input.
 pub fn read_stdin() -> Result<String> {
+    read_capped(std::io::stdin().lock())
+}
+
+/// Everything from `reader`, capped. Refuses invalid UTF-8 and oversized input.
+pub fn read_capped(reader: impl Read) -> Result<String> {
     let mut bytes = Vec::new();
-    std::io::stdin()
-        .lock()
+    reader
         .take(MAX_INPUT_BYTES as u64 + 1)
         .read_to_end(&mut bytes)
         .map_err(|_| invalid("Could not read the input."))?;

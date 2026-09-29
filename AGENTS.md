@@ -25,6 +25,10 @@ Minimum Rust is 1.89 (`rust-version`, checked in CI).
 - `crates/cleanping-core/src/infrastructure` — SQLite, secrets file, HTTP (ureq), paths, clock
 - `crates/cleanping-cli` — the `cleanping` binary: `args`, `rewrite`, `keys`, `prompt`, `history`, `init`
   (shell scripts in `shell/`); all stdout goes through `output` (a closed pipe is not a panic)
+- `crates/cleanping-cli/src/edit` — `cleanping edit FILE` (the `$VISUAL` screen): `view` + `layout` + `wrap`
+  are pure (state and keys in, styled lines out), `terminal` is crossterm on `/dev/tty` only (never
+  stdin/stdout: a host app pipes them), `session` is the key/reply loop, `job` the background request
+  (never saved to history), `file` reads and writes the host's temp file
 
 Dependencies point inward: infrastructure -> application -> domain. Keep files under ~150 lines.
 
@@ -41,6 +45,9 @@ Dependencies point inward: infrastructure -> application -> domain. Keep files u
   grow much longer than the text it replaces on a command line.
 - A proxy variable that is set but unusable is an error (`infrastructure/proxy_env.rs`), never a
   silent direct connection. Deleted history is overwritten and the database rebuilt.
+- `edit` sends nothing that `find_secret` flags unless the user presses S on the screen, and never with
+  `--yes`; the screen names the kind of secret, never the secret. A failed edit on the screen exits 0
+  with the file untouched, so the host app keeps the user's text.
 - Never guess which key to use (`CredentialService::resolve`); an exact name beats a case variant.
 - `.env*` and secret files are never read by tools or committed; the test fixture DB holds fake data only.
 

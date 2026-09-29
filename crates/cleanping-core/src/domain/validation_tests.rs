@@ -193,3 +193,15 @@ fn blank_and_ordinary_keys_pass_and_absurd_ones_do_not() {
     .unwrap_err();
     assert!(message(err).contains("too long"));
 }
+
+#[test]
+fn the_host_of_a_url_names_where_text_goes() {
+    let host = |url| host_of(url).map(|h| h.to_string());
+    assert_eq!(
+        host("https://api.deepseek.com/v1/chat"),
+        Some("api.deepseek.com".into())
+    );
+    assert_eq!(host("http://127.0.0.1:11434/v1"), Some("127.0.0.1".into()));
+    assert_eq!(host("http://[::1]:11434/v1"), Some("[::1]".into()));
+    assert_eq!(host("not a url"), None);
+}
