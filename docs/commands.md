@@ -93,7 +93,7 @@ asking. See [Getting started](getting-started.md).
 |---|---|
 | `--provider PRESET` | `DeepSeek`, `OpenAI`, `OpenRouter` or `"Ollama (local)"`: fills in the address and a default model |
 | `--name NAME` | A name for this key (defaults to the provider) |
-| `--url URL` | The API address, for a provider that has no preset. It must be `https://`, or `http://` for `localhost`, `127.0.0.1` or `::1` |
+| `--url URL` | The API address, for a provider that has no preset. It must be `https://`, or `http://` for `localhost`, `127.0.0.1` or `::1`, and must not have a query string or fragment (`?...` or `#...`) |
 | `--model MODEL` | The model name (defaults to the provider's) |
 | `--key-stdin` | Read the key as one line from stdin. On a terminal it is asked for with a hidden prompt |
 

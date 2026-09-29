@@ -96,6 +96,21 @@ fn validate_api_key(key: &str) -> Result<String> {
     Ok(key.to_string())
 }
 
+/// A key in the address would be printed by `keys list` and saved as plain text, so a new key's
+/// address may not carry a query string or fragment. Only checked when a key is added: addresses
+/// saved earlier keep working, because `validate_api_url` (used when sending) does not apply it.
+fn refuse_query_and_fragment(api_url: &str) -> Result<()> {
+    let has_extra = Url::parse(api_url.trim())
+        .is_ok_and(|parsed| parsed.query().is_some() || parsed.fragment().is_some());
+    if has_extra {
+        return Err(CleanpingError::Validation(
+            "API URL must not have a query string or fragment (? or #). Never put a key in the address."
+                .into(),
+        ));
+    }
+    Ok(())
+}
+
 /// Validate name, URL and model; return a whitespace-normalized copy.
 pub fn validate_credential_fields(draft: CredentialInput) -> Result<CredentialInput> {
     let name = draft.name.trim();
@@ -117,6 +132,7 @@ pub fn validate_credential_fields(draft: CredentialInput) -> Result<CredentialIn
         }
     }
     let api_key = validate_api_key(draft.api_key.trim())?;
+    refuse_query_and_fragment(&draft.api_url)?;
     Ok(CredentialInput {
         name: name.to_string(),
         api_url: validate_api_url(&draft.api_url)?,

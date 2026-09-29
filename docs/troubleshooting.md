@@ -15,6 +15,7 @@ The number in brackets is the [exit code](commands.md#exit-codes).
 | `A key for "NAME" is left over from an earlier setup; enter the API key again.` / `The API address changed; enter the API key again ...` [2] | Changing the address of a saved key, or reusing a key left over from an earlier setup, needs you to type the key again, so a saved key is never sent to a new host without you. Run `cleanping keys add ...` and enter the key |
 | `Unknown provider. Use DeepSeek, OpenAI, OpenRouter or "Ollama (local)", or give --url.` [2] | `--provider` must be one of those names (in quotes when it has spaces), or give `--url` for another provider |
 | `API URL must use HTTPS (HTTP is allowed only for localhost).` [2] | Use an `https://` address. `http://` works only for `localhost`, `127.0.0.1` and `::1` |
+| `API URL must not have a query string or fragment (? or #). Never put a key in the address.` [2] | Remove everything from `?` or `#` onward in `--url`. Give the key through the hidden prompt or `--key-stdin` |
 | `API key must be plain visible characters (no spaces, control characters or smart quotes).` [2] | The pasted key has something extra in it, often a trailing space or a curly quote. Copy it again |
 | `Cancelled: no key was entered.` [2] | You pressed Ctrl-C or Esc at the key prompt. Nothing was saved |
 

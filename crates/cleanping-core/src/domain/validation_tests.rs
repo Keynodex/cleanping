@@ -74,6 +74,29 @@ fn rejects_missing_host_and_non_http_schemes() {
 }
 
 #[test]
+fn a_new_key_is_refused_when_its_address_has_a_query_string_or_fragment() {
+    for url in [
+        "https://api.example.com/v1/chat/completions?key=sk-secret-value",
+        "https://api.example.com/v1?api-key=sk-secret-value&x=1",
+        "https://api.example.com/v1?",
+        "https://api.example.com/v1#sk-secret-value",
+    ] {
+        let text = message(validate_credential_fields(draft("n", url, "m")).unwrap_err());
+        assert!(text.contains("query string"), "{url}: {text}");
+        assert!(
+            !text.contains("sk-secret-value"),
+            "the message must not echo the address"
+        );
+    }
+}
+
+#[test]
+fn an_address_already_saved_with_a_query_string_still_validates_for_sending() {
+    let url = "https://api.example.com/v1/chat/completions?api-version=1";
+    assert_eq!(validate_api_url(url).unwrap(), url);
+}
+
+#[test]
 fn credential_fields_are_normalized() {
     let out = validate_credential_fields(CredentialInput {
         api_key: "  sk-x  ".into(),

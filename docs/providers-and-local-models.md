@@ -37,7 +37,8 @@ cleanping keys add --name work --url https://llm.example.com/v1/chat/completions
 - **Never put a key or token in the address** (for example `...?key=...`). The address is printed in full by
   `cleanping keys list`, saved in the database as plain text, and typed on a command line, where your
   shell may keep it. Keys belong in the hidden prompt or on stdin, which is the only way CleanPing sends
-  one. A provider that wants the key in the address is not supported.
+  one. A provider that wants the key in the address is not supported. `keys add` refuses any address
+  with a query string or fragment (`?...` or `#...`), so this cannot happen by accident.
 
 ## Several keys
 
