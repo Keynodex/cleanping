@@ -3,6 +3,7 @@
 pub mod diff;
 pub mod errors;
 pub mod models;
+pub mod prompt_presets;
 pub mod providers;
 pub mod sanitize;
 pub mod secret_scan;
