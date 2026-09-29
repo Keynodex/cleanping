@@ -66,6 +66,8 @@ NOTES
 
 expect_failure 'missing version' 9.9.9 "$fixtures/releases.md" 'section not found'
 expect_failure 'empty section' 0.3.0 "$fixtures/empty.md" 'section is empty'
+printf '## [0.3.0] - 2026-09-29\n\n \t \n\n## [0.2.0]\n' > "$scratch/whitespace.md"
+expect_failure 'whitespace-only section' 0.3.0 "$scratch/whitespace.md" 'section is empty'
 expect_failure 'headings alone are empty' 0.3.0 "$fixtures/headings-only.md" 'section is empty'
 expect_failure 'handle is rejected' 0.3.0 "$fixtures/handle.md" 'attribution is not allowed'
 expect_failure 'author is rejected' 0.3.0 "$fixtures/author.md" 'attribution is not allowed'
