@@ -97,6 +97,14 @@ Reviewers will look for these first. Details are in [AGENTS.md](AGENTS.md).
 
 ## Releases (maintainers)
 
+Release notes come from the version’s section of [CHANGELOG.md](CHANGELOG.md), followed by a full
+changelog compare link. Write that section for a reader: explain what people can do now, rather than
+listing pull requests, and leave out author names and handles. Missing or empty notes fail the release.
+The extraction script is tested in CI on Ubuntu and macOS.
+
+GitHub shows the account that opened each pull request on merged commits and pull requests; this project
+cannot change that attribution.
+
 1. Set `version` in the workspace `Cargo.toml`, run `cargo build` so `Cargo.lock` follows, and move the
    **Unreleased** notes in [CHANGELOG.md](CHANGELOG.md) under the new version and date.
 2. Merge that pull request and wait for CI on `main` to pass.
@@ -105,6 +113,11 @@ Reviewers will look for these first. Details are in [AGENTS.md](AGENTS.md).
    Linux (x86_64) and macOS (Apple silicon and Intel) archives with SHA-256 checksums and build-provenance
    attestations, and creates a **draft** release.
 4. Read the draft, then publish it.
+
+After any change to `.github/workflows/release.yml`, wait for CI to pass, then run **Actions → Release →
+Run workflow** on the changed branch. This dry run builds and checks the archives, but does not exercise
+the publish job. The script itself is tested in CI; the first real proof of the publish step is the next
+release.
 
 ## License
 
