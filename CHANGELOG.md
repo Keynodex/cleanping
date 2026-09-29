@@ -7,6 +7,8 @@ behavior, and the notes below say when it does.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-09-29
+
 ### Added
 
 - `cleanping edit FILE`: fix a message inside Claude Code and Codex. Set `VISUAL="cleanping edit"` and
@@ -56,5 +58,6 @@ First public release.
 - Linux (x86_64) and macOS (Apple silicon and Intel) builds with checksums and build-provenance
   attestations.
 
-[Unreleased]: https://github.com/Keynodex/cleanping/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/Keynodex/cleanping/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/Keynodex/cleanping/releases/tag/v0.3.0
 [0.2.0]: https://github.com/Keynodex/cleanping/releases/tag/v0.2.0
