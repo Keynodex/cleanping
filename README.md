@@ -57,6 +57,14 @@ For a local model no key is needed:
 cleanping keys add --provider "Ollama (local)"
 ```
 
+Check that a saved key works (this sends one fixed word, never your text, and saves nothing to the history):
+
+```sh
+cleanping keys test
+```
+
+For Ollama, a failed test also says what to do: install it, start it, or download the model.
+
 Rewrite something:
 
 ```sh
@@ -115,7 +123,9 @@ It works with Claude Code and Codex, as tested. Other apps that run `$VISUAL FIL
 | `cleanping keys list` | Show saved keys (never the key itself) |
 | `cleanping keys add ...` | Save a key: `--provider`, `--name`, `--url`, `--model`, `--key-stdin` |
 | `cleanping keys use NAME` / `remove NAME` | Choose the default key / delete one |
+| `cleanping keys test [NAME]` | Send one tiny fixed request to check that a key works. Exit `0` if it answered, `1` if not, `3` if no key is saved |
 | `cleanping prompt show` / `set [TEXT]` | Read or change the system prompt sent with every rewrite |
+| `cleanping prompt presets` / `use NAME` | List the ready-made system prompts (`default`, `typos`, `concise`, `friendly`) / switch to one. Replacing a prompt you wrote yourself needs `--yes` |
 | `cleanping history list [--limit N]` | Show your newest rewrites, one line each |
 | `cleanping history clear --yes` | Delete every saved rewrite |
 | `cleanping history purge --older-than DAYS` | Delete rewrites older than DAYS days |

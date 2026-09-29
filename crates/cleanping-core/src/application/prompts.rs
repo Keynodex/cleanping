@@ -3,14 +3,7 @@
 use super::ports::PromptRepository;
 use crate::domain::errors::{CleanpingError, Result};
 
-pub const DEFAULT_INSTRUCTIONS: &str =
-    "You are a precise copy editor for a software developer's terminal prompts. \
-Fix spelling, grammar, and clarity while retaining the author's intent, tone, \
-technical details, and all constraints. Preserve commands, code, flags, file \
-paths, identifiers, names, URLs, and error messages exactly. Do not execute \
-or answer the request. Do not add facts, requirements, or explanations. \
-Return only the edited text, with no quotes or Markdown fences. \
-If editing would change technical meaning, leave that portion unchanged.";
+pub use crate::domain::prompt_presets::DEFAULT_INSTRUCTIONS;
 
 pub struct PromptService<P: PromptRepository> {
     prompts: P,

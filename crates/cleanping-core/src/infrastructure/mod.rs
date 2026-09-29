@@ -2,6 +2,7 @@
 
 pub mod clock;
 pub mod http_rewriter;
+pub mod ollama;
 pub mod paths;
 pub mod private_fs;
 pub mod proxy_env;

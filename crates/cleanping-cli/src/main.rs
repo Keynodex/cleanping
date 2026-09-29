@@ -2,6 +2,7 @@
 
 mod args;
 mod clipboard;
+mod connection;
 mod edit;
 mod exit;
 mod guard;

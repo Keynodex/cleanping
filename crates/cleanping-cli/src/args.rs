@@ -111,6 +111,8 @@ pub enum KeysAction {
     Remove { name: String },
     /// Make a saved key the default.
     Use { name: String },
+    /// Send one tiny fixed request to check that a saved key works (default: the selected key).
+    Test { name: Option<String> },
 }
 
 #[derive(Args)]
@@ -159,4 +161,13 @@ pub enum PromptAction {
     Show,
     /// Replace it with TEXT, or with stdin when TEXT is omitted and input is piped.
     Set { text: Option<String> },
+    /// List the ready-made system prompts (the one in use is marked with *).
+    Presets,
+    /// Use a ready-made system prompt; `cleanping prompt presets` lists them.
+    Use {
+        name: String,
+        /// Replace a system prompt you wrote yourself.
+        #[arg(long)]
+        yes: bool,
+    },
 }

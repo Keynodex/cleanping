@@ -6,6 +6,7 @@ use cleanping_core::domain::models::CredentialInput;
 use cleanping_core::domain::providers::{ProviderPreset, PROVIDER_PRESETS};
 
 use crate::args::{AddArgs, KeysAction};
+use crate::connection;
 use crate::input;
 use crate::output;
 use crate::services::Services;
@@ -103,6 +104,7 @@ pub fn run(services: &Services, action: &KeysAction) -> Result<()> {
             }
             output::line(&format!("Removed \u{201c}{}\u{201d}.", credential.name))
         }
+        KeysAction::Test { name } => connection::run(services, name.as_deref()),
         KeysAction::Use { name } => {
             let credential = services.credentials.find_by_name(name)?;
             services.state.select_credential(credential.id)?;
