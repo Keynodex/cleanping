@@ -24,7 +24,8 @@ Minimum Rust is 1.89 (`rust-version`, checked in CI).
 - `crates/cleanping-core/src/application` — use cases and ports (traits); fakes live in `test_support.rs`
 - `crates/cleanping-core/src/infrastructure` — SQLite, secrets file, HTTP (ureq), paths, clock
 - `crates/cleanping-cli` — the `cleanping` binary: `args`, `rewrite`, `keys`, `prompt`, `history`, `init`
-  (shell scripts in `shell/`); all stdout goes through `output` (a closed pipe is not a panic)
+  (shell scripts in `shell/`), `guard` (the refuse-if-it-looks-like-a-secret check), `marks` (hidden
+  `--marks`, see below); all stdout goes through `output` (a closed pipe is not a panic)
 - `crates/cleanping-cli/src/edit` — `cleanping edit FILE` (the `$VISUAL` screen): `view` + `layout` + `wrap`
   are pure (state and keys in, styled lines out), `terminal` is crossterm on `/dev/tty` only (never
   stdin/stdout: a host app pipes them), `session` is the key/reply loop, `job` the background request
@@ -43,6 +44,13 @@ Dependencies point inward: infrastructure -> application -> domain. Keep files u
 - Provider replies are untrusted: `clean_reply` strips control and invisible characters, and the
   shell key passes `--keep-shape` (`domain/shape.rs`) so a reply cannot add lines, pad itself or
   grow much longer than the text it replaces on a command line.
+- The shell key also passes `--refuse-secrets` (`guard.rs`): a command line that looks like it holds a
+  secret is never sent. Plain `cleanping TEXT` only checks when that flag is given.
+- Hidden `--marks` is how zsh highlights changes: stdin is `original NUL reply`; stdout is the reply's
+  length in characters, then a `start end` line (characters) per changed range, or nothing if the texts
+  are too large to compare. It must stay pure (no database, files or network; a test checks). The zsh
+  script highlights only when `${#reply}` equals that length, so a non-UTF-8 locale (zsh counts bytes)
+  gets no highlight instead of the wrong one.
 - A proxy variable that is set but unusable is an error (`infrastructure/proxy_env.rs`), never a
   silent direct connection. Deleted history is overwritten and the database rebuilt.
 - `edit` sends nothing that `find_secret` flags unless the user presses S on the screen, and never with

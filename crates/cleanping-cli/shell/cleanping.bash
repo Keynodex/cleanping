@@ -6,8 +6,12 @@
 # Press it again, without editing, to get your original text back.
 # Change the key by setting CLEANPING_KEYBIND before the eval line, e.g. CLEANPING_KEYBIND='\er'.
 #
-# Privacy: the whole command line is sent to your configured AI provider when you press the key.
-# Nothing is saved to CleanPing's history from here (--no-history).
+# Bash cannot highlight part of the command line, so after a rewrite the original is printed on
+# its own line ("cleanping: was: ...") for you to compare.
+#
+# Privacy: the whole command line is sent to your configured AI provider when you press the key,
+# unless it looks like it holds a key, token or password: then nothing is sent. Nothing is saved
+# to CleanPing's history from here (--no-history).
 
 if (( BASH_VERSINFO[0] < 4 )); then
   echo "cleanping: the shell key needs bash 4 or newer (this is bash ${BASH_VERSION})." >&2
@@ -30,10 +34,11 @@ else
 
     # --keep-shape: the reply may not have more lines than your text, be much longer, or be padded
     # with blanks. Otherwise the part you can see could hide what runs when you press Enter.
+    # --refuse-secrets: a line that looks like it holds a key, token or password is not sent.
     # The line goes over stdin, not the argument list, so it never shows up in `ps`. Errors go to
     # a private temp file, so only the reply itself can ever end up on your command line.
     errfile=$(mktemp 2>/dev/null) || errfile=/dev/null
-    out=$(printf '%s' "$original" | command cleanping --no-history --keep-shape 2>"$errfile")
+    out=$(printf '%s' "$original" | command cleanping --no-history --keep-shape --refuse-secrets 2>"$errfile")
     rc=$?
     msg=$(<"$errfile"); [[ $errfile == /dev/null ]] || rm -f "$errfile"
 
@@ -42,6 +47,9 @@ else
       _CLEANPING_RESULT=$out
       READLINE_LINE=$out
       READLINE_POINT=${#READLINE_LINE}
+      # Control characters are shown as ? so an odd line cannot drive the terminal.
+      printf '\ncleanping: was: %s\n' \
+        "$(printf '%s' "$original" | LC_ALL=C tr '\000-\010\013-\037\177' '?')" >&2
     else
       # Bash has no message area; print the reason on its own line and keep the text.
       # cleanping's own messages already start with "cleanping: ".

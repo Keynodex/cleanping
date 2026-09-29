@@ -39,6 +39,20 @@ pub struct Cli {
     /// The shell key uses this so a reply cannot hide part of itself on your command line.
     #[arg(long)]
     pub keep_shape: bool,
+
+    /// Refuse to send text that looks like it holds a secret (a key, token or password). The
+    /// shell key uses this, because command lines often carry them.
+    #[arg(long)]
+    pub refuse_secrets: bool,
+
+    /// Used by the shell key: read the original and the reply from stdin, separated by a NUL
+    /// byte, and print which character ranges of the reply changed. Sends nothing anywhere.
+    #[arg(
+        long,
+        hide = true,
+        conflicts_with_all = ["text", "credential", "copy", "no_history", "keep_shape", "refuse_secrets"]
+    )]
+    pub marks: bool,
 }
 
 #[derive(Subcommand)]

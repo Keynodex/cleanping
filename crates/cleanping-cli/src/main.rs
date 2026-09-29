@@ -4,11 +4,13 @@ mod args;
 mod clipboard;
 mod edit;
 mod exit;
+mod guard;
 mod hints;
 mod history;
 mod init;
 mod input;
 mod keys;
+mod marks;
 mod no_history;
 mod output;
 mod prompt;
@@ -29,6 +31,7 @@ fn execute(cli: &Cli) -> Result<()> {
         Some(Command::Keys { action }) => keys::run(&Services::open()?, action),
         Some(Command::Prompt { action }) => prompt::run(&Services::open()?, action),
         Some(Command::History { action }) => history::run(&Services::open()?, action),
+        None if cli.marks => marks::run(),
         None => rewrite::run(cli, &Services::open()?),
     }
 }

@@ -9,6 +9,7 @@ use cleanping_core::infrastructure::sqlite_repositories::SqliteRunRepository;
 
 use crate::args::Cli;
 use crate::clipboard;
+use crate::guard;
 use crate::hints;
 use crate::input;
 use crate::no_history::NoHistory;
@@ -72,6 +73,9 @@ fn polish(
 
 pub fn run(cli: &Cli, services: &Services) -> Result<()> {
     let text = input::text_from(&cli.text)?;
+    if cli.refuse_secrets {
+        guard::refuse_if_secret(&text)?;
+    }
     let credential = pick_credential(cli.credential.as_deref(), services)?;
     let result = polish(cli, services, &text, &credential)
         .map_err(|error| hints::with_add_hint(error, &credential))?;

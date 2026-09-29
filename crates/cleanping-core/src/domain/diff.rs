@@ -16,6 +16,23 @@ pub struct Diff {
     pub removed_words: usize,
 }
 
+impl Diff {
+    /// Where the changed pieces sit in the edited text, as `(start, end)` character positions
+    /// (the end is one past the last character), in order.
+    pub fn changed_ranges(&self) -> Vec<(usize, usize)> {
+        let mut start = 0;
+        let mut ranges = Vec::new();
+        for piece in &self.pieces {
+            let end = start + piece.text.chars().count();
+            if piece.changed {
+                ranges.push((start, end));
+            }
+            start = end;
+        }
+        ranges
+    }
+}
+
 /// Compare word by word. `None` when the texts are too large to compare quickly; the caller
 /// then shows the edited text without highlighting.
 pub fn highlight_changes(original: &str, edited: &str) -> Option<Diff> {

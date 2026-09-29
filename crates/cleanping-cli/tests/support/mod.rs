@@ -2,6 +2,7 @@
 #![allow(dead_code)]
 
 pub mod pty;
+pub mod shell;
 
 use std::io::{Read, Write};
 use std::net::TcpListener;

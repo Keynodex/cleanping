@@ -117,3 +117,35 @@ fn large_but_mostly_equal_texts_still_work() {
     let diff = highlight_changes(&base, &edited).unwrap();
     assert!(diff.pieces.last().unwrap().changed);
 }
+
+#[test]
+fn changed_ranges_are_character_positions_in_the_edited_text() {
+    let diff = highlight_changes("pleae fix this", "Please fix this.").unwrap();
+    assert_eq!(diff.changed_ranges(), [(0, 6), (11, 16)]);
+}
+
+#[test]
+fn nothing_changed_means_no_ranges() {
+    let diff = highlight_changes("fix the login", "fix the login").unwrap();
+    assert_eq!(diff.changed_ranges(), []);
+}
+
+#[test]
+fn ranges_count_characters_not_bytes() {
+    // "café" is 4 characters but 5 bytes; "naïve" 5 characters, 6 bytes.
+    let diff = highlight_changes("cafe ok naive", "café ok naïve").unwrap();
+    assert_eq!(diff.changed_ranges(), [(0, 4), (8, 13)]);
+}
+
+#[test]
+fn ranges_follow_line_breaks_and_tabs() {
+    let diff = highlight_changes("a b\nc d", "a B\n\tc D").unwrap();
+    let text = joined(&diff);
+    let chars: Vec<char> = text.chars().collect();
+    let cut: Vec<String> = diff
+        .changed_ranges()
+        .iter()
+        .map(|&(start, end)| chars[start..end].iter().collect())
+        .collect();
+    assert_eq!(cut, ["B", "D"]);
+}
