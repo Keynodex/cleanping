@@ -71,19 +71,28 @@ fn marks(input: &str) -> Out {
 fn marks_lists_the_changed_character_ranges_of_the_reply() {
     let out = marks("pleae fix this\0Please fix this.");
     assert_eq!(out.code, 0, "{}", out.stderr);
-    assert_eq!(out.stdout, "0 6\n11 16\n");
+    assert_eq!(out.stdout, "16\n0 6\n11 16\n");
 }
 
 #[test]
-fn marks_prints_nothing_when_nothing_changed() {
+fn marks_lists_no_ranges_when_nothing_changed() {
     let out = marks("fix the login\0fix the login");
-    assert_eq!((out.code, out.stdout.as_str()), (0, ""));
+    assert_eq!((out.code, out.stdout.as_str()), (0, "13\n"));
 }
 
 #[test]
 fn marks_counts_characters_not_bytes() {
     let out = marks("cafe ok naive\0café ok naïve");
-    assert_eq!(out.stdout, "0 4\n8 13\n");
+    assert_eq!(out.stdout, "13\n0 4\n8 13\n");
+}
+
+#[test]
+fn marks_says_nothing_when_the_texts_are_too_large_to_compare() {
+    // No word in common, so nothing can be trimmed and the comparison table is too big.
+    let before: Vec<String> = (0..2100).map(|n| format!("w{n}")).collect();
+    let after: Vec<String> = (0..2100).map(|n| format!("x{n}")).collect();
+    let out = marks(&format!("{}\0{}", before.join(" "), after.join(" ")));
+    assert_eq!((out.code, out.stdout.as_str()), (0, ""), "{}", out.stderr);
 }
 
 #[test]

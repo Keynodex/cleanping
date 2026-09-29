@@ -51,15 +51,19 @@ pub struct Shell {
 
 impl Shell {
     pub fn start(sandbox: &Sandbox, command: &str) -> Self {
+        Self::start_with(sandbox, command, &[])
+    }
+
+    /// Same, with more environment variables set for the shell.
+    pub fn start_with(sandbox: &Sandbox, command: &str, extra: &[(&str, &str)]) -> Self {
         let dump = sandbox.dir.path().join("dump.txt");
-        let env = sandbox.environment(
-            Some(&sandbox.path_with_binary()),
-            &[
-                ("DUMP", dump.to_str().unwrap()),
-                ("TERM", "xterm"),
-                ("PS1", READY),
-            ],
-        );
+        let mut variables = vec![
+            ("DUMP", dump.to_str().unwrap()),
+            ("TERM", "xterm"),
+            ("PS1", READY),
+        ];
+        variables.extend_from_slice(extra);
+        let env = sandbox.environment(Some(&sandbox.path_with_binary()), &variables);
         Self {
             terminal: Pty::start(&env, command),
             dump,
