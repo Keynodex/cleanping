@@ -2,6 +2,7 @@
 
 pub mod diff;
 pub mod errors;
+pub mod local_server;
 pub mod models;
 pub mod prompt_presets;
 pub mod providers;
