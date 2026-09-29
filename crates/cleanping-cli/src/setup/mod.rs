@@ -2,8 +2,10 @@
 //! test the connection), and a small menu when run again.
 
 mod ask;
+mod check;
 mod console;
 mod provider;
+mod system_prompt;
 #[cfg(test)]
 mod testing;
 mod tools;
