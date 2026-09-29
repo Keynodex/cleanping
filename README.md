@@ -45,11 +45,11 @@ This installs a `cleanping` binary into `~/.cargo/bin`. An `npm` package is plan
 cleanping setup
 ```
 
-It asks which AI you want, takes your key (typed hidden, never shown), lets you pick a system prompt, offers to test the connection, and ends by printing the lines to add for Claude Code or Codex and for your shell. It does not change any of your files. Run it again later for a small menu to change the provider, the prompt, or to test again. If you pick a local model (Ollama), it checks that Ollama is running and asks before downloading the model with Ollama's own `ollama pull`; it never installs Ollama for you.
+It asks which AI you want, takes your key (shown only as stars while you type or paste it), lets you pick a system prompt, offers to test the connection, and ends by printing the lines to add for Claude Code or Codex and for your shell. It does not change any of your files. Run it again later for a small menu to change the provider, the prompt, or to test again. If you pick a local model (Ollama), it checks that Ollama is running and asks before downloading the model with Ollama's own `ollama pull`; it never installs Ollama for you.
 
 Prefer to do it by hand? The same steps as separate commands:
 
-Save a key. You are asked for it with a hidden prompt (nothing is shown as you paste). It is never taken from an argument, so it does not land in your shell history:
+Save a key. You are asked for it with a hidden prompt (you see one star per character, never the key; Backspace and Ctrl-U edit, Ctrl-C or Esc cancel and save nothing). It is never taken from an argument, so it does not land in your shell history:
 
 ```sh
 cleanping keys add --provider OpenAI
