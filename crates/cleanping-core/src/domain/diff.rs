@@ -3,7 +3,10 @@
 /// A piece of the edited text and whether it is new or different compared to the original.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Piece {
+    /// This piece's characters, blanks included, exactly as in the edited text.
     pub text: String,
+    /// True when this piece is new or different; blanks between two changed words count as
+    /// changed too.
     pub changed: bool,
 }
 
@@ -11,6 +14,7 @@ pub struct Piece {
 /// exactly.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Diff {
+    /// The pieces in order; two adjacent pieces never have the same `changed`.
     pub pieces: Vec<Piece>,
     /// Words of the original that no longer appear (they have no place in the edited text).
     pub removed_words: usize,

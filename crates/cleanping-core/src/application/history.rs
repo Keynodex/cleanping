@@ -4,11 +4,13 @@ use super::ports::RunRepository;
 use crate::domain::errors::{CleanpingError, Result};
 use crate::domain::models::Run;
 
+/// Use case: list and delete the local rewrite history.
 pub struct HistoryService<R: RunRepository> {
     runs: R,
 }
 
 impl<R: RunRepository> HistoryService<R> {
+    /// Build the service on the run store.
     pub fn new(runs: R) -> Self {
         Self { runs }
     }

@@ -12,6 +12,10 @@ use super::private_fs::{create_private_file, ensure_private_dir, open_private_fi
 use crate::application::ports::SecretStore;
 use crate::domain::errors::{CleanpingError, Result};
 
+/// [`SecretStore`] kept in one JSON file of name/key pairs. Writes replace the file atomically
+/// while holding a lock file; on Unix the file is owner-only (0600) and its folder 0700. A
+/// symlinked file is followed. A file that is not a JSON object of strings is a `Storage` error
+/// and is left untouched.
 pub struct JsonSecretStore {
     path: PathBuf,
 }
@@ -28,6 +32,9 @@ fn cannot_write(error: std::io::Error) -> CleanpingError {
 static TEMP_COUNTER: AtomicU64 = AtomicU64::new(0);
 
 impl JsonSecretStore {
+    /// Use the file at `path` (usually
+    /// [`secrets_path`](crate::infrastructure::paths::secrets_path)). Nothing is read or created
+    /// until first use.
     pub fn new(path: impl Into<PathBuf>) -> Self {
         Self { path: path.into() }
     }

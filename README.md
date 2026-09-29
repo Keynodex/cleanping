@@ -188,11 +188,14 @@ Planned, not built yet, and the order may change:
 ## Documentation
 
 - This README: install, first run, commands, where things are stored, safety.
+- [docs/](docs/README.md): [getting started](docs/getting-started.md), the [command reference](docs/commands.md), guides for [Claude Code and Codex](docs/claude-code-and-codex.md), the [shell key](docs/shell-key.md), [providers and local models](docs/providers-and-local-models.md) and [system prompts](docs/system-prompts.md), plus [privacy and safety](docs/privacy-and-safety.md), [troubleshooting](docs/troubleshooting.md) and the [architecture](docs/architecture.md).
 - `cleanping --help` and `cleanping <command> --help`.
+- [CHANGELOG.md](CHANGELOG.md): what changed in each version.
+- [CONTRIBUTING.md](CONTRIBUTING.md): how to build, test and send a change.
 - [SECURITY.md](SECURITY.md): how to report a problem privately.
 - [AGENTS.md](AGENTS.md): how the code is organized and the rules contributors follow.
 
-A full documentation site is planned.
+A documentation site built from the `docs/` pages is planned.
 
 ## Development
 
@@ -202,7 +205,7 @@ cargo clippy --workspace --all-targets -- -D warnings
 cargo test --workspace
 ```
 
-The code is a Cargo workspace: `cleanping-core` (domain rules, use cases, adapters) and `cleanping-cli` (the command). Tests run the real binary against a fake local API server, and drive real interactive zsh and bash sessions for the shell key (Linux; needs `zsh` and `script`).
+[CONTRIBUTING.md](CONTRIBUTING.md) has the full checklist, and [docs/architecture.md](docs/architecture.md) is a map of the code. The code is a Cargo workspace: `cleanping-core` (domain rules, use cases, adapters) and `cleanping-cli` (the command). Tests run the real binary against a fake local API server, and drive real interactive zsh and bash sessions for the shell key (Linux; needs `zsh` and `script`).
 
 The earlier desktop window (Python, tkinter) is kept in [`legacy/python`](legacy/python) until it is ported to Rust; it reads the same database and key file.
 

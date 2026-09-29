@@ -12,7 +12,10 @@ pub enum LocalServer {
     /// Nothing answered, but the `ollama` program is installed.
     NotRunning,
     /// Ollama answered; these are the models it has.
-    Running { models: Vec<String> },
+    Running {
+        /// Model names exactly as Ollama lists them, such as `qwen2.5:7b` or `llama3:latest`.
+        models: Vec<String>,
+    },
     /// Something answered, but not like Ollama.
     Other,
 }
@@ -20,13 +23,19 @@ pub enum LocalServer {
 /// What the user can do about it.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum LocalFix {
+    /// Install Ollama (nothing answered and the `ollama` program was not found).
     Install,
+    /// Start Ollama (the program is installed but nothing answered).
     Start,
+    /// Download the configured model (Ollama is running but does not have it).
     PullModel,
 }
 
+/// The port Ollama listens on by default.
 pub const OLLAMA_PORT: u16 = 11434;
 
+/// True when `wanted` is one of `models`. A name without a tag also matches its `:latest`
+/// entry: `llama3` matches `llama3:latest`, not `llama3:8b`.
 pub fn model_present(models: &[String], wanted: &str) -> bool {
     let with_default_tag = format!("{wanted}:latest");
     models

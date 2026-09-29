@@ -2,6 +2,8 @@
 
 use time::{Duration, OffsetDateTime, UtcOffset};
 
+/// `moment` as a UTC stamp in whole seconds, such as `2026-09-28T18:30:00+00:00`. Every stored
+/// time uses this form, so stamps compare correctly as text.
 pub fn format_utc(moment: OffsetDateTime) -> String {
     let m = moment.to_offset(UtcOffset::UTC);
     format!(
@@ -15,6 +17,7 @@ pub fn format_utc(moment: OffsetDateTime) -> String {
     )
 }
 
+/// The current time as a [`format_utc`] stamp.
 pub fn utc_now() -> String {
     format_utc(OffsetDateTime::now_utc())
 }

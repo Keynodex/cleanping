@@ -2,6 +2,8 @@
 
 use thiserror::Error;
 
+/// An expected failure. `Display` shows only the carried message, which is written for the
+/// user.
 #[derive(Debug, Error, PartialEq, Eq)]
 pub enum CleanpingError {
     /// A user-supplied value violates a domain invariant.
@@ -21,4 +23,5 @@ pub enum CleanpingError {
     Storage(String),
 }
 
+/// Result type used throughout the crate.
 pub type Result<T> = std::result::Result<T, CleanpingError>;

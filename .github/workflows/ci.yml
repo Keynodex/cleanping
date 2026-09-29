@@ -26,6 +26,11 @@ jobs:
       - run: cargo fmt --all -- --check
       - run: cargo clippy --workspace --all-targets --locked -- -D warnings
       - run: cargo test --workspace --locked
+      # The doc comments become the published API docs: a broken link in one should fail here.
+      - if: runner.os == 'Linux'
+        run: cargo doc --workspace --no-deps --locked
+        env:
+          RUSTDOCFLAGS: -D warnings
 
   # The oldest Rust the crates promise to build with (`rust-version` in Cargo.toml).
   msrv:
