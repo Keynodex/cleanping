@@ -17,6 +17,7 @@ mod output;
 mod prompt;
 mod rewrite;
 mod services;
+mod setup;
 
 use clap::Parser;
 use cleanping_core::domain::errors::Result;

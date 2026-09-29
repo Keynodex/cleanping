@@ -95,7 +95,7 @@ pub struct EditArgs {
     pub yes: bool,
 }
 
-#[derive(Clone, Copy, ValueEnum)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, ValueEnum)]
 pub enum Shell {
     Zsh,
     Bash,
