@@ -13,12 +13,13 @@ mod terminal;
 mod view;
 mod wrap;
 
-use cleanping_core::domain::errors::{CleanpingError, Result};
+use cleanping_core::domain::errors::Result;
 use cleanping_core::domain::models::Credential;
 use cleanping_core::domain::secret_scan::find_secret;
 use cleanping_core::domain::validation::host_of;
 
 use crate::args::EditArgs;
+use crate::guard;
 use crate::rewrite::pick_credential;
 use crate::services::Services;
 use job::Job;
@@ -65,9 +66,7 @@ fn edit_quietly(
     credential: Result<Credential>,
 ) -> Result<()> {
     if let Some(kind) = secret {
-        return Err(CleanpingError::Validation(format!(
-            "The text looks like it contains {kind}, so it was not sent."
-        )));
+        return Err(guard::refusal(kind));
     }
     let job = Job::prepare(services, raw.trim(), credential?)?;
     file::write(&args.file, &file::replacement(raw, &job.run()?))
