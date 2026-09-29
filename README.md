@@ -79,7 +79,9 @@ eval "$(cleanping init zsh)"     # or: eval "$(cleanping init bash)"
 
 Type a rough line at the prompt (do not press Enter), then press **Ctrl-X Ctrl-P**. The line is replaced by the rewrite. Press the same keys again, without editing, to get your original back. To use a different key, set `CLEANPING_KEYBIND` before that line (zsh: `'^[r'`, bash: `'\er'`).
 
-The whole command line is sent to your AI provider when you press the key, so do not use it on lines that contain secrets. The line is sent over stdin, never as a command-line argument, and nothing is written to CleanPing's history from the shell key.
+**What changed.** In zsh the words the AI changed are highlighted until you edit the line. Set `CLEANPING_HIGHLIGHT` to another zsh style (for example `'underline'` or `'bg=yellow'`), or to an empty value to turn it off. It needs zsh 5.3 or newer and a UTF-8 locale; without one the line is still rewritten, just not highlighted. Bash cannot highlight part of the command line, so it prints your original on its own line after the rewrite (`cleanping: was: ...`), for you to compare.
+
+The whole command line is sent to your AI provider when you press the key. A line that looks like it holds an API key, token, private key or password is not sent at all: you see a message and the line stays as it is. That check is a best guess and cannot catch everything, so still avoid the key on lines with secrets. The line is sent over stdin, never as a command-line argument, and nothing is written to CleanPing's history from the shell key.
 
 **The reply has to look like what it replaces.** A reply is only put on your command line if it has no more lines than your text, is not much longer (about twice as long plus a short sentence), and does not pad itself with long runs of spaces or tabs. Otherwise the line is left alone and you see a message. This stops a reply from pushing a command out of sight above a harmless-looking end. It is still a rewrite by an AI, so read the line before you press Enter.
 
@@ -108,7 +110,7 @@ It works with Claude Code and Codex, as tested. Other apps that run `$VISUAL FIL
 
 | Command | What it does |
 |---|---|
-| `cleanping [TEXT]...` | Rewrite the text (or piped input). Options: `-c/--credential NAME`, `--copy`, `--no-history`, `--keep-shape` (refuse a reply with more lines, much longer, or padded) |
+| `cleanping [TEXT]...` | Rewrite the text (or piped input). Options: `-c/--credential NAME`, `--copy`, `--no-history`, `--keep-shape` (refuse a reply with more lines, much longer, or padded), `--refuse-secrets` (send nothing if the text looks like a key, token or password; exit `2`) |
 | `cleanping edit FILE` | Fix the text in a file and review it on a screen (set it as `VISUAL`). Options: `-c/--credential NAME`, `--yes` (no screen: write the edit into the file) |
 | `cleanping keys list` | Show saved keys (never the key itself) |
 | `cleanping keys add ...` | Save a key: `--provider`, `--name`, `--url`, `--model`, `--key-stdin` |
@@ -145,6 +147,7 @@ If you delete the database file to start over, saved API keys stay in `secrets.j
 - HTTP redirects are never followed, so a key and your text cannot be forwarded to another host.
 - Error messages never include the server's response body.
 - `cleanping edit` will not send text that looks like an API key, token, private key or password unless you press **S** on the screen; with `--yes` it never does. The check is a best guess and cannot catch everything, so it does not replace judgment about what you paste. The screen only ever names the kind of secret, never shows it.
+- The shell key uses the same check through `--refuse-secrets`. Plain `cleanping "text"` does not run it unless you add that flag, because there you chose the text yourself.
 - Replies are cleaned before they are shown: terminal control characters, text-direction overrides and zero-width or other invisible characters are removed, so a reply cannot move your cursor, rewrite the screen or hide text in it.
 - Input is capped at 200,000 bytes, and refused before any request is made. A reply larger than 1 MB is refused.
 - `HTTP_PROXY`, `HTTPS_PROXY` and `ALL_PROXY` (and `NO_PROXY`) are honored for remote providers. Only `http://` and `https://` proxies are supported: if one of these variables is set to anything else (for example a `socks5://` address) or to something that does not parse, CleanPing stops and sends nothing, rather than quietly connecting without the proxy. Local providers are always reached directly, never through a proxy.
@@ -157,11 +160,10 @@ To report a security problem, see [SECURITY.md](SECURITY.md).
 
 Planned, not built yet, and the order may change:
 
-1. **Highlighted changes in the shell key** (zsh first).
-2. **`cleanping setup`**: a first-run guide to pick a provider, enter your key (shown masked), set your system prompt, and optionally install a free local model with Ollama.
-3. **Grok Build** as an editor host for `cleanping edit` (not tested yet).
-4. **A browser extension** for web text boxes. Every website's editor behaves differently and sites change without notice, so each one needs its own testing and an update can break it.
-5. Windows support.
+1. **`cleanping setup`**: a first-run guide to pick a provider, enter your key (shown masked), set your system prompt, and optionally install a free local model with Ollama.
+2. **Grok Build** as an editor host for `cleanping edit` (not tested yet).
+3. **A browser extension** for web text boxes. Every website's editor behaves differently and sites change without notice, so each one needs its own testing and an update can break it.
+4. Windows support.
 
 ## Documentation
 
