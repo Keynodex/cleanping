@@ -11,6 +11,7 @@ cargo build
 cargo fmt --all -- --check
 cargo clippy --workspace --all-targets -- -D warnings
 cargo test --workspace
+RUSTDOCFLAGS='-D warnings' cargo doc --workspace --no-deps
 ```
 
 Shell-key tests need `zsh` and `script` (Linux). Locally they skip when a shell is missing; with
@@ -46,6 +47,15 @@ Minimum Rust is 1.89 (`rust-version`, checked in CI).
   reach a real provider (answer "n" to the connection test unless a fake server is used).
 
 Dependencies point inward: infrastructure -> application -> domain. Keep files under ~150 lines.
+
+## Docs
+
+`docs/` (user guides, reference, troubleshooting, architecture), `CONTRIBUTING.md` and `CHANGELOG.md`
+are written to be published later as a docs site, so they must stay true: when behavior changes, update
+the matching page and add a line under **Unreleased** in `CHANGELOG.md`. Check a claim against the
+binary or the code before writing it (`cleanping COMMAND --help`, a run in a throwaway `HOME`). Every
+public item of `cleanping-core` needs a doc comment: the crate has `#![warn(missing_docs)]`, CI turns
+warnings into errors, and CI also builds the docs with `-D warnings` so a broken link fails.
 
 ## Rules that matter here
 
