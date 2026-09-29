@@ -25,7 +25,12 @@ Minimum Rust is 1.89 (`rust-version`, checked in CI).
 - `crates/cleanping-core/src/infrastructure` — SQLite, secrets file, HTTP (ureq), paths, clock
 - `crates/cleanping-cli` — the `cleanping` binary: `args`, `rewrite`, `keys`, `prompt`, `history`, `init`
   (shell scripts in `shell/`), `guard` (the refuse-if-it-looks-like-a-secret check), `marks` (hidden
-  `--marks`, see below); all stdout goes through `output` (a closed pipe is not a panic)
+  `--marks`, see below), `connection` (`keys test`); all stdout goes through `output` (a closed pipe
+  is not a panic)
+- Local models: `domain/local_server.rs` decides what to suggest (install, start, pull the model; install
+  and start advice only for the standard Ollama address, port 11434); `infrastructure/ollama.rs` asks
+  `GET /api/tags` on a loopback address only (no redirects, no proxy, 3 s, 1 MB). `keys test` sends fixed
+  words only (`ConnectionCheck`), never the user's text, and never saves to the history.
 - `crates/cleanping-cli/src/edit` — `cleanping edit FILE` (the `$VISUAL` screen): `view` + `layout` + `wrap`
   are pure (state and keys in, styled lines out), `terminal` is crossterm on `/dev/tty` only (never
   stdin/stdout: a host app pipes them), `session` is the key/reply loop, `job` the background request
