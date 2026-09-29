@@ -1,5 +1,6 @@
 //! Copy-pasteable commands shown inside error messages.
 
+use cleanping_core::domain::errors::CleanpingError;
 use cleanping_core::domain::models::Credential;
 
 pub const ADD_FIRST_KEY: &str = "Add one: cleanping keys add --provider OpenAI";
@@ -19,6 +20,17 @@ pub fn add_saved_key(credential: &Credential) -> String {
         shell_quote(&credential.api_url),
         shell_quote(&credential.model)
     )
+}
+
+/// A missing-key error, plus the command that saves this key again.
+pub fn with_add_hint(error: CleanpingError, credential: &Credential) -> CleanpingError {
+    match error {
+        CleanpingError::MissingCredential(message) => CleanpingError::MissingCredential(format!(
+            "{message} Add it: {}",
+            add_saved_key(credential)
+        )),
+        other => other,
+    }
 }
 
 #[cfg(test)]

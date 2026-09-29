@@ -265,6 +265,16 @@ pub fn status_reply(code: u16, body: &str) -> String {
 
 /// One canned response per incoming connection, in order.
 pub fn serve(responses: Vec<String>) -> FakeServer {
+    serve_gated(responses, None)
+}
+
+/// A server that reads the request but holds its reply until the returned sender fires.
+pub fn serve_held(response: String) -> (FakeServer, std::sync::mpsc::Sender<()>) {
+    let (release, gate) = std::sync::mpsc::channel();
+    (serve_gated(vec![response], Some(gate)), release)
+}
+
+fn serve_gated(responses: Vec<String>, gate: Option<std::sync::mpsc::Receiver<()>>) -> FakeServer {
     let listener = TcpListener::bind("127.0.0.1:0").unwrap();
     let url = format!(
         "http://127.0.0.1:{}/v1/chat/completions",
@@ -303,6 +313,9 @@ pub fn serve(responses: Vec<String>) -> FakeServer {
             seen.lock()
                 .unwrap()
                 .push(String::from_utf8_lossy(&buffer).to_string());
+            if let Some(gate) = &gate {
+                let _ = gate.recv();
+            }
             let _ = stream.write_all(response.as_bytes());
         }
     });

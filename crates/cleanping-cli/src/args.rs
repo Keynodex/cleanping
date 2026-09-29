@@ -1,5 +1,7 @@
 //! Command-line shape (clap). No behavior here.
 
+use std::path::PathBuf;
+
 use clap::{Args, Parser, Subcommand, ValueEnum};
 
 #[derive(Parser)]
@@ -56,11 +58,27 @@ pub enum Command {
         #[command(subcommand)]
         action: HistoryAction,
     },
+    /// Fix the text in FILE with the AI, then review it. Set `VISUAL="cleanping edit"` so the
+    /// editor key of Claude Code or Codex (Ctrl+G) opens it.
+    Edit(EditArgs),
     /// Print shell integration: add `eval "$(cleanping init zsh)"` to your shell's rc file.
     Init {
         #[arg(value_enum)]
         shell: Shell,
     },
+}
+
+#[derive(Args)]
+pub struct EditArgs {
+    /// The file whose text is fixed.
+    pub file: PathBuf,
+    /// Which saved key to use (default: the selected one).
+    #[arg(short, long, value_name = "NAME")]
+    pub credential: Option<String>,
+    /// Write the edited text into the file without a screen or a question. Text that looks
+    /// like it holds a secret is still never sent.
+    #[arg(long)]
+    pub yes: bool,
 }
 
 #[derive(Clone, Copy, ValueEnum)]
