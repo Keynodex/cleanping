@@ -25,9 +25,13 @@ pub struct Services {
 
 impl Services {
     pub fn open() -> Result<Self> {
-        let db = Database::new(database_path()?);
+        Self::open_at(database_path()?, secrets_path()?)
+    }
+
+    /// The same, with the database and key file at given places (tests use a temp folder).
+    pub fn open_at(database: PathBuf, secrets: PathBuf) -> Result<Self> {
+        let db = Database::new(database);
         db.migrate()?;
-        let secrets = secrets_path()?;
         Ok(Self {
             credentials: CredentialService::new(
                 SqliteCredentialRepository::new(db.clone()),

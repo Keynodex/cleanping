@@ -2,7 +2,7 @@
 
 use std::time::Duration;
 
-use cleanping_core::application::connection_check::ConnectionCheck;
+use cleanping_core::application::connection_check::{CheckOutcome, ConnectionCheck};
 use cleanping_core::domain::errors::{CleanpingError, Result};
 use cleanping_core::domain::local_server::{diagnose, is_default_ollama_url};
 use cleanping_core::domain::models::Credential;
@@ -20,14 +20,24 @@ const TEST_TIMEOUT: Duration = Duration::from_secs(60);
 
 pub fn run(services: &Services, name: Option<&str>) -> Result<()> {
     let credential = pick_credential(name, services)?;
+    let outcome = test(services, &credential)?;
+    output::line(&ok_line(&credential, outcome))
+}
+
+/// One tiny request to the provider. A failure comes back with the key's name and, for a
+/// local model server, what to do about it.
+pub fn test(services: &Services, credential: &Credential) -> Result<CheckOutcome> {
     let check = ConnectionCheck::new(OpenAiRewriter::new(TEST_TIMEOUT), services.secrets());
-    match check.run(&credential) {
-        Ok(outcome) => output::line(&format!(
-            "OK: \u{201c}{}\u{201d} answered in {} ms (model {}).",
-            credential.name, outcome.duration_ms, credential.model
-        )),
-        Err(error) => Err(explain(error, &credential)),
-    }
+    check
+        .run(credential)
+        .map_err(|error| explain(error, credential))
+}
+
+pub fn ok_line(credential: &Credential, outcome: CheckOutcome) -> String {
+    format!(
+        "OK: \u{201c}{}\u{201d} answered in {} ms (model {}).",
+        credential.name, outcome.duration_ms, credential.model
+    )
 }
 
 /// The failure with the key's name, and, for a local model server, what to do about it.

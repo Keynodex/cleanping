@@ -3,6 +3,8 @@
 
 mod ask;
 mod console;
+mod provider;
 #[cfg(test)]
 mod testing;
+mod tools;
 mod usage;
