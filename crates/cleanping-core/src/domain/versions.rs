@@ -5,8 +5,11 @@
 
 use serde_json::{json, Value};
 
+/// Adding a version to a stack that already holds this many drops the oldest one.
 pub const MAX_VERSIONS: usize = 20;
 
+/// The user's text and its rewrites, oldest first, with a position on the one shown. It always
+/// holds at least one version, and the position always points at one of them.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct VersionStack {
     versions: Vec<String>,
@@ -20,6 +23,7 @@ impl Default for VersionStack {
 }
 
 impl VersionStack {
+    /// A stack with one empty version.
     pub fn new() -> Self {
         Self {
             versions: vec![String::new()],
@@ -39,18 +43,22 @@ impl VersionStack {
         }
     }
 
+    /// Every kept version, oldest first.
     pub fn versions(&self) -> &[String] {
         &self.versions
     }
 
+    /// The version shown now.
     pub fn current(&self) -> &str {
         &self.versions[self.index]
     }
 
+    /// Position of the shown version; 0 is the oldest.
     pub fn index(&self) -> usize {
         self.index
     }
 
+    /// How many versions are kept (never 0).
     pub fn count(&self) -> usize {
         self.versions.len()
     }
@@ -76,12 +84,14 @@ impl VersionStack {
         true
     }
 
+    /// Move to the next older version; false (and no change) when already at the oldest.
     pub fn back(&mut self) -> bool {
         self.index
             .checked_sub(1)
             .is_some_and(|target| self.move_to(target))
     }
 
+    /// Move to the next newer version; false (and no change) when already at the latest.
     pub fn forward(&mut self) -> bool {
         self.move_to(self.index + 1)
     }
@@ -98,6 +108,8 @@ impl VersionStack {
         })
     }
 
+    /// The saved form: JSON with `versions` and `index`, as the Python release wrote it. Read it
+    /// back with [`loads`](Self::loads).
     pub fn dumps(&self) -> String {
         json!({ "versions": self.versions, "index": self.index }).to_string()
     }

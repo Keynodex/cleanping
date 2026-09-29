@@ -8,14 +8,19 @@ use crate::domain::models::{Credential, Run, RunStatus};
 use crate::domain::shape::keeps_shape;
 use crate::domain::validation::is_local_url;
 
+/// What one polish attempt produced. Exactly one of `output_text` and `error_message` is set.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct PolishResult {
+    /// The edited text; `None` when the attempt failed.
     pub output_text: Option<String>,
+    /// Why the attempt failed, as a message for the user; `None` on success.
     pub error_message: Option<String>,
+    /// The attempt as recorded in the history, with its id and time.
     pub run: Run,
 }
 
 impl PolishResult {
+    /// True when the attempt produced an edit.
     pub fn ok(&self) -> bool {
         self.error_message.is_none()
     }
@@ -32,6 +37,8 @@ pub struct PolishText<W: Rewriter, R: RunRepository, S: SecretStore> {
 }
 
 impl<W: Rewriter, R: RunRepository, S: SecretStore> PolishText<W, R, S> {
+    /// Build the use case. Replies are not shape-checked unless
+    /// [`keeping_shape`](Self::keeping_shape) is called.
     pub fn new(rewriter: W, runs: R, secrets: S) -> Self {
         Self {
             rewriter,

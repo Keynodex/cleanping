@@ -5,7 +5,8 @@ use std::path::{Path, PathBuf};
 
 use crate::domain::errors::{CleanpingError, Result};
 
-/// `$VAR` when set and non-empty, otherwise `$HOME/<fallback>`.
+/// `$VAR` when it is set to an absolute path, otherwise `$HOME/<fallback>` (`HOME` must be
+/// absolute too).
 fn xdg_base(
     get: &impl Fn(&str) -> Option<OsString>,
     var: &str,
@@ -22,10 +23,15 @@ fn xdg_base(
         .fold(PathBuf::from(home), |path, part| path.join(part)))
 }
 
+/// `$XDG_CONFIG_HOME/cleanping`, or `$HOME/.config/cleanping` when that variable is unset or
+/// not an absolute path. `get` looks up an environment variable by name. A `Storage` error when
+/// `HOME` is needed but missing or relative.
 pub fn config_dir_from(get: impl Fn(&str) -> Option<OsString>) -> Result<PathBuf> {
     Ok(xdg_base(&get, "XDG_CONFIG_HOME", &[".config"])?.join("cleanping"))
 }
 
+/// `$XDG_DATA_HOME/cleanping`, or `$HOME/.local/share/cleanping`; the same rules as
+/// [`config_dir_from`].
 pub fn data_dir_from(get: impl Fn(&str) -> Option<OsString>) -> Result<PathBuf> {
     Ok(xdg_base(&get, "XDG_DATA_HOME", &[".local", "share"])?.join("cleanping"))
 }
@@ -34,10 +40,13 @@ fn real_env(name: &str) -> Option<OsString> {
     std::env::var_os(name)
 }
 
+/// The secret store file: `secrets.json` in the config folder, found from the process
+/// environment.
 pub fn secrets_path() -> Result<PathBuf> {
     Ok(config_dir_from(real_env)?.join("secrets.json"))
 }
 
+/// The database file: `cleanping.db` in the data folder, found from the process environment.
 pub fn database_path() -> Result<PathBuf> {
     Ok(data_dir_from(real_env)?.join("cleanping.db"))
 }

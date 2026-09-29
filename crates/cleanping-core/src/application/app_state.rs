@@ -9,15 +9,20 @@ const VERSIONS: &str = "versions";
 const LEGACY_DRAFT: &str = "draft";
 const LEGACY_RESULT: &str = "result";
 
+/// Use case: what a front-end restores on its next launch (the chosen key and the editor
+/// history).
 pub struct AppState<S: StateRepository> {
     state: S,
 }
 
 impl<S: StateRepository> AppState<S> {
+    /// Build it on a state store.
     pub fn new(state: S) -> Self {
         Self { state }
     }
 
+    /// The id of the key the user chose, if any. A missing or unreadable saved value reads as
+    /// `None`.
     pub fn selected_credential_id(&self) -> Result<Option<i64>> {
         Ok(self
             .state
@@ -25,6 +30,7 @@ impl<S: StateRepository> AppState<S> {
             .and_then(|raw| raw.parse().ok()))
     }
 
+    /// Remember `id` as the chosen key; `None` clears the choice.
     pub fn select_credential(&self, id: Option<i64>) -> Result<()> {
         self.state.set(
             SELECTED_CREDENTIAL,
@@ -46,6 +52,8 @@ impl<S: StateRepository> AppState<S> {
         Ok(VersionStack::from_parts(legacy, None))
     }
 
+    /// Save the editor history, and blank any leftover `draft` and `result` values from the older
+    /// saved form so no stale copy of the user's text remains.
     pub fn save_versions(&self, stack: &VersionStack) -> Result<()> {
         self.state.set(VERSIONS, &stack.dumps())?;
         for key in [LEGACY_DRAFT, LEGACY_RESULT] {

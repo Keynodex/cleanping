@@ -1,12 +1,17 @@
 //! Provider presets: pick one, the URL fills in.
 
+/// A known OpenAI-compatible provider. Picking one fills in its URL and a starting model.
 #[derive(Debug, PartialEq, Eq)]
 pub struct ProviderPreset {
+    /// Name shown to the user and matched by [`preset_for`].
     pub label: &'static str,
+    /// Its chat-completions endpoint; empty for `Custom`.
     pub api_url: &'static str,
+    /// Model suggested when the provider is picked; empty for `Custom`.
     pub default_model: &'static str,
 }
 
+/// The known providers, in the order the Python release showed them; `Custom` (no URL) is last.
 pub const PROVIDER_PRESETS: &[ProviderPreset] = &[
     ProviderPreset {
         label: "DeepSeek",
@@ -35,10 +40,12 @@ pub const PROVIDER_PRESETS: &[ProviderPreset] = &[
     },
 ];
 
+/// Every preset's label, in order.
 pub fn preset_labels() -> Vec<&'static str> {
     PROVIDER_PRESETS.iter().map(|p| p.label).collect()
 }
 
+/// The preset with exactly this label (case-sensitive).
 pub fn preset_for(label: &str) -> Option<&'static ProviderPreset> {
     PROVIDER_PRESETS.iter().find(|p| p.label == label)
 }

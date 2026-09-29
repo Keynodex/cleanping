@@ -50,6 +50,9 @@ CREATE TABLE app_state (
 
 const MIGRATIONS: &[(i64, &str)] = &[(1, SCHEMA_V1)];
 
+/// Handle on the SQLite database file. Cheap to clone: each call opens a short-lived
+/// connection with `foreign_keys` and `secure_delete` on, and on Unix keeps the file and its
+/// folder owner-only.
 #[derive(Clone, Debug)]
 pub struct Database {
     path: PathBuf,
@@ -60,6 +63,8 @@ fn storage(error: impl std::fmt::Display) -> CleanpingError {
 }
 
 impl Database {
+    /// Point at the database file at `path`; nothing is opened until first use. Run
+    /// [`migrate`](Self::migrate) before using the repositories.
     pub fn new(path: impl Into<PathBuf>) -> Self {
         Self { path: path.into() }
     }
@@ -93,6 +98,8 @@ impl Database {
         outcome.map_err(storage)
     }
 
+    /// Create the file and its folder if needed, switch to WAL mode and apply any missing schema
+    /// migrations. Safe to run on every launch, including several launches at once.
     pub fn migrate(&self) -> Result<()> {
         self.with(|connection| {
             ensure_wal(connection)?;

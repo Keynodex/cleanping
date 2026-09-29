@@ -19,11 +19,17 @@ pub const MAX_RESPONSE_BYTES: u64 = 1_000_000;
 /// Cold local models can take a while to load.
 pub const DEFAULT_TIMEOUT: Duration = Duration::from_secs(180);
 
+/// [`Rewriter`] for OpenAI-compatible chat completions. It never follows redirects, never puts
+/// the response body in an error and reads at most [`MAX_RESPONSE_BYTES`] of it. An unsafe URL
+/// or a key with control characters is a `Validation` error and nothing is sent; every later
+/// failure is a `Rewrite` error.
 pub struct OpenAiRewriter {
     timeout: Duration,
 }
 
 impl OpenAiRewriter {
+    /// `timeout` limits the whole call, from connecting to reading the reply. The `Default` uses
+    /// [`DEFAULT_TIMEOUT`].
     pub fn new(timeout: Duration) -> Self {
         Self { timeout }
     }

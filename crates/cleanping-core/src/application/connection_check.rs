@@ -9,19 +9,25 @@ use crate::domain::validation::is_local_url;
 
 /// Fixed words, so a test can never carry the user's text or history to a provider.
 pub const CHECK_INSTRUCTIONS: &str = "This is a connection test. Reply with the single word OK.";
+/// The text a connection test asks the provider to edit (with [`CHECK_INSTRUCTIONS`]).
 pub const CHECK_TEXT: &str = "ping";
 
+/// A connection test that succeeded.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct CheckOutcome {
+    /// How long the provider took to answer, in milliseconds.
     pub duration_ms: u64,
 }
 
+/// Use case: check that a saved credential works by sending one fixed request. The user's
+/// text is never sent and nothing is written to the history.
 pub struct ConnectionCheck<W: Rewriter, S: SecretStore> {
     rewriter: W,
     secrets: S,
 }
 
 impl<W: Rewriter, S: SecretStore> ConnectionCheck<W, S> {
+    /// Build the check from a rewriter and the store that holds the keys.
     pub fn new(rewriter: W, secrets: S) -> Self {
         Self { rewriter, secrets }
     }

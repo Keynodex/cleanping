@@ -12,6 +12,7 @@ pub struct CredentialService<R: CredentialRepository, S: SecretStore> {
 }
 
 impl<R: CredentialRepository, S: SecretStore> CredentialService<R, S> {
+    /// Build the service on the credential rows and the secret store.
     pub fn new(credentials: R, secrets: S) -> Self {
         Self {
             credentials,
@@ -19,10 +20,12 @@ impl<R: CredentialRepository, S: SecretStore> CredentialService<R, S> {
         }
     }
 
+    /// Every saved credential.
     pub fn list(&self) -> Result<Vec<Credential>> {
         self.credentials.list()
     }
 
+    /// The credential with this id; a `NotFound` error if it is gone.
     pub fn get(&self, id: i64) -> Result<Credential> {
         self.credentials.get(id)
     }

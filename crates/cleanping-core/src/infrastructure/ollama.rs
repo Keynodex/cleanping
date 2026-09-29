@@ -22,6 +22,8 @@ pub fn probe(api_url: &str) -> Option<LocalServer> {
     probe_with(api_url, std::env::var_os("PATH").as_deref())
 }
 
+/// Like [`probe`], but looks for the `ollama` program in `path` (a `PATH`-style list of
+/// folders) instead of the real `PATH`.
 pub fn probe_with(api_url: &str, path: Option<&OsStr>) -> Option<LocalServer> {
     if !is_local_url(api_url) {
         return None;
