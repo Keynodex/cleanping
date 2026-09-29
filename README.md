@@ -7,6 +7,8 @@ $ cleanping "plz fix teh login pgae, buttons r too smal"
 Please fix the login page; the buttons are too small.
 ```
 
+**What makes it different:** you pick the AI, bring your own key, edit with your own system prompt, and can run a local model so nothing leaves your computer.
+
 - **Pipe-friendly.** Only the rewritten text goes to stdout. Errors go to stderr, with clear exit codes.
 - **Works with your key.** DeepSeek, OpenAI, OpenRouter, or a local model such as Ollama. No account with us, no server of ours.
 - **A key for your shell.** Type a rough command line, press one key, get it rewritten in place. Press again to restore your original.
@@ -16,15 +18,23 @@ Works on Linux and macOS. Windows is not supported yet.
 
 ## Install
 
-From source (needs [Rust](https://rustup.rs) 1.89 or newer):
+**Prebuilt binary** (Linux x86_64, macOS Apple silicon and Intel): download the archive for your system from the [latest release](https://github.com/Keynodex/cleanping/releases/latest), then check it and put it on your `PATH`:
 
 ```sh
-git clone https://github.com/Keynodex/cleanping
-cd cleanping
-cargo install --path crates/cleanping-cli --locked
+sha256sum -c cleanping-v0.2.0-x86_64-unknown-linux-gnu.tar.gz.sha256   # macOS: shasum -a 256 -c
+tar xzf cleanping-v0.2.0-x86_64-unknown-linux-gnu.tar.gz
+install cleanping-v0.2.0-x86_64-unknown-linux-gnu/cleanping ~/.local/bin/
 ```
 
-This installs a `cleanping` binary into `~/.cargo/bin`. Prebuilt binaries and an `npm` package are planned.
+(Replace `v0.2.0` with the version you downloaded.) The Linux build needs glibc 2.34 or newer (Ubuntu 22.04+, Debian 12+). The macOS builds are not signed or notarized by Apple, so macOS may ask you to allow them. Each archive has a build-provenance attestation from this repository's release workflow.
+
+**From source** (needs [Rust](https://rustup.rs) 1.89 or newer):
+
+```sh
+cargo install --git https://github.com/Keynodex/cleanping cleanping-cli --locked
+```
+
+This installs a `cleanping` binary into `~/.cargo/bin`. An `npm` package is planned.
 
 ## First run
 
@@ -107,6 +117,7 @@ If you delete the database file to start over, saved API keys stay in `secrets.j
 
 ## Safety
 
+- Your text goes over an encrypted connection to the provider you chose, and that provider can read it. cleanping is not end-to-end encrypted. If the text must never leave your computer, use a local model such as Ollama: then nothing is sent anywhere.
 - API URLs must be `https://`; plain `http://` is accepted only for `localhost`, `127.0.0.1` and `::1`.
 - HTTP redirects are never followed, so a key and your text cannot be forwarded to another host.
 - Error messages never include the server's response body.
@@ -117,6 +128,25 @@ If you delete the database file to start over, saved API keys stay in `secrets.j
 - TLS uses a built-in copy of Mozilla's root certificates, not your system's. A company proxy that inspects TLS with its own certificate authority will not be trusted.
 
 To report a security problem, see [SECURITY.md](SECURITY.md).
+
+## Roadmap
+
+Planned, not built yet, and the order may change:
+
+1. **`cleanping edit`**: use cleanping as the editor for Claude Code, Codex and Grok (press their edit-in-editor key, Ctrl+G), with your changes highlighted and Enter to accept or N to keep your original.
+2. **Highlighted changes in the shell key** (zsh first).
+3. **`cleanping setup`**: a first-run guide to pick a provider, enter your key (shown masked), set your system prompt, and optionally install a free local model with Ollama.
+4. **A browser extension** for web text boxes. Every website's editor behaves differently and sites change without notice, so each one needs its own testing and an update can break it.
+5. Windows support.
+
+## Documentation
+
+- This README: install, first run, commands, where things are stored, safety.
+- `cleanping --help` and `cleanping <command> --help`.
+- [SECURITY.md](SECURITY.md): how to report a problem privately.
+- [AGENTS.md](AGENTS.md): how the code is organized and the rules contributors follow.
+
+A full documentation site is planned.
 
 ## Development
 
