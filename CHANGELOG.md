@@ -37,6 +37,10 @@ behavior, and the notes below say when it does.
   and save nothing, and the terminal is always restored (the previous prompt could leave typing hidden
   after Ctrl-C in some shells).
 - The "no key saved" message now also points to `cleanping setup`.
+- **`cleanping keys add` refuses an address with a query string or fragment** (`?...` or `#...`), so a
+  key cannot end up in the address, where `keys list` would print it and the database would keep it as
+  plain text. It exits with code `2`. Addresses saved earlier keep working; remove and add them again
+  without the query string to clear it.
 - The product is written **CleanPing** in prose; the command, crate names, paths and URLs stay lowercase.
 
 ## [0.2.0] - 2026-09-29

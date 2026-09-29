@@ -80,14 +80,6 @@ They bump `actions/upload-artifact` 4.6.2 to 7.0.1 (#1), `actions/checkout` 4.4.
 
 **Done when** each pull request is merged or closed with a reason, and a Release dry run has passed.
 
-## 4. Decision: an address with a key in it
-
-`cleanping keys add --url` accepts a query string, so an address such as `https://host/v1/chat/completions?key=...`
-is printed in full by `cleanping keys list` and saved as plain text in the database. The docs already tell
-people never to do this ([providers](docs/providers-and-local-models.md#any-other-provider)). Decide
-between rejecting query strings when a key is added, or hiding them in `keys list`. Whichever is chosen
-needs a failing test first, and a line under **Unreleased** in the changelog.
-
 ## 5. Docs page on keynodex.com
 
 `keynodex.com/docs/cleanping/`, built from `docs/` so the two cannot drift. It lives in the website
