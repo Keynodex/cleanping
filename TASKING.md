@@ -3,9 +3,9 @@
 Written 2026-09-29. Delete a task when its pull request is merged, and delete this file when nothing is
 left. Every step that changes `main`, pushes a tag, or publishes needs the maintainer's explicit go.
 
-**Where things stand.** `main` is `2ffa0f2`. Every v0.3.0 feature and its documentation is merged, and CI
-is green on Ubuntu, macOS and the minimum-Rust build. The version in `Cargo.toml` is still `0.2.0`, so
-v0.3.0 is not released.
+**Where things stand.** Every v0.3.0 feature and its documentation is merged. The release pull request
+(`release/v0.3.0`) sets the version to `0.3.0`; until it is merged, the tag is pushed and the draft is
+published, v0.3.0 is not released. Task 1 is done (Rust 1.98.1 here, 398 tests passing).
 
 ## 1. Set up a new Linux dev machine
 
@@ -32,8 +32,9 @@ The packaged Rust on Ubuntu 24.04 is 1.75, older than the 1.89 this project need
    cargo fmt --all -- --check && cargo clippy --workspace --all-targets --locked -- -D warnings && cargo test --workspace --locked && RUSTDOCFLAGS='-D warnings' cargo doc --workspace --no-deps --locked
    ```
 
-**Done when** all four pass and the test total is **396 passed, 0 failed**, the same as on the first
-machine. If the total differs, find out why before doing anything else. Ollama is not needed for the
+**Done when** all four pass and the test total is **398 passed, 0 failed**, the same as on the first
+machine (396 before the query-string check was added). If the total differs, find out why before doing
+anything else. Ollama is not needed for the
 tests; it is only for trying a real local model by hand.
 
 ## 2. Release v0.3.0
