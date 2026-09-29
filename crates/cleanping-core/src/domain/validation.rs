@@ -30,6 +30,12 @@ pub fn is_local_url(url: &str) -> bool {
         .unwrap_or(false)
 }
 
+/// The host part of a URL, for showing where text is going.
+pub fn host_of(url: &str) -> Option<String> {
+    let parsed = Url::parse(url.trim()).ok()?;
+    parsed.host_str().map(str::to_string)
+}
+
 /// True when both URLs have the same scheme, host and port (paths may differ).
 pub fn same_origin(a: &str, b: &str) -> bool {
     match (Url::parse(a.trim()), Url::parse(b.trim())) {

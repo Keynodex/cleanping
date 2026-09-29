@@ -3,7 +3,7 @@
 use cleanping_core::application::polisher::{PolishResult, PolishText};
 use cleanping_core::application::ports::RunRepository;
 use cleanping_core::domain::errors::{CleanpingError, Result};
-use cleanping_core::domain::models::{Credential, Run};
+use cleanping_core::domain::models::Credential;
 use cleanping_core::infrastructure::http_rewriter::OpenAiRewriter;
 use cleanping_core::infrastructure::sqlite_repositories::SqliteRunRepository;
 
@@ -11,33 +11,16 @@ use crate::args::Cli;
 use crate::clipboard;
 use crate::hints;
 use crate::input;
+use crate::no_history::NoHistory;
 use crate::output;
 use crate::services::Services;
 
-/// A history that remembers nothing, for `--no-history`.
-struct NoHistory;
-
-impl RunRepository for NoHistory {
-    fn add(&self, run: &Run) -> Result<Run> {
-        Ok(run.clone())
-    }
-    fn recent(&self, _limit: usize) -> Result<Vec<Run>> {
-        Ok(Vec::new())
-    }
-    fn delete_all(&self) -> Result<usize> {
-        Ok(0)
-    }
-    fn delete_before(&self, _cutoff: &str) -> Result<usize> {
-        Ok(0)
-    }
-}
-
 /// The key named by `--credential`, else the selected one, else the only one. Never a guess.
-fn pick_credential(cli: &Cli, services: &Services) -> Result<Credential> {
+pub fn pick_credential(name: Option<&str>, services: &Services) -> Result<Credential> {
     let selected = services.state.selected_credential_id()?;
     services
         .credentials
-        .resolve(cli.credential.as_deref(), selected)
+        .resolve(name, selected)
         .map_err(|error| match error {
             CleanpingError::MissingCredential(message) => {
                 let none_saved = services
@@ -89,14 +72,9 @@ fn polish(
 
 pub fn run(cli: &Cli, services: &Services) -> Result<()> {
     let text = input::text_from(&cli.text)?;
-    let credential = pick_credential(cli, services)?;
-    let result = polish(cli, services, &text, &credential).map_err(|error| match error {
-        CleanpingError::MissingCredential(message) => CleanpingError::MissingCredential(format!(
-            "{message} Add it: {}",
-            hints::add_saved_key(&credential)
-        )),
-        other => other,
-    })?;
+    let credential = pick_credential(cli.credential.as_deref(), services)?;
+    let result = polish(cli, services, &text, &credential)
+        .map_err(|error| hints::with_add_hint(error, &credential))?;
     match (result.output_text, result.error_message) {
         (Some(output), _) => {
             output::line(&output)?;
