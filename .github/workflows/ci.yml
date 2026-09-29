@@ -23,6 +23,8 @@ jobs:
       # The shell-key tests drive real zsh and bash; make sure they actually run on Linux.
       - if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y zsh
+      - name: Test release notes
+        run: bash .github/scripts/release-notes-test.sh
       - run: cargo fmt --all -- --check
       - run: cargo clippy --workspace --all-targets --locked -- -D warnings
       - run: cargo test --workspace --locked
