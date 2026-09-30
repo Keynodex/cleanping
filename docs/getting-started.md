@@ -63,6 +63,8 @@ cleanping --copy "rough text"             # also copies the result to the clipbo
 - **At your shell prompt:** add `eval "$(cleanping init zsh)"` (or `bash`) to your profile, then press
   Ctrl-X Ctrl-P on a line you have typed. [Guide](shell-key.md).
 
+Which key works where, your own launcher names and other choices: [Use it your way](use-it-your-way.md).
+
 ## What to know before you rely on it
 
 - The text you rewrite is sent to the AI provider you chose, and that provider can read it. CleanPing is

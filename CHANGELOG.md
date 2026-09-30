@@ -7,6 +7,12 @@ behavior, and the notes below say when it does.
 
 ## [Unreleased]
 
+### Added
+
+- Documentation: [Use it your way](docs/use-it-your-way.md) shows which key works where (the shell prompt,
+  Claude Code and Codex, the plain command), how to name your own launcher commands, how to use a different
+  shell key such as Ctrl+G, and what to do when a key does nothing.
+
 ## [0.3.0] - 2026-09-29
 
 ### Added
