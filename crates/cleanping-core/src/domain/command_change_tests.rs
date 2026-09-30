@@ -210,3 +210,22 @@ fn control_characters_in_a_command_are_never_shown() {
     let said = changes[0].to_string();
     assert!(!said.chars().any(char::is_control), "{said:?}");
 }
+
+/// Known false positives, kept here so the docs that list them stay true.
+#[test]
+fn known_false_positives() {
+    let opened: Vec<_> = command_line_changes("the users files", "The users' files.")
+        .into_iter()
+        .map(|c| c.kind)
+        .collect();
+    assert_eq!(opened, vec![QuoteOpened], "an apostrophe at a word's edge");
+    assert_eq!(
+        kinds(&fenced("ls -la"), "Run `ls -la` to see them."),
+        vec![Missing],
+        "a command moved into a sentence in backticks"
+    );
+    assert!(
+        kinds(&fenced("ls -la"), "Run ls -la to see them.").is_empty(),
+        "without backticks the words in common still find it"
+    );
+}

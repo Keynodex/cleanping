@@ -21,7 +21,8 @@ Minimum Rust is 1.89 (`rust-version`, checked in CI).
 
 ## Layout (Rust)
 
-- `crates/cleanping-core/src/domain` — entities and invariants, no I/O (`VersionStack`, URL rules, presets)
+- `crates/cleanping-core/src/domain` — entities and invariants, no I/O (`VersionStack`, URL rules, presets,
+  the "reply changed a command" check in `command_change` + `command_lines` + `command_pairs` + `command_match` + `shell_words`)
 - `crates/cleanping-core/src/application` — use cases and ports (traits); fakes live in `test_support.rs`
 - `crates/cleanping-core/src/infrastructure` — SQLite, secrets file, HTTP (ureq), paths, clock
 - `crates/cleanping-cli` — the `cleanping` binary: `args`, `rewrite`, `keys`, `prompt`, `history`, `init`
@@ -79,6 +80,12 @@ when its pull request is merged.
 - Provider replies are untrusted: `clean_reply` strips control and invisible characters, and the
   shell key passes `--keep-shape` (`domain/shape.rs`) so a reply cannot add lines, pad itself or
   grow much longer than the text it replaces on a command line.
+- `domain/command_change.rs` (pure) reports a reply that changed a command: a quote closed or opened,
+  a flag or a path or URL changed. `--keep-shape` refuses it (`command_line_changes`: the whole line is
+  the command), the plain command and `edit --yes` warn on stderr (`command_warnings.rs`), the edit
+  screen shows it under the title. Command-like lines are defined in `domain/command_lines.rs`; shown
+  words are cut to 40 characters and never show a secret. A safety net with false negatives and a few
+  false positives, not a proof.
 - The shell key also passes `--refuse-secrets` (`guard.rs`): a command line that looks like it holds a
   secret is never sent. Plain `cleanping TEXT` only checks when that flag is given.
 - Hidden `--marks` is how zsh highlights changes: stdin is `original NUL reply`; stdout is the reply's

@@ -27,7 +27,9 @@ The number in brackets is the [exit code](commands.md#exit-codes).
 | `Input is too long (limit 200000 bytes).` [2] | Rewrite a smaller piece. The limit is checked before anything is sent |
 | `Input is not valid UTF-8 text.` [2] | The input is not text (for example a binary file) |
 | `The text looks like it contains a private key / an API key or token / a password or secret, so it was not sent.` [2] | The [secret check](privacy-and-safety.md#text-that-looks-like-a-secret) stopped it. Remove the secret, or, for plain `cleanping "text"`, leave out `--refuse-secrets` |
-| `The reply is longer or has more lines than your text; not applied.` | The shell key refused a reply that did not [keep the shape](shell-key.md#what-the-key-sends-and-what-it-refuses) of your line. Your line is unchanged; try again or edit it by hand |
+| `The reply is longer or has more lines than your text; not applied.` [1] | The shell key refused a reply that did not [keep the shape](shell-key.md#what-the-key-sends-and-what-it-refuses) of your line. Your line is unchanged; try again or edit it by hand |
+| `The reply changed your command (a quote was closed in the command starting ...); not applied.` [1] | The shell key (or `--keep-shape`) refused a reply that [changed the command](privacy-and-safety.md#a-reply-that-changes-a-command) on your line. Your line is unchanged. If the quote was open on purpose, that may be your bug; otherwise fix the line by hand |
+| `warning: a quote was closed in the command starting ...` (also: a flag removed or added, a path or URL changed, a command no longer in the reply) | The reply was printed, but it [changed a command](privacy-and-safety.md#a-reply-that-changes-a-command) in your text. Compare the command with your original before you use it. The exit code is unchanged |
 
 ## The provider
 
@@ -57,6 +59,7 @@ For a local Ollama it also says whether to install it, start it, or download the
 | `Could not copy (no clipboard tool found). ...` (shown inside the writer) | No `pbcopy`, `wl-copy`, `xclip` or `xsel` was found, or it failed. Select the text on screen and copy it yourself |
 | `Could not read the file to edit.` [2] | The file path is wrong or unreadable |
 | `Could not write the edited text back to the file.` | The file is not writable. Check its permissions |
+| The edit screen says **Check the command: ...** | The edit [changed a command](privacy-and-safety.md#a-reply-that-changes-a-command) in your text, for example closed a quote. Press O to compare with your original; Enter still accepts the edit, N keeps your text |
 | The edit screen says **Could not edit** | The reason is shown on the screen and your text is unchanged. Any key returns you to the app |
 
 ## Still stuck?

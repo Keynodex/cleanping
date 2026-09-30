@@ -80,7 +80,35 @@ The AI's reply is treated as untrusted.
   removed, so a reply cannot move your cursor, rewrite the screen or hide text in itself.
 - The shell key puts a reply on your command line only if it [keeps the shape](shell-key.md#what-the-key-sends-and-what-it-refuses)
   of your text, so a long reply cannot push a command out of sight.
+- A reply that [changes a command](#a-reply-that-changes-a-command) in your text is refused by the shell
+  key and named everywhere else.
 - A reply is still an AI's rewrite. Read a rewritten command before you press Enter.
+
+## A reply that changes a command
+
+Models asked to fix spelling often "fix" a command too, most often by closing a quote you left open.
+When the open quote is the problem you are asking about, that hides the answer. CleanPing compares the
+commands in your text with the reply and reports a quote closed or opened, a flag (`-x`, `--name`)
+dropped or added, and a path or URL changed.
+
+| Where | Behavior |
+|---|---|
+| [Shell key](shell-key.md) and Ctrl+G in [`cleanping writer`](use-it-your-way.md#5-writing-mode-for-text-only) | The whole line is the command. A changed command is **refused**: the line stays as it is and a message says why (`--keep-shape`) |
+| [`cleanping edit`](claude-code-and-codex.md) | The screen shows `Check the command: ...` under the title. Enter still accepts the edit. With `--yes` the same warning goes to stderr |
+| `cleanping "text"` | Each change is a `cleanping: warning: ...` line on stderr. The reply is still printed and the exit code does not change |
+
+Outside the shell key, only these lines count as commands: lines inside a fenced block (three
+backticks), a line after a `$ ` prompt (and its `> ` continuation lines), a line indented by 4 spaces
+or a tab that starts with a plain word followed by a flag or a path, and any other line that starts
+with a plain word followed by a flag. Everything else is prose and is never checked. Messages show at
+most 40 characters of a command or word, and never a part that looks like a secret.
+
+It is a safety net, not a proof. It misses changes to words that are not quotes, flags or paths, and
+commands that do not match the rules above. It also reports some harmless changes: an apostrophe
+between two letters (`don't`) is read as an apostrophe, but one at the edge of a word (`the users'
+files`) counts as a quote, so adding one can be refused on the shell key; a prose line with a flag in it
+(`use -v`) is checked like a command; and a command the reply moves into a sentence in backticks is
+reported as no longer in the reply.
 
 ## Network rules
 

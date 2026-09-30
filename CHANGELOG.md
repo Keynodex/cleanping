@@ -7,6 +7,18 @@ behavior, and the notes below say when it does.
 
 ## [Unreleased]
 
+### Added
+
+- **A reply that changes a command is caught.** Models asked to fix spelling often "fix" a command too,
+  most often by closing a quote you left open, which hides the very bug you were asking about. CleanPing
+  now compares the commands in your text with the reply: a quote closed or opened, a flag dropped or
+  added, a path or URL changed. The shell key, Ctrl+G in `cleanping writer`, and anything else using
+  `--keep-shape` refuse such a reply (your line stays, exit `1`); `cleanping edit` shows
+  `Check the command: ...` on its screen (and `--yes` warns on stderr); the plain command prints
+  `cleanping: warning: ...` on stderr and still prints the reply with the same exit code. It is a safety
+  net with false negatives and a few false positives, not a proof; see
+  [Privacy and safety](docs/privacy-and-safety.md#a-reply-that-changes-a-command).
+
 ## [0.4.0] - 2026-09-30
 
 ### Added

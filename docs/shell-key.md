@@ -53,6 +53,15 @@ The key runs `cleanping --no-history --keep-shape --refuse-secrets` and gives it
   does not pad itself with long runs of spaces or tabs (more than 8 in a row, unless your own text
   already had a longer run). Otherwise the line is left alone and you see a message. This stops a reply from pushing a command out of sight above a harmless-looking
   end. It is still a rewrite by an AI, so read the line before you press Enter.
+- **A reply may not change the command itself** (also `--keep-shape`). Your line is a command, so a reply
+  is refused when it closes a quote you left open or leaves one open that you closed, drops or adds a
+  flag (`-f`, `--force`), or changes a path or URL. A missing quote is often the very bug you are asking
+  about, and a model that "fixes" it hides the answer, even when told not to. Your line stays as it is
+  and you see `cleanping: The reply changed your command (...); not applied.` This is a safety net, not a
+  proof: it reads quotes the way a shell does, but it does not understand every command, so it misses
+  some changes (a changed word that is not a flag or path) and refuses a few harmless ones (see
+  [Privacy and safety](privacy-and-safety.md#a-reply-that-changes-a-command)). The same applies to
+  Ctrl+G in `cleanping writer`, which is this key.
 - **Errors never end up on your command line.** They are captured and shown as a message, so only the
   reply itself can be placed in your line.
 
