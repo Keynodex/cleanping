@@ -46,6 +46,12 @@ Minimum Rust is 1.89 (`rust-version`, checked in CI).
   passed to `ollama`; setup prints the profile lines and never edits the user's files; tests must never
   reach a real provider (answer "n" to the connection test unless a fake server is used).
 
+- `crates/cleanping-cli/src/writer` — `cleanping writer` (a text-only zsh where typed text is never run):
+  `terminal` (needs stdin and stdout on a terminal), `rc` (writes `shell/writer.zsh` as a private `.zshrc`
+  under the data folder on every start), `launch` (PATH and the `exec` of `zsh -d -i`; `-f` would skip the
+  private `.zshrc` too). It never edits the user's files. It is a guard
+  against accidents, not a sandbox; `tests/writer*.rs` drive it in a terminal with a fake clipboard tool.
+
 Dependencies point inward: infrastructure -> application -> domain. Keep files under ~150 lines.
 
 ## Docs

@@ -6,6 +6,7 @@ Every command, option, exit code and environment variable. `cleanping --help` an
 - [Rewrite text](#rewrite-text): `cleanping [TEXT]...`
 - [`edit`](#edit): fix a file's text on a screen
 - [`setup`](#setup): guided setup
+- [`writer`](#writer): a text-only window where nothing typed is run
 - [`keys`](#keys): list, add, remove, use and test API keys
 - [`prompt`](#prompt): the system prompt and its presets
 - [`history`](#history): look at or delete saved rewrites
@@ -35,7 +36,7 @@ $ echo "plz fix teh login pgae" | cleanping
 | `--keep-shape` | Refuse a reply with more lines than your text, much longer than it, or padded with blanks (the [shell key](shell-key.md) uses this) |
 | `--refuse-secrets` | Send nothing if the text looks like it holds a key, token or password; exit `2` (the shell key uses this) |
 
-**Text or command?** If the first word is `keys`, `prompt`, `history`, `edit`, `setup` or `init`, it is
+**Text or command?** If the first word is `keys`, `prompt`, `history`, `edit`, `setup`, `writer` or `init`, it is
 read as that command. To rewrite text that starts with one of those words, put it after `--` or pipe it
 in: `cleanping -- keys are broken`. Any other text, including `help me fix this`, is rewritten as it is.
 
@@ -76,6 +77,20 @@ The guided setup: choose the AI, save its key, pick a system prompt, test the co
 use CleanPing. It needs a terminal and exits `2` without one. With a key already saved it shows a menu
 instead. It prints profile lines and never edits your files, and it never runs `ollama pull` without
 asking. See [Getting started](getting-started.md).
+
+## `writer`
+
+```
+cleanping writer
+```
+
+A text-only mode for people who have never used a shell: an interactive zsh where typed text is never
+run. **Ctrl+G** fixes the line in place, **Enter** copies it to the clipboard (with `pbcopy`, `wl-copy`,
+`xclip` or `xsel`, the first one found), **Ctrl+D** on an empty line leaves. It needs a terminal for both
+input and output (exit `2` without one) and zsh (exit `1` without it). It starts zsh with `-d -i` and a
+private `.zshrc` in `writer/` in the data folder, rewritten on every start, so none of your own zsh startup
+files are read. The exit status is zsh's. It never edits your files. It is a guard against accidents, not a
+security sandbox. The guide is [Use it your way](use-it-your-way.md#5-writing-mode-for-text-only).
 
 ## `keys`
 
@@ -152,7 +167,7 @@ Prints the shell integration. Add `eval "$(cleanping init zsh)"` to `~/.zshrc`, 
 |---|---|
 | `0` | Success |
 | `1` | The request failed: network, provider or storage |
-| `2` | Bad input: empty or too long text, an invalid address or option, text refused by `--refuse-secrets`, or `setup` without a terminal |
+| `2` | Bad input: empty or too long text, an invalid address or option, text refused by `--refuse-secrets`, or `setup` or `writer` without a terminal |
 | `3` | No usable key: none saved, several saved and none selected, or the name you gave does not exist |
 
 One exception: on the `edit` screen a failed edit shows why and exits `0`, so the app that opened the file
@@ -176,3 +191,4 @@ keeps your text.
 |---|---|---|
 | API keys | `~/.config/cleanping/secrets.json` (and a `secrets.json.lock` beside it) | `0600`; directory `0700` |
 | History, saved prompt, state | `~/.local/share/cleanping/cleanping.db` (SQLite) | `0600`; directory `0700` |
+| Startup file of `cleanping writer` | `~/.local/share/cleanping/writer/.zshrc`, rewritten on every start | `0600`; directory `0700` |

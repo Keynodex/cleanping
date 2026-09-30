@@ -13,6 +13,7 @@ Please fix the login page; the buttons are too small.
 - **Works with your key.** DeepSeek, OpenAI, OpenRouter, or a local model such as Ollama. No account with us, no server of ours.
 - **A key for your shell.** Type a rough command line, press one key, get it rewritten in place. Press again to restore your original.
 - **Fix your message inside Claude Code and Codex.** Press their edit key (Ctrl+G), see the changed words highlighted, and press Enter to accept or N to keep yours.
+- **A writing mode for people who never use a shell.** `cleanping writer` opens a window where nothing you type is ever run: Ctrl+G fixes your text, Enter copies it.
 - **Private by default.** Your API key stays in a file only you can read and is never printed or passed on a command line. Text goes only to the provider you configured.
 
 Works on Linux and macOS. Windows is not supported yet.
@@ -83,7 +84,7 @@ echo "plz fix teh login pgae" | cleanping
 cleanping --copy "rough text"      # also copies to the clipboard (wl-copy, xclip, xsel or pbcopy)
 ```
 
-Text that starts with a word that is also a command (`keys`, `prompt`, `history`, `edit`, `setup`, `init`) can be passed after `--`, or piped in. Any other text, including `help me fix this`, is rewritten as it is.
+Text that starts with a word that is also a command (`keys`, `prompt`, `history`, `edit`, `setup`, `writer`, `init`) can be passed after `--`, or piped in. Any other text, including `help me fix this`, is rewritten as it is.
 
 If you have several keys, pick one with `cleanping keys use NAME` or `-c NAME`. CleanPing never guesses between keys, so your text cannot go to a provider you did not choose. With a single saved key it just uses it.
 
@@ -140,6 +141,7 @@ It works with Claude Code and Codex, as tested. Other apps that run `$VISUAL FIL
 | `cleanping history clear --yes` | Delete every saved rewrite |
 | `cleanping history purge --older-than DAYS` | Delete rewrites older than DAYS days |
 | `cleanping setup` | Guided setup: pick the AI, save its key, choose a system prompt, test the connection. Needs a terminal; run it again for a menu |
+| `cleanping writer` | A text-only window (zsh): nothing you type is run, Ctrl+G fixes the text, Enter copies it, Ctrl+D leaves. Needs a terminal |
 | `cleanping init zsh\|bash` | Print the shell integration |
 
 Exit codes: `0` ok, `1` the request failed (network, provider, storage), `2` bad input (empty, too long, invalid URL), `3` no usable key. The one exception is the `edit` screen: when an edit fails there, it shows why and exits `0` with the file untouched, so the app that opened it keeps your text. With `--yes` the codes above apply.
@@ -150,6 +152,7 @@ Exit codes: `0` ok, `1` the request failed (network, provider, storage), `2` bad
 |---|---|---|
 | API keys | `~/.config/cleanping/secrets.json` | `0600` (directory `0700`) |
 | History, saved prompt, state | `~/.local/share/cleanping/cleanping.db` (SQLite) | `0600` |
+| Startup file of `cleanping writer` | `~/.local/share/cleanping/writer/.zshrc`, rewritten on every start | `0600` (directory `0700`) |
 
 `$XDG_CONFIG_HOME` and `$XDG_DATA_HOME` are respected (relative paths are ignored).
 

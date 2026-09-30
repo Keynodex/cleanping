@@ -9,9 +9,20 @@ behavior, and the notes below say when it does.
 
 ### Added
 
+- `cleanping writer`: a text-only window for people who have never used a shell. Nothing you type there is
+  ever run. Press Ctrl+G to fix your text in place, Enter to copy it to the clipboard, Ctrl+D to leave. It
+  needs zsh and a terminal, reads none of your own zsh startup files, and never edits your files. It
+  guards against accidents and is not a security sandbox. To open it in every new zsh window, add
+  `[[ -o interactive ]] && exec cleanping writer` to the end of `~/.zshrc` yourself; see
+  [Use it your way](docs/use-it-your-way.md#5-writing-mode-for-text-only).
 - Documentation: [Use it your way](docs/use-it-your-way.md) shows which key works where (the shell prompt,
   Claude Code and Codex, the plain command), how to name your own launcher commands, how to use a different
   shell key such as Ctrl+G, and what to do when a key does nothing.
+
+### Changed
+
+- **`writer` is now a command word**, like `edit` and `setup`. Text that starts with it must be given after
+  `--` or piped in: `cleanping -- writer notes`.
 
 ## [0.3.0] - 2026-09-29
 

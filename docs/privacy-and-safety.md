@@ -10,14 +10,14 @@ To report a security problem privately, see [SECURITY.md](../SECURITY.md).
 
 | When | What is sent, and to whom |
 |---|---|
-| You rewrite text (`cleanping`, `cleanping edit`, the shell key) | Your text and the [system prompt](system-prompts.md), over an encrypted (TLS) connection, to the provider address you saved, together with your key for that provider |
+| You rewrite text (`cleanping`, `cleanping edit`, the shell key, Ctrl+G in `cleanping writer`) | Your text and the [system prompt](system-prompts.md), over an encrypted (TLS) connection, to the provider address you saved, together with your key for that provider |
 | `cleanping keys test` | One fixed word (`ping`) with a fixed instruction, to that provider. Never your text, history or saved system prompt |
 | You use a local model | To an address on your own machine only. Nothing leaves it |
 | `cleanping setup`, local model | A request to the local server's model list (`GET /api/tags`) on a loopback address, and, only if you say yes, Ollama's own `ollama pull` |
 
 CleanPing itself makes no other network connections: it does not check for updates and sends no usage
-data. The only programs it starts are your clipboard tool (with `--copy`) and `ollama pull` (with your
-yes).
+data. The only programs it starts are your clipboard tool (with `--copy`, and on Enter in `cleanping writer`),
+zsh (for `cleanping writer`) and `ollama pull` (with your yes).
 
 ## What is stored on your computer
 
@@ -35,7 +35,7 @@ printed, logged, or passed on a command line; the hidden prompt shows only stars
 Each plain rewrite is saved: your text, the result, the system prompt and the model, on your machine
 only. A rewrite that failed is saved too, with the error message, so your text is in the history even
 when the provider did not answer. It has no expiry and is never trimmed automatically. **Nothing is saved
-with `--no-history`, and nothing is ever saved from the shell key or from `cleanping edit`.**
+with `--no-history`, and nothing is ever saved from the shell key, from `cleanping edit` or from `cleanping writer`.**
 
 ```sh
 cleanping history list                       # newest first, one line each, times in UTC
@@ -65,6 +65,7 @@ password. It names the *kind* of secret and never shows it.
 | Where | Behavior |
 |---|---|
 | [Shell key](shell-key.md) | Always on (`--refuse-secrets`). The line is not sent; you see a message |
+| [`cleanping writer`](use-it-your-way.md#5-writing-mode-for-text-only) | Always on: Ctrl+G is the shell key, so it behaves the same. The line is not sent; you see a message |
 | [`cleanping edit`](claude-code-and-codex.md) | Always on. The screen says **Not sent**; **S** sends it anyway if you choose. `--yes` never sends it |
 | `cleanping "text"` | Off, because you chose the text yourself. Add `--refuse-secrets` to turn it on (exit code `2`) |
 

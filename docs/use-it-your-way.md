@@ -1,12 +1,13 @@
 # Use CleanPing your way
 
-CleanPing works in three places, and each has its own key. This page shows how to set up each one, and how
+CleanPing works in four places, and each has its own key. This page shows how to set up each one, and how
 to make it fit the way you work.
 
 | Where you are | What you do | Key |
 |---|---|---|
 | A plain terminal prompt | Type a rough line. Do not press Enter. | **Ctrl-X**, then **Ctrl-P** |
 | Inside Claude Code or Codex | Type your message | **Ctrl+G** |
+| A window only for writing text | Run `cleanping writer` and type | **Ctrl+G** to fix, **Enter** to copy |
 | Anywhere | `cleanping "rough text"` | none |
 
 Ctrl-X Ctrl-P is one shortcut pressed in two steps. It does nothing inside Claude Code or Codex, and Ctrl+G
@@ -77,12 +78,65 @@ More in [Claude Code and Codex](claude-code-and-codex.md).
 or `pbcopy` on the machine where CleanPing runs. Without one it still prints the result and warns that it
 could not copy. Over SSH that machine is the remote one, so select the text with your terminal instead.
 
+## 5. Writing mode, for text only
+
+For someone who wants to write text and has never used a terminal. `cleanping writer` opens a window where
+**nothing you type is ever run**. It needs a terminal, zsh (macOS and most Linux systems have it) and a
+saved key ([step 1](#1-save-a-key)).
+
+```sh
+cleanping writer
+```
+
+It shows three lines of help and a `> ` prompt. Then:
+
+| Key | What it does |
+|---|---|
+| Type or paste | Your text goes on the line. Pasting several lines works |
+| **Ctrl+G** | Fixes the text in place. Press Ctrl+G again, without editing, to get your own text back |
+| **Enter** | Copies all of the text to the clipboard and says `Copied.` Your text stays on screen above that message and the line is cleared for the next one. Enter on an empty line does nothing |
+| **Ctrl+D** on an empty line | Leaves |
+
+Paste the copied text where you need it: **Cmd+V** on a Mac, **Ctrl+V** elsewhere.
+
+**Start it every time (optional).** `cleanping writer` never edits your files, so this is a line for you to
+add. Try `cleanping writer` by hand first. Then make this the **last line** of `~/.zshrc`, after any line
+that sets your `PATH`:
+
+```sh
+[[ -o interactive ]] && exec cleanping writer
+```
+
+From then on every new zsh terminal window opens in the writer, and leaving it (Ctrl+D) closes the window.
+To undo, delete that line. If `cleanping` cannot be found when a window opens, the window closes at once:
+open `~/.zshrc` in a text editor and delete the line.
+
+**Limits.**
+
+- **One paragraph at a time** is what it is made for. Ctrl+G sends the whole text to your AI provider, and
+  the fixed text has to look like the text it replaces: a reply with more lines than your text, or much
+  longer, is refused and your text stays as it was (the same rules as the
+  [shell key](shell-key.md#what-the-key-sends-and-what-it-refuses)). Text that looks like a secret is not
+  sent.
+- **zsh only.** There is no bash version.
+- **Copying needs a clipboard tool:** `pbcopy` (macOS), `wl-copy`, `xclip` or `xsel`. Without one, or if it
+  fails, you see `Could not copy (no clipboard tool found). Select the text above and copy it yourself.`
+  Over SSH the clipboard is the one on the machine where CleanPing runs.
+- **A guard against accidents, not a security sandbox.** It stops a typed line from running by mistake. It
+  is still a zsh underneath, and someone who knows zsh well can find a way to run a command.
+- **It does not read your own zsh startup files** (such as `~/.zshrc`), so your prompt, aliases and
+  shortcuts are not there. It writes one private startup file, `.zshrc`, into `writer/` in CleanPing's data
+  folder (`~/.local/share/cleanping/writer/`), fresh on every start. Nothing you type there is saved to the
+  history.
+
 ## When it does not work
 
 | What you see | Why, and what to do |
 |---|---|
 | The command is red, or "command not found" | Your terminal has not loaded your profile. Open a new terminal, or run `source ~/.zshrc` (`source ~/.bashrc` in bash). |
 | Nothing happens at the prompt | Are you inside Claude Code or Codex? Use Ctrl+G there. Otherwise check that the key is bound: `bindkey \| grep cleanping` (zsh) or `bind -X \| grep -i clean` (bash). |
+| `cleanping writer needs zsh, and zsh was not found.` | Writing mode runs in zsh. Install it with your system's package manager (macOS and most Linux systems already have it) |
+| `cleanping writer needs a terminal for its input and its output.` | Run `cleanping writer` in a terminal window, not in a script or with its input or output redirected |
 | Ctrl+G opens something else in Claude Code or Codex | The app was started without CleanPing as its editor. Quit it and start it with your `fixclaude` or `fixcodex`. |
 
 Other problems: [Troubleshooting](troubleshooting.md).

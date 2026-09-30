@@ -41,7 +41,7 @@ pass, then tidy.
   mod tests;`. Production files stay small and tests never live in them.
 - **Integration tests** in `crates/cleanping-cli/tests` run the real `cleanping` binary against a fake
   local API server (`tests/support`). **Tests must never reach a real provider.**
-- **Terminal tests** (`edit.rs`, `setup.rs`, `hidden_key.rs`, `shell.rs`, `shell_marks.rs`) drive real
+- **Terminal tests** (`edit.rs`, `setup.rs`, `hidden_key.rs`, `shell.rs`, `shell_marks.rs`, `writer.rs`, `writer_keys.rs`) drive real
   interactive zsh and bash sessions through a pseudo-terminal. They are Linux-only. Locally they skip when
   `zsh` or `script` is missing; when the `CI` environment variable is set they fail instead, so they
   cannot pass without running. They wait for a prompt or for text on the screen: do not use sleeps as the
