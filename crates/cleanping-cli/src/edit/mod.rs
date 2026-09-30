@@ -7,6 +7,7 @@
 //! a command in the text (a closed quote, a dropped flag) is named on the screen, or on stderr
 //! with `--yes`; it can still be accepted.
 
+mod estimate;
 mod file;
 mod job;
 mod layout;
@@ -23,6 +24,7 @@ use cleanping_core::domain::validation::host_of;
 use crate::args::EditArgs;
 use crate::command_warnings;
 use crate::guard;
+use crate::progress;
 use crate::rewrite::pick_credential;
 use crate::services::Services;
 use job::Job;
@@ -72,7 +74,11 @@ fn edit_quietly(
         return Err(guard::refusal(kind));
     }
     let job = Job::prepare(services, raw.trim(), credential?)?;
-    let edited = job.run()?;
+    let edited = {
+        // Erased when this block ends, before a warning is printed.
+        let _progress = progress::while_waiting(raw.trim().len());
+        job.run()
+    }?;
     command_warnings::warn_about(raw.trim(), &edited);
     file::write(&args.file, &file::replacement(raw, &edited))
 }
