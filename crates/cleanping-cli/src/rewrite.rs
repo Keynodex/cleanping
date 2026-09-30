@@ -15,6 +15,7 @@ use crate::hints;
 use crate::input;
 use crate::no_history::NoHistory;
 use crate::output;
+use crate::progress;
 use crate::services::Services;
 
 /// The key named by `--credential`, else the selected one, else the only one. Never a guess.
@@ -78,8 +79,12 @@ pub fn run(cli: &Cli, services: &Services) -> Result<()> {
         guard::refuse_if_secret(&text)?;
     }
     let credential = pick_credential(cli.credential.as_deref(), services)?;
-    let result = polish(cli, services, &text, &credential)
-        .map_err(|error| hints::with_add_hint(error, &credential))?;
+    let result = {
+        // Erased when this block ends, before anything below is printed.
+        let _progress = progress::while_waiting(text.len());
+        polish(cli, services, &text, &credential)
+    }
+    .map_err(|error| hints::with_add_hint(error, &credential))?;
     match (result.output_text, result.error_message) {
         (Some(output), _) => {
             output::line(&output)?;
