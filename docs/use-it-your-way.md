@@ -104,12 +104,12 @@ add. Try `cleanping writer` by hand first. Then make this the **last line** of `
 that sets your `PATH`:
 
 ```sh
-[[ -o interactive ]] && exec cleanping writer
+[[ -o interactive ]] && command -v cleanping >/dev/null && exec cleanping writer
 ```
 
 From then on every new zsh terminal window opens in the writer, and leaving it (Ctrl+D) closes the window.
-To undo, delete that line. If `cleanping` cannot be found when a window opens, the window closes at once:
-open `~/.zshrc` in a text editor and delete the line.
+To undo, delete that line. The `command -v` part means that if `cleanping` cannot be found, the window
+stays an ordinary terminal instead of closing.
 
 **Limits.**
 

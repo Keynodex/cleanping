@@ -13,7 +13,8 @@ behavior, and the notes below say when it does.
   ever run. Press Ctrl+G to fix your text in place, Enter to copy it to the clipboard, Ctrl+D to leave. It
   needs zsh and a terminal, reads none of your own zsh startup files, and never edits your files. It
   guards against accidents and is not a security sandbox. To open it in every new zsh window, add
-  `[[ -o interactive ]] && exec cleanping writer` to the end of `~/.zshrc` yourself; see
+  `[[ -o interactive ]] && command -v cleanping >/dev/null && exec cleanping writer` to the end of
+  `~/.zshrc` yourself; see
   [Use it your way](docs/use-it-your-way.md#5-writing-mode-for-text-only).
 - Documentation: [Use it your way](docs/use-it-your-way.md) shows which key works where (the shell prompt,
   Claude Code and Codex, the plain command), how to name your own launcher commands, how to use a different
