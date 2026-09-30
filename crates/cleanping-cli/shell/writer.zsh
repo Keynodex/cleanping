@@ -36,7 +36,10 @@ _cleanping_writer_enter() {
     message='Could not copy (no clipboard tool found). Select the text above and copy it yourself.'
   fi
   zle -I
+  # The blank line matters: the prompt redraw moves up one line and clears below, so a message on
+  # the line just above the prompt would be wiped at once and nobody would see it.
   print -r -- $message
+  print
   BUFFER=''
   zle reset-prompt
 }
