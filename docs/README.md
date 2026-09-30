@@ -6,6 +6,7 @@ These pages go deeper than the [README](../README.md), which is the place to sta
 | Page | Read it to |
 |---|---|
 | [Getting started](getting-started.md) | Go from nothing to your first rewrite |
+| [Use it your way](use-it-your-way.md) | See which key works where, and set up your own launcher names and keys |
 | [Command reference](commands.md) | Look up a command, an option, an exit code or an environment variable |
 | [Claude Code and Codex](claude-code-and-codex.md) | Fix your message inside those apps with Ctrl+G |
 | [The shell key](shell-key.md) | Rewrite the line you are typing in zsh or bash |
