@@ -136,7 +136,7 @@ The system prompt is the instruction sent with every rewrite. See [System prompt
 |---|---|
 | `cleanping prompt show` | Print the current system prompt |
 | `cleanping prompt set [TEXT]` | Replace it with `TEXT`, or with stdin when `TEXT` is left out and input is piped |
-| `cleanping prompt presets` | List the ready-made prompts (`default`, `typos`, `concise`, `friendly`); `*` marks the one in use |
+| `cleanping prompt presets` | List the ready-made prompts (`default`, `typos`, `concise`, `friendly`, `structure`); `*` marks the one in use |
 | `cleanping prompt use NAME [--yes]` | Switch to a preset. Replacing a prompt you wrote yourself needs `--yes` |
 
 ## `history`
