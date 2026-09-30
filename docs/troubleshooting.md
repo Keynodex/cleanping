@@ -30,6 +30,7 @@ The number in brackets is the [exit code](commands.md#exit-codes).
 | `The reply is longer or has more lines than your text; not applied.` [1] | The shell key refused a reply that did not [keep the shape](shell-key.md#what-the-key-sends-and-what-it-refuses) of your line. Your line is unchanged; try again or edit it by hand |
 | `The reply changed your command (a quote was closed in the command starting ...); not applied.` [1] | The shell key (or `--keep-shape`) refused a reply that [changed the command](privacy-and-safety.md#a-reply-that-changes-a-command) on your line. Your line is unchanged. If the quote was open on purpose, that may be your bug; otherwise fix the line by hand |
 | `warning: a quote was closed in the command starting ...` (also: a flag removed or added, a path or URL changed, a command no longer in the reply) | The reply was printed, but it [changed a command](privacy-and-safety.md#a-reply-that-changes-a-command) in your text. Compare the command with your original before you use it. The exit code is unchanged |
+| `Fixing your text… ... about 95% 40s` stays at 95% | The percent is an [estimate](commands.md#rewrite-text): the provider answers all at once, so CleanPing guesses from the length of your text and stops at 95% until the reply arrives. A long text, a busy provider or a local model can take longer. After 180 seconds the request stops with `Could not reach the API`. `CLEANPING_PROGRESS=off` hides the line |
 
 ## The provider
 

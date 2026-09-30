@@ -18,6 +18,13 @@ behavior, and the notes below say when it does.
   `cleanping: warning: ...` on stderr and still prints the reply with the same exit code. It is a safety
   net with false negatives and a few false positives, not a proof; see
   [Privacy and safety](docs/privacy-and-safety.md#a-reply-that-changes-a-command).
+- **You can see a slow rewrite working.** A long text can take the AI a while, and nothing showed. Now,
+  after 1.5 seconds, a line on stderr shows `Fixing your text… ▰▰▰▰▱▱▱▱ about 40% 12s`, and
+  `cleanping edit` shows the same bar under its title. The provider answers all at once, so the percent
+  is an estimate from the length of your text; it stops at 95% until the reply arrives, and the seconds
+  are real. The line is erased before the result or an error, never goes to stdout, and is not shown in
+  pipes, scripts or the shell key. `CLEANPING_PROGRESS=off` hides it, `NO_COLOR` drops the green, and a
+  terminal that is not UTF-8 gets ASCII. See [Command reference](docs/commands.md#rewrite-text).
 
 - A Mac installer on every release. Download `install-cleanping-mac.sh` from the latest release and run it
   with `sh install-cleanping-mac.sh`. It picks the build for your Mac and checks its SHA-256 checksum,

@@ -35,6 +35,7 @@ network.
 | `domain/secret_scan.rs`, `shape.rs`, `sanitize.rs` | The "looks like a secret" check, the "reply must look like the text" rule, and cleaning of replies |
 | `domain/command_change.rs`, `command_lines.rs`, `command_pairs.rs`, `command_match.rs`, `shell_words.rs` | The "reply changed a command" check: which lines are commands, which reply line each became, what changed (quotes, flags, paths), and splitting a command into words the way a shell quotes them |
 | `domain/diff.rs` | The word diff behind the highlighting (`Diff::changed_ranges`) |
+| `domain/progress.rs` | The estimate of how far a rewrite has got, from the text's size and the time waited (`estimate_progress`); its timing guesses are in `progress::timing` |
 | `domain/providers.rs`, `prompt_presets.rs`, `local_server.rs` | Provider and prompt presets, and what to suggest for a local model that is not ready |
 | `domain/draft_frame.rs`, `provider_extras.rs` | How the draft is marked off in a request (`<draft>` tags, the fixed sentence, removing echoed tags), and the settings one provider and model get (DeepSeek flash: thinking off) |
 | `application/polisher.rs` | The rewrite use case (`PolishText`) |
@@ -52,7 +53,8 @@ network.
 | `guard.rs`, `marks.rs`, `hints.rs`, `no_history.rs` | The secret refusal, the hidden `--marks` output, copy-pasteable commands for error messages, and the "never save this" switch |
 | `command_warnings.rs` | The `cleanping: warning:` lines when a reply changed a command (the plain command and `edit --yes`) |
 | `secret_input.rs` | The hidden key prompt (raw mode on `/dev/tty`, one star per character) |
-| `edit/` | `cleanping edit`: `view`, `layout` and `wrap` are pure (state and keys in, styled lines out); `terminal` is the only file that touches the terminal; `session` is the key and reply loop; `job` runs the request in the background; `file` reads and writes the host's temp file |
+| `progress/` | The line on stderr while a rewrite waits: `bar` (the text, pure), `look` (whether and how to draw it, from the environment; pure), `ticker` (the thread that draws it and erases it when dropped) |
+| `edit/` | `cleanping edit`: `view`, `layout`, `estimate` and `wrap` are pure (state and keys in, styled lines out); `terminal` is the only file that touches the terminal; `session` is the key and reply loop; `job` runs the request in the background; `file` reads and writes the host's temp file |
 | `setup/` | `cleanping setup`: every question goes through a `Console` trait and every outside contact through a `Tools` trait, so the steps (`provider`, `system_prompt`, `check`, `flow`, `usage`) are tested with scripted answers |
 | `writer/` | `cleanping writer`: `terminal` checks for a terminal, `rc` writes the private startup file, `launch` builds the PATH and replaces the process with zsh; the behavior lives in `shell/writer.zsh` |
 | `shell/cleanping.zsh`, `cleanping.bash` | The shell key, printed by `cleanping init` |
