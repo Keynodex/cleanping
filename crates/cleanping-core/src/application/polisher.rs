@@ -3,6 +3,7 @@
 use std::time::Instant;
 
 use super::ports::{RewriteRequest, Rewriter, RunRepository, SecretStore};
+use crate::domain::command_change::{command_line_changes, summary};
 use crate::domain::errors::{CleanpingError, Result};
 use crate::domain::models::{Credential, Run, RunStatus};
 use crate::domain::shape::keeps_shape;
@@ -49,14 +50,26 @@ impl<W: Rewriter, R: RunRepository, S: SecretStore> PolishText<W, R, S> {
     }
 
     /// Refuse a reply that could hide part of itself when it replaces the text on a command
-    /// line: more lines, much longer, or padded with blanks (see `keeps_shape`).
+    /// line: more lines, much longer, or padded with blanks (see `keeps_shape`). The text is
+    /// then a command, so a reply that changes its quotes, flags or paths is refused too (see
+    /// `command_line_changes`).
     pub fn keeping_shape(mut self) -> Self {
         self.keep_shape = true;
         self
     }
 
-    fn misfits(&self, text: &str, output: &str) -> bool {
-        self.keep_shape && !keeps_shape(text, output)
+    /// Why this reply may not replace the text, if it may not.
+    fn refusal(&self, text: &str, output: &str) -> Option<String> {
+        if !self.keep_shape {
+            return None;
+        }
+        if !keeps_shape(text, output) {
+            return Some(DOES_NOT_FIT.to_string());
+        }
+        let changed = summary(&command_line_changes(text, output))?;
+        Some(format!(
+            "The reply changed your command ({changed}); not applied."
+        ))
     }
 
     /// `Err` means the run never happened (missing key, invalid URL, storage failure).
@@ -83,8 +96,10 @@ impl<W: Rewriter, R: RunRepository, S: SecretStore> PolishText<W, R, S> {
             model: &credential.model,
         });
         let (output_text, error_message) = match outcome {
-            Ok(output) if self.misfits(text, &output) => (None, Some(DOES_NOT_FIT.to_string())),
-            Ok(output) => (Some(output), None),
+            Ok(output) => match self.refusal(text, &output) {
+                Some(refused) => (None, Some(refused)),
+                None => (Some(output), None),
+            },
             Err(CleanpingError::Rewrite(message)) => (None, Some(message)),
             Err(other) => return Err(other),
         };
@@ -116,3 +131,7 @@ impl<W: Rewriter, R: RunRepository, S: SecretStore> PolishText<W, R, S> {
 #[cfg(test)]
 #[path = "polisher_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "polisher_command_tests.rs"]
+mod command_tests;
