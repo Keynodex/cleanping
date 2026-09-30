@@ -146,3 +146,33 @@ fn nothing_is_shown_in_a_terminal_when_it_is_turned_off() {
     assert!(raw.contains(CLEAN), "{raw:?}");
     assert!(!raw.contains("about "), "{raw:?}");
 }
+
+#[test]
+fn the_edit_screen_shows_the_estimate_while_it_waits() {
+    let (server, release) = serve_held(ok_reply(CLEAN));
+    let sandbox = with_server(&server);
+    let file = sandbox.dir.path().join("prompt.txt");
+    std::fs::write(&file, ROUGH).unwrap();
+    let command = format!("cleanping edit '{}'", file.display());
+    let mut screen = terminal(&sandbox, &command, &[]);
+    assert!(
+        screen.wait_until(LIMIT, || has_estimate(&screen.plain_screen())),
+        "no estimate: {:?}",
+        screen.plain_screen()
+    );
+    release.send(()).unwrap();
+    assert!(screen.wait_for_text("Text edit complete", LIMIT));
+    screen.send("\r");
+    assert_eq!(screen.wait_for_exit(LIMIT), Some(0));
+    assert_eq!(std::fs::read_to_string(&file).unwrap(), CLEAN);
+}
+
+#[test]
+fn edit_yes_in_a_terminal_shows_it_and_erases_it_too() {
+    let command = format!(
+        "printf '%s' '{ROUGH}' > \"$HOME/p.txt\"; cleanping edit --yes \"$HOME/p.txt\"; cat \"$HOME/p.txt\""
+    );
+    let lines = slow_run(ok_reply(CLEAN), &command, CLEAN);
+    assert!(lines.contains(&CLEAN.to_string()), "{lines:?}");
+    assert_no_bar(&lines);
+}
