@@ -7,8 +7,10 @@
 
 bindkey -e
 
-# The shell key, loaded exactly as a ~/.zshrc line would load it, on Ctrl+G.
+# The shell key, loaded exactly as a ~/.zshrc line would load it, on Ctrl+G. The changed-words
+# highlight is off here: after Enter the lit words stay on the lines that scrolled away.
 CLEANPING_KEYBIND='^G'
+CLEANPING_HIGHLIGHT=''
 eval "$(command cleanping init zsh)"
 
 # Copy $1 with the first clipboard tool found. Fails when there is none or it fails.

@@ -118,6 +118,8 @@ stays an ordinary terminal instead of closing.
   longer, is refused and your text stays as it was (the same rules as the
   [shell key](shell-key.md#what-the-key-sends-and-what-it-refuses)). Text that looks like a secret is not
   sent.
+- **No highlight.** The fixed line replaces your text, but the changed words are not lit up here: they would
+  stay lit on lines that have scrolled away.
 - **zsh only.** There is no bash version.
 - **Copying needs a clipboard tool:** `pbcopy` (macOS), `wl-copy`, `xclip` or `xsel`. Without one, or if it
   fails, you see `Could not copy (no clipboard tool found). Select the text above and copy it yourself.`
