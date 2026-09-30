@@ -20,8 +20,9 @@ pub const HELD_AT: u8 = 95;
 pub mod timing {
     use std::time::Duration;
 
-    /// Connecting and the model's first word, whatever the size of the text.
-    pub const BASE: Duration = Duration::from_secs(2);
+    /// Connecting and the model's first word, whatever the size of the text. With this, a
+    /// short text is a bit over half way after 1.5 s and at the hold after 6 s.
+    pub const BASE: Duration = Duration::from_secs(3);
     /// About 250 bytes a second (roughly 60 tokens a second), a typical hosted model.
     pub const PER_KILOBYTE: Duration = Duration::from_secs(4);
     /// No request waits longer than the HTTP timeout (`http_rewriter::DEFAULT_TIMEOUT`).
