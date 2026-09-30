@@ -50,7 +50,9 @@ network.
 | `secret_input.rs` | The hidden key prompt (raw mode on `/dev/tty`, one star per character) |
 | `edit/` | `cleanping edit`: `view`, `layout` and `wrap` are pure (state and keys in, styled lines out); `terminal` is the only file that touches the terminal; `session` is the key and reply loop; `job` runs the request in the background; `file` reads and writes the host's temp file |
 | `setup/` | `cleanping setup`: every question goes through a `Console` trait and every outside contact through a `Tools` trait, so the steps (`provider`, `system_prompt`, `check`, `flow`, `usage`) are tested with scripted answers |
+| `writer/` | `cleanping writer`: `terminal` checks for a terminal, `rc` writes the private startup file, `launch` builds the PATH and replaces the process with zsh; the behavior lives in `shell/writer.zsh` |
 | `shell/cleanping.zsh`, `cleanping.bash` | The shell key, printed by `cleanping init` |
+| `shell/writer.zsh` | The startup file of the writer's zsh: loads the shell key on Ctrl+G, makes every accept-line key copy instead of run |
 
 ## How a rewrite flows
 
@@ -89,7 +91,7 @@ network.
 - Unit tests sit next to the code in `*_tests.rs` files (pulled in with `#[path]`), so production files
   stay small.
 - Integration tests in `crates/cleanping-cli/tests` run the real binary against a fake local API server
-  (`tests/support`). Terminal tests (`edit.rs`, `setup.rs`, `hidden_key.rs`, `shell.rs`, `shell_marks.rs`)
+  (`tests/support`). Terminal tests (`edit.rs`, `setup.rs`, `hidden_key.rs`, `shell.rs`, `shell_marks.rs`, `writer.rs`, `writer_keys.rs`)
   drive real interactive sessions through a pseudo-terminal with `script`; they are Linux-only. See
   [CONTRIBUTING.md](../CONTRIBUTING.md#tests).
 

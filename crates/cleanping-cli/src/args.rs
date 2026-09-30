@@ -78,6 +78,9 @@ pub enum Command {
     /// Guided setup: pick the AI, save its key, choose a system prompt and test the connection.
     /// Run it again later for a small menu.
     Setup,
+    /// A text-only terminal mode: type text, press Ctrl+G to fix it, press Enter to copy it.
+    /// Nothing you type there is ever run. Needs zsh.
+    Writer,
     /// Print shell integration: add `eval "$(cleanping init zsh)"` to your shell's rc file.
     Init {
         #[arg(value_enum)]

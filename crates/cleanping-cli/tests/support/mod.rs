@@ -3,6 +3,7 @@
 
 pub mod pty;
 pub mod shell;
+pub mod writer;
 
 use std::io::{Read, Write};
 use std::net::TcpListener;

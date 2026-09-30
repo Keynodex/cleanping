@@ -46,12 +46,15 @@ The number in brackets is the [exit code](commands.md#exit-codes).
 For a local Ollama it also says whether to install it, start it, or download the model
 ([details](providers-and-local-models.md#a-local-model-with-ollama)).
 
-## Setup and `edit`
+## Setup, `edit` and `writer`
 
 | Message | What it means and what to do |
 |---|---|
 | `cleanping setup asks questions, so it needs a terminal. ...` [2] | Run it in a real terminal. In a script, use `cleanping keys add --provider NAME --key-stdin` |
 | `There is no terminal to show the edit on. Run it from a terminal, or add --yes ...` [1] | `cleanping edit` needs a terminal for its screen. Add `--yes` to edit the file without one |
+| `cleanping writer needs a terminal for its input and its output. ...` [2] | `cleanping writer` is for a terminal window. It cannot run in a script or with its input or output redirected |
+| `cleanping writer needs zsh, and zsh was not found. ...` [1] | Writing mode runs in zsh. Install it with your system's package manager (macOS and most Linux systems have it) |
+| `Could not copy (no clipboard tool found). ...` (shown inside the writer) | No `pbcopy`, `wl-copy`, `xclip` or `xsel` was found, or it failed. Select the text on screen and copy it yourself |
 | `Could not read the file to edit.` [2] | The file path is wrong or unreadable |
 | `Could not write the edited text back to the file.` | The file is not writable. Check its permissions |
 | The edit screen says **Could not edit** | The reason is shown on the screen and your text is unchanged. Any key returns you to the app |
