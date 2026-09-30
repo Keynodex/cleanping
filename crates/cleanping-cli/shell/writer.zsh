@@ -7,8 +7,10 @@
 
 bindkey -e
 
-# The shell key, loaded exactly as a ~/.zshrc line would load it, on Ctrl+G.
+# The shell key, loaded exactly as a ~/.zshrc line would load it, on Ctrl+G. The changed-words
+# highlight is off here: after Enter the lit words stay on the lines that scrolled away.
 CLEANPING_KEYBIND='^G'
+CLEANPING_HIGHLIGHT=''
 eval "$(command cleanping init zsh)"
 
 # Copy $1 with the first clipboard tool found. Fails when there is none or it fails.
@@ -36,7 +38,10 @@ _cleanping_writer_enter() {
     message='Could not copy (no clipboard tool found). Select the text above and copy it yourself.'
   fi
   zle -I
+  # The blank line matters: the prompt redraw moves up one line and clears below, so a message on
+  # the line just above the prompt would be wiped at once and nobody would see it.
   print -r -- $message
+  print
   BUFFER=''
   zle reset-prompt
 }

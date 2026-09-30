@@ -3,9 +3,10 @@
 Written 2026-09-29. Delete a task when its pull request is merged, and delete this file when nothing is
 left. Every step that changes `main`, pushes a tag, or publishes needs the maintainer's explicit go.
 
-**Where things stand.** v0.3.0 is published (2026-09-30): three archives with checksums and build
-attestations. The Linux archive was downloaded without signing in, and its checksum, attestation and
-`--version` were checked; the macOS archives have not been run by anyone. Release notes come from the
+**Where things stand.** v0.3.0 is published (2026-09-30). v0.4.0 adds `cleanping writer`; its release
+pull request is open until it is merged, tagged and published. The Linux v0.3.0 archive was downloaded
+without signing in, and its checksum, attestation and `--version` were checked; no macOS archive has been
+run by anyone. Release notes come from the
 changelog section (`.github/scripts/release-notes.sh`), and the pinned GitHub Actions are `checkout` 7.0.1,
 `upload-artifact` 7.0.1 and `download-artifact` 8.0.1. The docs have a page for which key works where
 ([docs/use-it-your-way.md](docs/use-it-your-way.md)). Task 1 is done (Rust 1.98.1 here, 398 tests passing).
@@ -40,14 +41,14 @@ machine (396 before the query-string check was added). If the total differs, fin
 anything else. Ollama is not needed for the
 tests; it is only for trying a real local model by hand.
 
-## 2. Prove the v0.3.0 install on a clean machine
+## 2. Prove the install on a clean machine (v0.4.0, includes `cleanping writer`)
 
 Download one archive from the published release on a machine that has never had CleanPing, and follow the
 README install steps, including `sha256sum -c` (`shasum -a 256 -c` on macOS). Do Linux and both macOS
 archives if a Mac is available: nobody has run the macOS builds yet. Then delete this task in a small
 pull request.
 
-**Done when** each archive you tried installs, passes its checksum and prints `cleanping 0.3.0`.
+**Done when** each archive you tried installs, passes its checksum and prints `cleanping 0.4.0`, and `cleanping writer` opens, fixes with Ctrl+G and copies with Enter.
 
 ## 3. Docs page on keynodex.com
 
