@@ -3,9 +3,12 @@
 Written 2026-09-29. Delete a task when its pull request is merged, and delete this file when nothing is
 left. Every step that changes `main`, pushes a tag, or publishes needs the maintainer's explicit go.
 
-**Where things stand.** Every v0.3.0 feature and its documentation is merged. The release pull request
-(`release/v0.3.0`) sets the version to `0.3.0`; until it is merged, the tag is pushed and the draft is
-published, v0.3.0 is not released. Task 1 is done (Rust 1.98.1 here, 398 tests passing).
+**Where things stand.** Every v0.3.0 feature is merged, the version is `0.3.0` on `main`, the tag `v0.3.0`
+is pushed and the release workflow built a **draft** release (three archives with checksums and
+attestations; the Linux one was checked). It is not public until the maintainer publishes it. Release
+notes now come from the changelog section (`.github/scripts/release-notes.sh`), and the pinned GitHub
+Actions are `checkout` 7.0.1, `upload-artifact` 7.0.1 and `download-artifact` 8.0.1. Task 1 is done
+(Rust 1.98.1 here, 398 tests passing).
 
 ## 1. Set up a new Linux dev machine
 
@@ -37,57 +40,23 @@ machine (396 before the query-string check was added). If the total differs, fin
 anything else. Ollama is not needed for the
 tests; it is only for trying a real local model by hand.
 
-## 2. Release v0.3.0
+## 2. Finish the v0.3.0 release
 
-Do this before task 3, so the release workflow that shipped v0.2.0 is used unchanged.
+1. The maintainer reads the draft on GitHub (Releases, v0.3.0) and publishes it. Publishing is the
+   maintainer's step.
+2. After publishing, download one archive on a clean machine and follow the README install steps,
+   including `sha256sum -c`. The macOS archives have not been run by anyone yet.
+3. Delete this task in a small pull request.
 
-1. Branch `release/v0.3.0`. Set `version = "0.3.0"` in the workspace `Cargo.toml` (line 6), then run
-   `cargo build` so both `cleanping-*` entries in `Cargo.lock` follow.
-2. `CHANGELOG.md`: put a new empty **Unreleased** section on top, rename the old one `[0.3.0] - DATE`,
-   and update the two links at the bottom (`compare/v0.3.0...HEAD` and `releases/tag/v0.3.0`).
-3. `README.md` lines 25 to 27 and 30 name `v0.2.0` in the install example: change them to `v0.3.0`.
-   Check with `grep -rn '0\.2\.0' README.md docs CONTRIBUTING.md Cargo.toml`.
-4. Run the four checks from task 1, open the pull request, and wait for CI. **Merge needs a go on the
-   exact head.**
-5. Wait for CI on `main` to pass for the merge commit, then push the tag (**needs a go**):
-   ```sh
-   git tag v0.3.0 MERGE_COMMIT_SHA && git push origin v0.3.0
-   ```
-   `release.yml` refuses a tag that is not on `main`, that differs from the `Cargo.toml` version, or
-   whose commit has no successful CI run. It builds Linux (x86_64) and macOS (Apple silicon and Intel)
-   archives with checksums and build-provenance attestations, and creates a **draft** release.
-6. Read the draft (three archives, three `.sha256` files, generated notes), then the maintainer publishes.
-7. After publishing, download one archive on a clean machine and follow the README install steps,
-   including `sha256sum -c`.
+**Done when** the release is published and step 2 works.
 
-**Done when** the release is published and step 7 works.
-
-## 3. Dependabot pull requests #1, #2 and #3
-
-They bump `actions/upload-artifact` 4.6.2 to 7.0.1 (#1), `actions/checkout` 4.4.0 to 7.0.1 (#2) and
-`actions/download-artifact` 4.3.0 to 8.0.1 (#3). Workflows pin actions by commit SHA, so for each one:
-
-- Check that the SHA in the pull request is the commit the upstream tag points to (annotated tags need
-  one more step to reach the commit):
-  ```sh
-  gh api repos/actions/checkout/git/ref/tags/v7.0.1
-  ```
-- Read the upstream release notes for breaking changes (runtime versions, changed inputs).
-- `upload-artifact` and `download-artifact` are used together in `release.yml`, and #1 and #3 move to
-  different major versions (7 and 8). Confirm they are compatible with each other, or change them in one
-  pull request.
-- CI must be green. Any change to `release.yml` also needs a dry run: **Actions, Release, Run workflow**
-  builds and checks everything and publishes nothing.
-
-**Done when** each pull request is merged or closed with a reason, and a Release dry run has passed.
-
-## 5. Docs page on keynodex.com
+## 3. Docs page on keynodex.com
 
 `keynodex.com/docs/cleanping/`, built from `docs/` so the two cannot drift. It lives in the website
 repository (`Keynodex/keynodex-site`, Next.js on Vercel), so its `CONVENTIONS.md` gates apply. Do it after
 task 2 so the page shows the released version. Separate pull request.
 
-## 6. Later
+## 4. Later
 
 - A browser extension for web text boxes, as its own release. Every site's editor differs and updates
   break it, so plan testing per site.
