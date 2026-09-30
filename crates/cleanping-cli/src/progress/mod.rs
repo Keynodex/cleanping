@@ -2,3 +2,4 @@
 
 pub mod bar;
 pub mod look;
+pub mod ticker;
