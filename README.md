@@ -23,12 +23,12 @@ Works on Linux and macOS. Windows is not supported yet.
 **Prebuilt binary** (Linux x86_64, macOS Apple silicon and Intel): download the archive for your system from the [latest release](https://github.com/Keynodex/cleanping/releases/latest), then check it and put it on your `PATH`:
 
 ```sh
-sha256sum -c cleanping-v0.3.0-x86_64-unknown-linux-gnu.tar.gz.sha256   # macOS: shasum -a 256 -c
-tar xzf cleanping-v0.3.0-x86_64-unknown-linux-gnu.tar.gz
-install cleanping-v0.3.0-x86_64-unknown-linux-gnu/cleanping ~/.local/bin/
+sha256sum -c cleanping-v0.4.0-x86_64-unknown-linux-gnu.tar.gz.sha256   # macOS: shasum -a 256 -c
+tar xzf cleanping-v0.4.0-x86_64-unknown-linux-gnu.tar.gz
+install cleanping-v0.4.0-x86_64-unknown-linux-gnu/cleanping ~/.local/bin/
 ```
 
-(Replace `v0.3.0` with the version you downloaded.) The Linux build needs glibc 2.34 or newer (Ubuntu 22.04+, Debian 12+). The macOS builds are not signed or notarized by Apple, so macOS may ask you to allow them. Each archive has a build-provenance attestation from this repository's release workflow.
+(Replace `v0.4.0` with the version you downloaded.) The Linux build needs glibc 2.34 or newer (Ubuntu 22.04+, Debian 12+). The macOS builds are not signed or notarized by Apple, so macOS may ask you to allow them. Each archive has a build-provenance attestation from this repository's release workflow.
 
 **From source** (needs [Rust](https://rustup.rs) 1.89 or newer):
 

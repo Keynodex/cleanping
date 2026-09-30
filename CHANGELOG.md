@@ -7,6 +7,8 @@ behavior, and the notes below say when it does.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-09-30
+
 ### Added
 
 - `cleanping writer`: a text-only window for people who have never used a shell. Nothing you type there is
@@ -76,6 +78,7 @@ First public release.
 - Linux (x86_64) and macOS (Apple silicon and Intel) builds with checksums and build-provenance
   attestations.
 
-[Unreleased]: https://github.com/Keynodex/cleanping/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/Keynodex/cleanping/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/Keynodex/cleanping/releases/tag/v0.4.0
 [0.3.0]: https://github.com/Keynodex/cleanping/releases/tag/v0.3.0
 [0.2.0]: https://github.com/Keynodex/cleanping/releases/tag/v0.2.0
