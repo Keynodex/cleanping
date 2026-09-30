@@ -37,9 +37,9 @@ than 40 lines goes first inside a `<log>`, `<code>` or `<document>` tag. After
 
 Limits:
 
-- On 18 invented drafts, a strong model graded the answers to its rewrites about the same as the answers to
-  the raw drafts. What you get is cleaner, better laid-out text without paste junk, not proven better
-  answers from the AI.
+- On 18 invented drafts, blind graders scored the answers to its rewrites about the same as the answers to
+  the raw drafts, both when a strong model answered and when a smaller one did. What you get is cleaner,
+  better laid-out text without paste junk, not proven better answers from the AI.
 - It tells the AI to reply in the draft's language, never to translate, and to leave commands exactly as
   pasted, even an obvious mistake, since that may be what you are asking about.
 - It can occasionally add a word of its own. Read the result before you accept it.
