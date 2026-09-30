@@ -1,9 +1,9 @@
-//! Pairing a command of the text with its line in the reply, and comparing the two.
+//! Comparing a command of the text with the line of the reply it became.
 
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::HashSet;
 
 use super::command_change::{ChangeKind, CommandChange};
-use super::command_lines::{flag, path, pieces};
+use super::command_lines::{flag, path};
 use super::secret_scan::find_secret;
 use super::shell_words::{scan, Scan, Word};
 
@@ -11,39 +11,6 @@ use super::shell_words::{scan, Scan, Word};
 const SHOWN_CHARS: usize = 40;
 /// How many words of a command name it in a message.
 const LABEL_WORDS: usize = 3;
-
-/// The reply's lines, by their first word: command lines first, then any other line.
-pub(super) struct Counterparts {
-    by_word: HashMap<String, (VecDeque<String>, VecDeque<String>)>,
-}
-
-impl Counterparts {
-    pub(super) fn of(reply: &str) -> Self {
-        let mut by_word: HashMap<_, (VecDeque<_>, VecDeque<_>)> = HashMap::new();
-        for piece in pieces(reply) {
-            let Some(key) = first_word(&piece.text) else {
-                continue;
-            };
-            let (commands, others) = by_word.entry(key).or_default();
-            if piece.command {
-                commands.push_back(piece.text);
-            } else {
-                others.push_back(piece.text);
-            }
-        }
-        Self { by_word }
-    }
-
-    /// The earliest unused line of the reply that starts with the same word as `command`.
-    pub(super) fn take(&mut self, command: &str) -> Option<String> {
-        let (commands, others) = self.by_word.get_mut(&first_word(command)?)?;
-        commands.pop_front().or_else(|| others.pop_front())
-    }
-}
-
-fn first_word(text: &str) -> Option<String> {
-    scan(text).words.first().map(|w| w.text.to_lowercase())
-}
 
 /// Every change from the command `before` to the command `after`.
 pub(super) fn compare(before: &str, after: &str) -> Vec<CommandChange> {
@@ -106,13 +73,17 @@ pub(super) fn label(scan: &Scan) -> String {
     shown(&words.join(" "))
 }
 
-/// `text` as it may be shown: at most 40 characters, and never something that looks like a
-/// secret (checked on the whole text, before it is shortened).
+/// `text` as it may be shown: on one line, without control characters, at most 40 characters,
+/// and never something that looks like a secret (checked on the whole text, before it is
+/// shortened).
 fn shown(text: &str) -> String {
     if find_secret(text).is_some() {
         return "(hidden: looks like a secret)".into();
     }
-    let text = text.replace(['\n', '\r', '\t'], " ");
+    let text: String = text
+        .chars()
+        .map(|c| if c.is_control() { ' ' } else { c })
+        .collect();
     if text.chars().count() <= SHOWN_CHARS {
         return text;
     }

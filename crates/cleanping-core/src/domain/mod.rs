@@ -3,6 +3,7 @@
 pub mod command_change;
 pub mod command_lines;
 mod command_match;
+mod command_pairs;
 pub mod diff;
 pub mod errors;
 pub mod local_server;

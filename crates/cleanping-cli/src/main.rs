@@ -2,6 +2,7 @@
 
 mod args;
 mod clipboard;
+mod command_warnings;
 mod connection;
 mod edit;
 mod exit;

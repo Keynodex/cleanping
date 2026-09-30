@@ -7,7 +7,8 @@
 use std::fmt;
 
 use super::command_lines::pieces;
-use super::command_match::{change, compare, label, Counterparts};
+use super::command_match::{change, compare, label};
+use super::command_pairs::Counterparts;
 use super::shell_words::scan;
 
 /// What happened to one command between the text and the reply.
@@ -73,8 +74,8 @@ impl fmt::Display for CommandChange {
 
 /// Changes to the commands in a text that mixes prose and commands (see
 /// [`command_lines`](super::command_lines) for which lines count as commands). Prose is ignored.
-/// Each command of the text is compared with the next line of the reply that starts with the
-/// same word (ignoring case), a command line first, else any line.
+/// Each command of the text is compared with the line of the reply it became (see
+/// `command_pairs`: the same first word, else the most words in common).
 pub fn command_changes(original: &str, reply: &str) -> Vec<CommandChange> {
     let mut counterparts = Counterparts::of(reply);
     pieces(original)

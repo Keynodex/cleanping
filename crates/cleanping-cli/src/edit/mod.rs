@@ -3,7 +3,9 @@
 //!
 //! With a screen the user accepts (Enter) or keeps the original (N). With `--yes` the edited
 //! text is written straight into the file. Text that looks like it holds a secret is never
-//! sent without a deliberate choice on the screen, and never with `--yes`.
+//! sent without a deliberate choice on the screen, and never with `--yes`. An edit that changes
+//! a command in the text (a closed quote, a dropped flag) is named on the screen, or on stderr
+//! with `--yes`; it can still be accepted.
 
 mod file;
 mod job;
@@ -19,6 +21,7 @@ use cleanping_core::domain::secret_scan::find_secret;
 use cleanping_core::domain::validation::host_of;
 
 use crate::args::EditArgs;
+use crate::command_warnings;
 use crate::guard;
 use crate::rewrite::pick_credential;
 use crate::services::Services;
@@ -69,5 +72,7 @@ fn edit_quietly(
         return Err(guard::refusal(kind));
     }
     let job = Job::prepare(services, raw.trim(), credential?)?;
-    file::write(&args.file, &file::replacement(raw, &job.run()?))
+    let edited = job.run()?;
+    command_warnings::warn_about(raw.trim(), &edited);
+    file::write(&args.file, &file::replacement(raw, &edited))
 }

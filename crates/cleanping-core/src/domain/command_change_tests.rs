@@ -69,6 +69,12 @@ fn the_table_of_cases() {
             "Please check why\n$ git push -u origin main\nfails with 403.".into(),
             vec![],
         ),
+        (
+            "prose lead-in fixed on a line with a flag",
+            "pls run: rm -r -f build/".into(),
+            "Please run: rm -r build/".into(),
+            vec![flag("-f")],
+        ),
         ("empty inputs", String::new(), String::new(), vec![]),
         ("empty reply", fenced("ls -a"), String::new(), vec![Missing]),
         (
@@ -196,4 +202,11 @@ fn the_t9_example_is_caught() {
         reply.lines().nth(1).unwrap(),
     );
     assert_eq!(line.len(), 1, "{line:?}");
+}
+
+#[test]
+fn control_characters_in_a_command_are_never_shown() {
+    let changes = command_changes(&fenced("echo \u{1b}[2J 'x"), &fenced("echo \u{1b}[2J 'x'"));
+    let said = changes[0].to_string();
+    assert!(!said.chars().any(char::is_control), "{said:?}");
 }
