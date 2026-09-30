@@ -80,6 +80,19 @@ impl Pty {
         self.wait_until(timeout, || self.screen().contains(needle))
     }
 
+    /// Wait for the session to end on its own, with the terminal's input still open; returns the
+    /// exit code, or `None` if it is still running after `timeout`.
+    pub fn wait_for_exit(&mut self, timeout: Duration) -> Option<i32> {
+        let started = Instant::now();
+        while started.elapsed() < timeout {
+            if let Some(status) = self.child.try_wait().unwrap() {
+                return Some(status.code().unwrap_or(-1));
+            }
+            std::thread::sleep(Duration::from_millis(20));
+        }
+        None
+    }
+
     /// Close the terminal's input and wait for the session to end; returns the exit code.
     pub fn finish(mut self, timeout: Duration) -> i32 {
         drop(self.stdin.take());
