@@ -113,3 +113,39 @@ fn a_saved_body_is_matched_back_to_its_preset() {
     }
     assert!(preset_for_body("Answer like a pirate.").is_none());
 }
+
+/// The `structure` prompt file, byte for byte (it ends with a newline).
+const STRUCTURE_FILE: &str = include_str!("prompts/structure.txt");
+
+fn structure() -> &'static PromptPreset {
+    preset_named("Structure").expect("no structure preset")
+}
+
+#[test]
+fn structure_is_the_prompt_file_word_for_word() {
+    assert_eq!(structure().name, "structure");
+    assert_eq!(structure().body, STRUCTURE_FILE.trim_end());
+    assert!(structure().body.ends_with("</example>"));
+}
+
+#[test]
+fn structure_comes_after_friendly_and_default_stays_first() {
+    let names: Vec<&str> = PROMPT_PRESETS.iter().map(|p| p.name).collect();
+    assert_eq!(names[0], "default", "{names:?}");
+    let friendly = names.iter().position(|n| *n == "friendly").unwrap();
+    assert_eq!(
+        names.get(friendly + 1),
+        Some(&"structure"),
+        "no structure preset"
+    );
+}
+
+#[test]
+fn a_saved_structure_prompt_is_matched_back_to_it() {
+    assert_eq!(
+        preset_for_body(STRUCTURE_FILE)
+            .expect("no structure preset")
+            .name,
+        "structure"
+    );
+}
