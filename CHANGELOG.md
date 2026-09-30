@@ -7,6 +7,13 @@ behavior, and the notes below say when it does.
 
 ## [Unreleased]
 
+### Changed
+
+- The DeepSeek preset now uses the model `deepseek-flash`, the name DeepSeek lists as current, instead
+  of `deepseek-chat`. Keys saved earlier keep their model. To switch one, run
+  `cleanping keys add --provider DeepSeek --name DeepSeek --model deepseek-flash` and press Enter at the
+  key prompt to keep the saved key.
+
 ## [0.4.0] - 2026-09-30
 
 ### Added
