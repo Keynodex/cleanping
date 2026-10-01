@@ -32,6 +32,7 @@ fn review(original: &str, edited: &str) -> View {
             edited: edited.into(),
             diff: highlight_changes(original, edited),
             showing_original: false,
+            command_warning: None,
         }),
     )
 }

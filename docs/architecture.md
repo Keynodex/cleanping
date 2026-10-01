@@ -33,6 +33,7 @@ network.
 |---|---|
 | `domain/models.rs`, `errors.rs`, `validation.rs` | The data types, the error type (its variants decide the exit code), and address and key rules |
 | `domain/secret_scan.rs`, `shape.rs`, `sanitize.rs` | The "looks like a secret" check, the "reply must look like the text" rule, and cleaning of replies |
+| `domain/command_change.rs`, `command_lines.rs`, `command_pairs.rs`, `command_match.rs`, `shell_words.rs` | The "reply changed a command" check: which lines are commands, which reply line each became, what changed (quotes, flags, paths), and splitting a command into words the way a shell quotes them |
 | `domain/diff.rs` | The word diff behind the highlighting (`Diff::changed_ranges`) |
 | `domain/providers.rs`, `prompt_presets.rs`, `local_server.rs` | Provider and prompt presets, and what to suggest for a local model that is not ready |
 | `domain/draft_frame.rs`, `provider_extras.rs` | How the draft is marked off in a request (`<draft>` tags, the fixed sentence, removing echoed tags), and the settings one provider and model get (DeepSeek flash: thinking off) |
@@ -49,6 +50,7 @@ network.
 | `args.rs`, `main.rs`, `services.rs`, `exit.rs`, `output.rs` | The command line (clap), the wiring of services, the exit codes, and stdout that treats a closed pipe as normal |
 | `rewrite.rs`, `keys.rs`, `prompt.rs`, `history.rs`, `connection.rs`, `init.rs` | One module per command |
 | `guard.rs`, `marks.rs`, `hints.rs`, `no_history.rs` | The secret refusal, the hidden `--marks` output, copy-pasteable commands for error messages, and the "never save this" switch |
+| `command_warnings.rs` | The `cleanping: warning:` lines when a reply changed a command (the plain command and `edit --yes`) |
 | `secret_input.rs` | The hidden key prompt (raw mode on `/dev/tty`, one star per character) |
 | `edit/` | `cleanping edit`: `view`, `layout` and `wrap` are pure (state and keys in, styled lines out); `terminal` is the only file that touches the terminal; `session` is the key and reply loop; `job` runs the request in the background; `file` reads and writes the host's temp file |
 | `setup/` | `cleanping setup`: every question goes through a `Console` trait and every outside contact through a `Tools` trait, so the steps (`provider`, `system_prompt`, `check`, `flow`, `usage`) are tested with scripted answers |
@@ -69,10 +71,12 @@ network.
    the reply (`clean_reply` in `domain/sanitize.rs`: control, direction-override and invisible characters
    are removed), then removes tags the model echoed. The framing stays inside the adapter: the use case,
    the history and the guards see the text and prompt as given.
-5. With `--keep-shape`, a reply that does not pass the shape rule counts as a failure. Either way the
+5. With `--keep-shape`, a reply that does not pass the shape rule, or that changes the command
+   (`domain::command_change::command_line_changes`), counts as a failure. Either way the
    attempt is recorded through `RunRepository`, failures included (with the error message), unless
    `--no-history` swaps in a repository that saves nothing (`no_history.rs`).
-6. Only the result is written to stdout.
+6. Only the result is written to stdout. Without `--keep-shape`, each change the reply made to a command
+   in the text (`command_changes`) is a warning on stderr.
 
 ## Design decisions worth knowing
 

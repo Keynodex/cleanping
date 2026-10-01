@@ -35,7 +35,8 @@ pub struct Cli {
     #[arg(long)]
     pub no_history: bool,
 
-    /// Refuse a reply with more lines than your text, or much longer, or padded with blanks.
+    /// Refuse a reply with more lines than your text, or much longer, or padded with blanks, or
+    /// one that changes the command in it (a quote closed or opened, a flag or a path changed).
     /// The shell key uses this so a reply cannot hide part of itself on your command line.
     #[arg(long)]
     pub keep_shape: bool,

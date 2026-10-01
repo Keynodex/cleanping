@@ -3,6 +3,7 @@
 use std::sync::mpsc::{Receiver, TryRecvError};
 use std::time::Duration;
 
+use cleanping_core::domain::command_change::{command_changes, summary};
 use cleanping_core::domain::diff::highlight_changes;
 use cleanping_core::domain::errors::Result;
 
@@ -22,6 +23,7 @@ fn phase_for(reply: Result<String>, original: &str) -> Phase {
     match reply {
         Ok(edited) => Phase::Review(Review {
             diff: highlight_changes(original, &edited),
+            command_warning: summary(&command_changes(original, &edited)),
             edited,
             showing_original: false,
         }),

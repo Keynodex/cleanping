@@ -33,7 +33,7 @@ $ echo "plz fix teh login pgae" | cleanping
 | `-c`, `--credential NAME` | Use this saved key instead of the selected one |
 | `--copy` | Also copy the result to the clipboard (needs `wl-copy`, `xclip`, `xsel` or `pbcopy`) |
 | `--no-history` | Do not save this run to the local history |
-| `--keep-shape` | Refuse a reply with more lines than your text, much longer than it, or padded with blanks (the [shell key](shell-key.md) uses this) |
+| `--keep-shape` | Refuse a reply with more lines than your text, much longer than it, or padded with blanks, or one that changes the command in your text (a quote closed or opened, a flag or a path changed); exit `1` (the [shell key](shell-key.md) uses this) |
 | `--refuse-secrets` | Send nothing if the text looks like it holds a key, token or password; exit `2` (the shell key uses this) |
 
 **Text or command?** If the first word is `keys`, `prompt`, `history`, `edit`, `setup`, `writer` or `init`, it is
@@ -46,6 +46,20 @@ and asks you to choose (`cleanping keys use NAME` or `-c NAME`) instead of guess
 go to a provider you did not pick.
 
 Input is limited to 200,000 bytes and is checked before any request is made.
+
+**A changed command is a warning.** When the reply changes a command in your text (a quote closed or
+opened, a flag dropped or added, a path or URL changed), each change is printed on stderr and the reply is
+still printed, with the usual exit code:
+
+```console
+$ cleanping < question.txt
+Why is it waiting?
+curl -X POST http://localhost:8080/items -d '{"name": "lamp"}'
+cleanping: warning: a quote was closed in the command starting `curl -X POST`.
+```
+
+With `--keep-shape` the reply is refused instead (exit `1`). Which lines count as commands is in
+[Privacy and safety](privacy-and-safety.md#a-reply-that-changes-a-command).
 
 ## `edit`
 
@@ -61,6 +75,9 @@ Claude Code and Codex open it with Ctrl+G. The full guide is
 |---|---|
 | `-c`, `--credential NAME` | Use this saved key instead of the selected one |
 | `--yes` | No screen and no question: write the edited text into the file. Text that looks like it holds a secret is still never sent |
+
+When the edit changes a command in your text, the screen says `Check the command: ...` under the title
+(Enter still accepts it), and `--yes` prints the same as a `cleanping: warning:` line on stderr.
 
 On the screen, a failed edit exits `0` with the file untouched, so the app that opened it keeps your text.
 With `--yes` the normal [exit codes](#exit-codes) apply. Options go before the file (that is how the apps
