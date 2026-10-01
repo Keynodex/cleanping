@@ -11,6 +11,9 @@ or `cargo install` from source. Then check that it runs:
 $ cleanping --version
 ```
 
+Later, `cleanping update` tells you whether a newer version exists and how to install it (it only checks;
+see the [command reference](commands.md#update)).
+
 ## 2. Run the guided setup
 
 ```console

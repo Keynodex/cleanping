@@ -11,6 +11,8 @@ use clap::{Args, Parser, Subcommand, ValueEnum};
     about = "Rewrite rough text into clean, clear text with an OpenAI-compatible API.",
     long_about = "Rewrite rough text into clean, clear text with an OpenAI-compatible API.\n\n\
         Give the text as arguments or pipe it in; only the rewritten text goes to stdout.\n\
+        Text that starts with a command word (keys, prompt, history, edit, setup, writer, update,\n\
+        init) goes after `--`: cleanping -- update the docs\n\
         Exit codes: 0 ok, 1 failed (network/provider/storage), 2 bad input, 3 no usable key.",
     args_conflicts_with_subcommands = true,
     // "help me fix this" is text to rewrite, not a request for a subcommand's help.

@@ -7,6 +7,7 @@ Every command, option, exit code and environment variable. `cleanping --help` an
 - [`edit`](#edit): fix a file's text on a screen
 - [`setup`](#setup): guided setup
 - [`writer`](#writer): a text-only window where nothing typed is run
+- [`update`](#update): check for a newer version
 - [`keys`](#keys): list, add, remove, use and test API keys
 - [`prompt`](#prompt): the system prompt and its presets
 - [`history`](#history): look at or delete saved rewrites
@@ -36,9 +37,9 @@ $ echo "plz fix teh login pgae" | cleanping
 | `--keep-shape` | Refuse a reply with more lines than your text, much longer than it, or padded with blanks (the [shell key](shell-key.md) uses this) |
 | `--refuse-secrets` | Send nothing if the text looks like it holds a key, token or password; exit `2` (the shell key uses this) |
 
-**Text or command?** If the first word is `keys`, `prompt`, `history`, `edit`, `setup`, `writer` or `init`, it is
-read as that command. To rewrite text that starts with one of those words, put it after `--` or pipe it
-in: `cleanping -- keys are broken`. Any other text, including `help me fix this`, is rewritten as it is.
+**Text or command?** If the first word is `keys`, `prompt`, `history`, `edit`, `setup`, `writer`, `update` or
+`init`, it is read as that command. To rewrite text that starts with one of those words, put it after `--`
+or pipe it in: `cleanping -- keys are broken`, `cleanping -- update the docs`. Any other text, including `help me fix this`, is rewritten as it is.
 
 With a single saved key, CleanPing just uses it. With several, it uses the selected one. If several are
 saved and none is selected (for example after you removed the selected one), it stops with exit code `3`
@@ -91,6 +92,28 @@ input and output (exit `2` without one) and zsh (exit `1` without it). It starts
 private `.zshrc` in `writer/` in the data folder, rewritten on every start, so none of your own zsh startup
 files are read. The exit status is zsh's. It never edits your files. It is a guard against accidents, not a
 security sandbox. The guide is [Use it your way](use-it-your-way.md#5-writing-mode-for-text-only).
+
+## `update`
+
+```
+cleanping update [--check]
+```
+
+Asks GitHub's public API for the newest CleanPing release and compares it with the version you are
+running. It prints one of:
+
+- `CleanPing 0.4.0 is the latest version.`
+- `CleanPing 0.5.0 is available (you have 0.4.0).`, the release page, the commands to install it on a Mac
+  (the [README](../README.md#install) steps for your Mac's archive, with `shasum -a 256 -c`) or, on other
+  systems, a pointer to the README install section, and `Nothing was changed: this command only checks
+  for a newer version.`
+- that your version is newer than the latest release (a development build), with no install steps.
+
+It exits `0` whether or not an update exists, and `1` when GitHub cannot be reached or its reply is not
+understood (see [Troubleshooting](troubleshooting.md#checking-for-updates)). It only checks: nothing is
+downloaded, installed or changed, and no file or database is opened. Installing the update for you is
+planned; `--check` does exactly what `update` does today and stays valid when that arrives. What the check
+sends is in [Privacy and safety](privacy-and-safety.md#checking-for-updates).
 
 ## `keys`
 
@@ -166,7 +189,7 @@ Prints the shell integration. Add `eval "$(cleanping init zsh)"` to `~/.zshrc`, 
 | Code | Meaning |
 |---|---|
 | `0` | Success |
-| `1` | The request failed: network, provider or storage |
+| `1` | The request failed: network, provider or storage, or `update` could not check for a newer version |
 | `2` | Bad input: empty or too long text, an invalid address or option, text refused by `--refuse-secrets`, or `setup` or `writer` without a terminal |
 | `3` | No usable key: none saved, several saved and none selected, or the name you gave does not exist |
 
@@ -178,12 +201,13 @@ keeps your text.
 | Variable | Used for |
 |---|---|
 | `XDG_CONFIG_HOME`, `XDG_DATA_HOME` | Where keys and history live (see below). Relative paths are ignored |
-| `HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY`, `NO_PROXY` | Proxy for remote providers. A proxy that is set but unusable is an error, never a silent direct connection. Local addresses are always reached directly |
+| `HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY`, `NO_PROXY` | Proxy for remote providers and for `cleanping update`. A proxy that is set but unusable is an error, never a silent direct connection. Local addresses are always reached directly |
 | `CLEANPING_KEYBIND` | The shell key. Set it before the `eval` line |
 | `CLEANPING_HIGHLIGHT` | zsh only: the style for changed words (default `standout`; empty turns it off) |
 | `VISUAL` | Read by Claude Code and Codex, not by CleanPing: `export VISUAL="cleanping edit"` |
 | `SHELL` | `cleanping setup` uses it to show the right profile file |
 | `PATH` | Searched for the `ollama` program, to tell "not installed" from "not running" when a local server does not answer |
+| `CLEANPING_UPDATE_URL` | **Tests only.** Replaces the address `cleanping update` asks, and is used only when it is `http://` to `localhost`, `127.0.0.1` or `[::1]` (without a user name or password); any other value is ignored, so it can never send the check to another computer |
 
 ## Files
 

@@ -14,9 +14,10 @@ To report a security problem privately, see [SECURITY.md](../SECURITY.md).
 | `cleanping keys test` | One fixed word (`ping`) with a fixed instruction, to that provider. Never your text, history or saved system prompt |
 | You use a local model | To an address on your own machine only. Nothing leaves it |
 | `cleanping setup`, local model | A request to the local server's model list (`GET /api/tags`) on a loopback address, and, only if you say yes, Ollama's own `ollama pull` |
+| `cleanping update` | One request to GitHub's public API asking for the newest release, with only a `User-Agent: cleanping/VERSION` header ([details](#checking-for-updates)) |
 
-CleanPing itself makes no other network connections: it does not check for updates and sends no usage
-data. The only programs it starts are your clipboard tool (with `--copy`, and on Enter in `cleanping writer`),
+CleanPing itself makes no other network connections: it never checks for updates by itself and sends no
+usage data. The only programs it starts are your clipboard tool (with `--copy`, and on Enter in `cleanping writer`),
 zsh (for `cleanping writer`) and `ollama pull` (with your yes).
 
 ## What is stored on your computer
@@ -82,12 +83,31 @@ The AI's reply is treated as untrusted.
   of your text, so a long reply cannot push a command out of sight.
 - A reply is still an AI's rewrite. Read a rewritten command before you press Enter.
 
+## Checking for updates
+
+`cleanping update` is the only time CleanPing contacts anything other than the provider you chose, and it
+happens only when you run that command: never in the background, never from another command, never on
+a schedule.
+
+- It sends one `GET` request to `https://api.github.com/repos/Keynodex/cleanping/releases/latest`. The
+  only header CleanPing adds is `User-Agent: cleanping/VERSION` (GitHub requires one). No id, key,
+  history, setting or text of yours is sent. GitHub, like any web server, sees your IP address.
+- It follows no redirects, uses HTTPS only, gives up after 15 seconds, refuses a reply larger than
+  256 KB, and uses the same proxy rules as a remote provider (below).
+- The reply is untrusted data. The version must be plain `vX.Y.Z` (a pre-release tag counts as not
+  understood), the release page is shown only if it is on `https://github.com/Keynodex/cleanping/`
+  (otherwise the standard releases page is shown), and no control character from the reply reaches your
+  terminal. An error never includes the reply.
+- It only prints. It downloads, installs, runs and changes nothing, and opens no file or database.
+  Installing the update for you is planned and will ask first.
+
 ## Network rules
 
 - API addresses must be `https://`. `http://` is accepted only for `localhost`, `127.0.0.1` and `::1`.
 - HTTP redirects are never followed, so a key and your text cannot be forwarded to another host.
 - Error messages never include the server's response body.
-- `HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY` and `NO_PROXY` are honored for remote providers. Only `http://`
+- `HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY` and `NO_PROXY` are honored for remote providers and for
+  `cleanping update`. Only `http://`
   and `https://` proxies are supported. If one of these variables is set to anything else (for example a
   `socks5://` address) or to something that does not parse, CleanPing stops and sends nothing rather than
   quietly connecting without the proxy. Local providers are always reached directly, never through a proxy.
@@ -104,6 +124,7 @@ The AI's reply is treated as untrusted.
 | A provider's reply | 1,000,000 bytes; larger replies are refused |
 | A rewrite request | Gives up after 180 seconds |
 | `cleanping keys test` | Gives up after 60 seconds |
+| `cleanping update` | Gives up after 15 seconds; a reply larger than 256 KB is refused |
 | Asking a local server what it has | Gives up after 3 seconds |
 | Shell key reply | At most as many lines as your text, at most twice its length plus 80 characters, and no run of more than 8 spaces or tabs (unless your text had one) |
 

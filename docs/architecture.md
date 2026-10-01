@@ -18,8 +18,8 @@ cleanping-core   the library, in three layers whose dependencies point inward
 | Layer | Owns | Must not own |
 |---|---|---|
 | `domain` | Rules and data: what a key or a run is, address rules, the secret check, the reply-shape rule, word diffs, prompt and provider presets | HTTP, files, SQL, the terminal |
-| `application` | Use cases, and the **ports** (traits) they need: `Rewriter`, `SecretStore`, `CredentialRepository`, `RunRepository`, `PromptRepository`, `StateRepository` | Concrete storage or network code |
-| `infrastructure` | Adapters that implement the ports: SQLite repositories, the JSON key file, the HTTP rewriter (`ureq`), the Ollama probe, paths, the clock, proxy settings | Product rules |
+| `application` | Use cases, and the **ports** (traits) they need: `Rewriter`, `SecretStore`, `CredentialRepository`, `RunRepository`, `PromptRepository`, `StateRepository`, `ReleaseSource` | Concrete storage or network code |
+| `infrastructure` | Adapters that implement the ports: SQLite repositories, the JSON key file, the HTTP rewriter (`ureq`), the Ollama probe, the GitHub release check, paths, the clock, proxy settings | Product rules |
 | `cleanping-cli` | Turning arguments and keystrokes into use-case calls, and results into text on a screen | Business rules, SQL |
 
 Fakes for the ports live in `application/test_support.rs`, so use cases are tested without a database or a
@@ -35,9 +35,11 @@ network.
 | `domain/secret_scan.rs`, `shape.rs`, `sanitize.rs` | The "looks like a secret" check, the "reply must look like the text" rule, and cleaning of replies |
 | `domain/diff.rs` | The word diff behind the highlighting (`Diff::changed_ranges`) |
 | `domain/providers.rs`, `prompt_presets.rs`, `local_server.rs` | Provider and prompt presets, and what to suggest for a local model that is not ready |
+| `domain/release.rs`, `update_source.rs` | Release versions (`vX.Y.Z`) and how they compare; which address the update check asks and which release page may be shown |
 | `application/polisher.rs` | The rewrite use case (`PolishText`) |
 | `application/credentials.rs`, `prompts.rs`, `history.rs`, `app_state.rs`, `connection_check.rs` | The other use cases |
-| `infrastructure/http_rewriter.rs`, `ollama.rs`, `proxy_env.rs` | Everything that touches the network |
+| `application/update_check.rs`, `update_text.rs` | The update check (`UpdateCheck`, through the `ReleaseSource` port) and the words it prints for a given system |
+| `infrastructure/http_rewriter.rs`, `ollama.rs`, `github_releases.rs`, `proxy_env.rs` | Everything that touches the network |
 | `infrastructure/sqlite_db.rs`, `sqlite_repositories*`, `secrets_file.rs`, `private_fs.rs`, `paths.rs` | Everything that touches disk |
 
 `crates/cleanping-cli/src`
@@ -45,7 +47,7 @@ network.
 | Module | What it holds |
 |---|---|
 | `args.rs`, `main.rs`, `services.rs`, `exit.rs`, `output.rs` | The command line (clap), the wiring of services, the exit codes, and stdout that treats a closed pipe as normal |
-| `rewrite.rs`, `keys.rs`, `prompt.rs`, `history.rs`, `connection.rs`, `init.rs` | One module per command |
+| `rewrite.rs`, `keys.rs`, `prompt.rs`, `history.rs`, `connection.rs`, `init.rs`, `update.rs` | One module per command |
 | `guard.rs`, `marks.rs`, `hints.rs`, `no_history.rs` | The secret refusal, the hidden `--marks` output, copy-pasteable commands for error messages, and the "never save this" switch |
 | `secret_input.rs` | The hidden key prompt (raw mode on `/dev/tty`, one star per character) |
 | `edit/` | `cleanping edit`: `view`, `layout` and `wrap` are pure (state and keys in, styled lines out); `terminal` is the only file that touches the terminal; `session` is the key and reply loop; `job` runs the request in the background; `file` reads and writes the host's temp file |

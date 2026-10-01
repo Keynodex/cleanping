@@ -38,6 +38,14 @@ cargo install --git https://github.com/Keynodex/cleanping cleanping-cli --locked
 
 This installs a `cleanping` binary into `~/.cargo/bin`. An `npm` package is planned.
 
+## Update
+
+```sh
+cleanping update
+```
+
+This asks GitHub for the newest release and says whether you have it. If a newer one exists, it prints the release page and the commands to install it (on a Mac, the three commands above for your Mac's archive; elsewhere, a pointer to this section). It only checks: nothing is downloaded or changed, and installing the update for you is planned for a later version. CleanPing contacts GitHub only when you run this command, never by itself, and sends nothing but its version (see [Privacy and safety](docs/privacy-and-safety.md#checking-for-updates)).
+
 ## First run
 
 **The quickest way** is the guided setup:
@@ -84,7 +92,7 @@ echo "plz fix teh login pgae" | cleanping
 cleanping --copy "rough text"      # also copies to the clipboard (wl-copy, xclip, xsel or pbcopy)
 ```
 
-Text that starts with a word that is also a command (`keys`, `prompt`, `history`, `edit`, `setup`, `writer`, `init`) can be passed after `--`, or piped in. Any other text, including `help me fix this`, is rewritten as it is.
+Text that starts with a word that is also a command (`keys`, `prompt`, `history`, `edit`, `setup`, `writer`, `update`, `init`) can be passed after `--`, or piped in. Any other text, including `help me fix this`, is rewritten as it is.
 
 If you have several keys, pick one with `cleanping keys use NAME` or `-c NAME`. CleanPing never guesses between keys, so your text cannot go to a provider you did not choose. With a single saved key it just uses it.
 

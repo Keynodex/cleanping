@@ -172,3 +172,15 @@ fn text_that_starts_with_update_needs_a_double_dash() {
         "nothing more was sent"
     );
 }
+
+#[test]
+fn the_help_names_update_as_a_command_word() {
+    let out = Sandbox::new().run(&["--help"], None);
+    assert_eq!(out.code, 0);
+    assert!(
+        out.stdout.contains("cleanping -- update the docs"),
+        "{}",
+        out.stdout
+    );
+    assert!(out.stdout.contains("  update "), "{}", out.stdout);
+}
