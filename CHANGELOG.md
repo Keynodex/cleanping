@@ -38,6 +38,10 @@ behavior, and the notes below say when it does.
   are real. The line is erased before the result or an error, never goes to stdout, and is not shown in
   pipes, scripts or the shell key. `CLEANPING_PROGRESS=off` hides it, `NO_COLOR` drops the green, and a
   terminal that is not UTF-8 gets ASCII. See [Command reference](docs/commands.md#rewrite-text).
+- **The progress bar's timing guess now matches a fast provider**: about 1 second plus 0.9 seconds per
+  kilobyte of text, from timings measured with DeepSeek flash (thinking off). Before, it guessed a slow
+  provider, so a quick rewrite finished while the bar showed under 20%. It is still an estimate: with a
+  slower provider (a thinking model, a local model) the bar waits longer at 95%.
 
 - A Mac installer on every release. Download `install-cleanping-mac.sh` from the latest release and run it
   with `sh install-cleanping-mac.sh`. It picks the build for your Mac and checks its SHA-256 checksum,
