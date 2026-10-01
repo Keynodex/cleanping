@@ -38,6 +38,16 @@ fn preset_for_finds_by_label_and_misses_unknown() {
 }
 
 #[test]
+fn deepseek_suggests_the_model_name_deepseek_documents_as_current() {
+    let deepseek = preset_for("DeepSeek").expect("DeepSeek preset");
+    assert_eq!(
+        deepseek.api_url,
+        "https://api.deepseek.com/v1/chat/completions"
+    );
+    assert_eq!(deepseek.default_model, "deepseek-flash");
+}
+
+#[test]
 fn custom_preset_has_no_url_and_never_matches_an_empty_url_by_accident() {
     let custom = preset_for("Custom").expect("Custom preset");
     assert_eq!(custom.api_url, "");

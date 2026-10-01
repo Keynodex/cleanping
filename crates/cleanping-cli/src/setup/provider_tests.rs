@@ -40,7 +40,7 @@ fn a_remote_provider_is_saved_with_a_hidden_key_and_selected() {
         saved.api_url,
         "https://api.deepseek.com/v1/chat/completions"
     );
-    assert_eq!(saved.model, "deepseek-chat");
+    assert_eq!(saved.model, "deepseek-flash");
     assert_eq!(stored_key(&services, "DeepSeek").as_deref(), Some(KEY));
     assert_eq!(services.state.selected_credential_id().unwrap(), saved.id);
     assert!(
