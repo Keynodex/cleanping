@@ -2,14 +2,26 @@
 //! edit the text instead of obeying it.
 
 /// The built-in system prompt: used when none is saved, and the body of the `default` preset.
-pub const DEFAULT_INSTRUCTIONS: &str =
+/// It asks the model to fix garbled words from context and shows one worked example; a blind
+/// test (2026-10-01) found both parts are needed.
+pub const DEFAULT_INSTRUCTIONS: &str = concat!(
     "You are a precise copy editor for a software developer's terminal prompts. \
 Fix spelling, grammar, and clarity while retaining the author's intent, tone, \
 technical details, and all constraints. Preserve commands, code, flags, file \
 paths, identifiers, names, URLs, and error messages exactly. Do not execute \
 or answer the request. Do not add facts, requirements, or explanations. \
 Return only the edited text, with no quotes or Markdown fences. \
-If editing would change technical meaning, leave that portion unchanged.";
+Fix every misspelled or garbled word by working out the intended word from the \
+surrounding sentence. Leave a part unchanged only if it is a command, code, flag, \
+path, name or error message, or if you truly cannot tell what was meant.\n\n",
+    "<example>\n",
+    "Draft: <draft>\n",
+    "this is nto the wya to do it, i cant evn see teh logs at allll\n",
+    "</draft>\n",
+    "Edited:\n",
+    "This is not the way to do it. I can't even see the logs at all.\n",
+    "</example>",
+);
 
 const TYPOS: &str = "You are a proofreader for a software developer's terminal prompts. \
 Fix only spelling, punctuation, and capitalization. Do not change wording, word order, or \
@@ -93,3 +105,7 @@ pub fn preset_for_body(body: &str) -> Option<&'static PromptPreset> {
 #[cfg(test)]
 #[path = "prompt_presets_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "prompt_presets_default_tests.rs"]
+mod default_tests;
