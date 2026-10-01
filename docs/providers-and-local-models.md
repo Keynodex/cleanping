@@ -110,6 +110,13 @@ reply may be. With a long text, such a model can run out of room before the rewr
 provider says it stopped at that limit, CleanPing refuses the reply instead of using part of a rewrite, and
 your text stays as it was ([what to do](troubleshooting.md#the-provider)).
 
+**DeepSeek flash models think by default; CleanPing turns that off.** For a key whose address is
+`api.deepseek.com` and whose model name starts with `deepseek-flash`, every request asks the model not to
+think (`"thinking": {"type": "disabled"}`). Rewriting does not need it: in a test on 2026-10-01, thinking
+took 13 to 44 seconds on a long text and sometimes ran out of room, while the same job without it took
+about 5 seconds. Other DeepSeek models (such as `deepseek-chat`), other addresses and other
+providers get nothing extra. This is not configurable yet.
+
 ## Limits
 
 A reply larger than 1 MB is refused, and input above 200,000 bytes is refused before anything is sent.

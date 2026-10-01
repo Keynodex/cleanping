@@ -35,9 +35,11 @@ network.
 | `domain/secret_scan.rs`, `shape.rs`, `sanitize.rs` | The "looks like a secret" check, the "reply must look like the text" rule, and cleaning of replies |
 | `domain/diff.rs` | The word diff behind the highlighting (`Diff::changed_ranges`) |
 | `domain/providers.rs`, `prompt_presets.rs`, `local_server.rs` | Provider and prompt presets, and what to suggest for a local model that is not ready |
+| `domain/draft_frame.rs`, `provider_extras.rs` | How the draft is marked off in a request (`<draft>` tags, the fixed sentence, removing echoed tags), and the settings one provider and model get (DeepSeek flash: thinking off) |
 | `application/polisher.rs` | The rewrite use case (`PolishText`) |
 | `application/credentials.rs`, `prompts.rs`, `history.rs`, `app_state.rs`, `connection_check.rs` | The other use cases |
 | `infrastructure/http_rewriter.rs`, `ollama.rs`, `proxy_env.rs` | Everything that touches the network |
+| `infrastructure/chat_request.rs`, `chat_reply.rs` | The request body the HTTP adapter sends (framed draft, provider extras) and how it reads the reply |
 | `infrastructure/sqlite_db.rs`, `sqlite_repositories*`, `secrets_file.rs`, `private_fs.rs`, `paths.rs` | Everything that touches disk |
 
 `crates/cleanping-cli/src`
@@ -61,9 +63,12 @@ network.
 2. With `--refuse-secrets`, `guard.rs` asks `domain::secret_scan` first and stops before anything is sent.
 3. `CredentialService` picks the key (never guessing between several) and the `PromptService` supplies the
    system prompt.
-4. `PolishText` reads the key from the `SecretStore` and calls the `Rewriter` port. The HTTP adapter sends
-   the request without following redirects, caps the reply at 1 MB, and cleans the reply (`clean_reply` in
-   `domain/sanitize.rs`: control, direction-override and invisible characters are removed).
+4. `PolishText` reads the key from the `SecretStore` and calls the `Rewriter` port. The HTTP adapter frames
+   the draft (`infrastructure/chat_request.rs`: `<draft>` tags and a fixed sentence after the prompt, plus
+   any provider extra), sends the request without following redirects, caps the reply at 1 MB, and cleans
+   the reply (`clean_reply` in `domain/sanitize.rs`: control, direction-override and invisible characters
+   are removed), then removes tags the model echoed. The framing stays inside the adapter: the use case,
+   the history and the guards see the text and prompt as given.
 5. With `--keep-shape`, a reply that does not pass the shape rule counts as a failure. Either way the
    attempt is recorded through `RunRepository`, failures included (with the error message), unless
    `--no-history` swaps in a repository that saves nothing (`no_history.rs`).
