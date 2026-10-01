@@ -16,7 +16,7 @@ pub const PROVIDER_PRESETS: &[ProviderPreset] = &[
     ProviderPreset {
         label: "DeepSeek",
         api_url: "https://api.deepseek.com/v1/chat/completions",
-        default_model: "deepseek-chat",
+        default_model: "deepseek-flash",
     },
     ProviderPreset {
         label: "OpenAI",

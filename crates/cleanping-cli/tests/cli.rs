@@ -185,7 +185,7 @@ fn the_system_prompt_can_be_shown_and_changed() {
         .contains("precise copy editor"));
     assert_eq!(sandbox.run(&["prompt", "set", "Be terse."], None).code, 0);
     sandbox.run(&["hello"], None);
-    assert_eq!(server.system_text(0), "Be terse.");
+    assert_eq!(server.saved_prompt(0), "Be terse.");
 }
 
 #[test]
