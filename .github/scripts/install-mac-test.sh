@@ -65,17 +65,34 @@ release v9.9.7 good
 release v9.9.8 bad
 release v9.9.5 broken
 
-python3 -u -m http.server 0 --bind 127.0.0.1 --directory "$scratch/www" \
+# Pick a free port here instead of reading it from the server's log (whose wording and buffering
+# vary), start the server on it, and wait until it answers a real request.
+server_fail() {
+  printf -- '--- server log (%s, %s) ---\n' "$(command -v python3)" "$(python3 --version 2>&1)" >&2
+  cat "$scratch/server.log" >&2 || true
+  fail "$1"
+}
+port=$(python3 -c 'import socket
+s = socket.socket()
+s.bind(("127.0.0.1", 0))
+print(s.getsockname()[1])
+s.close()') || fail 'could not pick a free port'
+case $port in '' | *[!0-9]*) fail "could not pick a free port: '$port'" ;; esac
+base="http://127.0.0.1:$port"
+python3 -u -m http.server "$port" --bind 127.0.0.1 --directory "$scratch/www" \
   > "$scratch/server.log" 2>&1 &
 server_pid=$!
-port=''
-for _ in $(seq 1 100); do
-  port=$(sed -n 's/.* port \([0-9][0-9]*\) .*/\1/p' "$scratch/server.log" | head -n 1)
-  [ -z "$port" ] || break
+ready=''
+for _ in $(seq 1 300); do
+  kill -0 "$server_pid" 2>/dev/null || server_fail 'the local test server exited'
+  if curl -fsS --noproxy '*' -o /dev/null --max-time 2 "$base/v9.9.9/cleanping-v9.9.9-$target.tar.gz.sha256" \
+    2>/dev/null; then
+    ready=1
+    break
+  fi
   sleep 0.1
 done
-[ -n "$port" ] || fail 'the local test server did not start'
-base="http://127.0.0.1:$port"
+[ -n "$ready" ] || server_fail 'the local test server did not answer within 30 seconds'
 
 # run SCRIPT HOME [VAR=value...]: a clean environment, so nothing from the caller leaks in.
 run() {
