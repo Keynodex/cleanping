@@ -15,6 +15,9 @@ If editing would change technical meaning, leave that portion unchanged.";
 
 const NEW_SENTENCE: &str = "Fix every misspelled or garbled word";
 
+const UPDATE_HINT: &str = "\nYou have an earlier version of default. \
+Get the current one with: cleanping prompt use default\n";
+
 fn marked(listed: &str) -> Vec<&str> {
     listed.lines().filter(|l| l.starts_with('*')).collect()
 }
@@ -42,6 +45,18 @@ fn the_earlier_default_is_marked_as_default() {
     let marked = marked(&listed.stdout);
     assert_eq!(marked.len(), 1, "{}", listed.stdout);
     assert!(marked[0].starts_with("* default "), "{}", listed.stdout);
+    assert!(
+        listed.stdout.ends_with(UPDATE_HINT),
+        "no hint in: {}",
+        listed.stdout
+    );
+}
+
+#[test]
+fn the_current_default_gets_no_hint() {
+    let listed = Sandbox::new().run(&["prompt", "presets"], None).stdout;
+    assert!(marked(&listed)[0].starts_with("* default "), "{listed}");
+    assert!(!listed.contains("earlier version"), "{listed}");
 }
 
 #[test]

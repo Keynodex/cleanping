@@ -67,3 +67,11 @@ fn every_earlier_text_names_a_preset_and_differs_from_every_current_text() {
         assert!(PROMPT_PRESETS.iter().all(|p| p.body != *text), "{name}");
     }
 }
+
+#[test]
+fn only_an_earlier_text_counts_as_earlier() {
+    assert!(is_earlier_text(&earlier_default()));
+    assert!(is_earlier_text(&format!("  {}\n", earlier_default())));
+    assert!(!is_earlier_text(DEFAULT_INSTRUCTIONS));
+    assert!(!is_earlier_text("Answer like a pirate."));
+}

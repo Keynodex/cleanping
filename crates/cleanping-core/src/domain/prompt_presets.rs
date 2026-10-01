@@ -125,6 +125,13 @@ pub fn preset_for_body(body: &str) -> Option<&'static PromptPreset> {
         })
 }
 
+/// Whether this saved prompt is an earlier text of a preset (ignoring blanks at the ends), so
+/// choosing that preset again would bring it up to date.
+pub fn is_earlier_text(body: &str) -> bool {
+    let wanted = body.trim();
+    EARLIER_BODIES.iter().any(|(_, text)| *text == wanted)
+}
+
 #[cfg(test)]
 #[path = "prompt_presets_tests.rs"]
 mod tests;
