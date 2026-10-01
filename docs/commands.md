@@ -48,6 +48,20 @@ go to a provider you did not pick.
 
 Input is limited to 200,000 bytes and is checked before any request is made.
 
+**While it waits.** A long text can take the AI a while. When a rewrite takes more than 1.5 seconds and
+stderr is a terminal, a line on stderr shows how it is going:
+
+```console
+Fixing your text… ▰▰▰▰▰▰▰▰▱▱▱▱▱▱▱▱▱▱▱▱ about 40% 12s
+```
+
+The provider answers all at once, so the percent is an **estimate** from the length of your text and the
+time waited; it stops at 95% until the reply arrives. The seconds are real. The line is erased before the
+result or an error is printed, and nothing of it goes to stdout. It is not shown when stderr is a pipe or
+a file (scripts, the [shell key](shell-key.md)) or with `CLEANPING_PROGRESS=off`. The filled blocks are
+green unless `NO_COLOR` is set; with a locale that is not UTF-8 or `TERM=dumb` the line is plain ASCII
+(`[########............]`).
+
 **A changed command is a warning.** When the reply changes a command in your text (a quote closed or
 opened, a flag dropped or added, a path or URL changed), each change is printed on stderr and the reply is
 still printed, with the usual exit code:
@@ -79,6 +93,10 @@ Claude Code and Codex open it with Ctrl+G. The full guide is
 
 When the edit changes a command in your text, the screen says `Check the command: ...` under the title
 (Enter still accepts it), and `--yes` prints the same as a `cleanping: warning:` line on stderr.
+
+While the edit is on its way, after 1.5 seconds the screen shows the same
+[estimate](#rewrite-text) under the title: a green bar and `about 40% 12s`. `--yes` in a terminal shows
+the line on stderr and erases it before anything else is printed.
 
 On the screen, a failed edit exits `0` with the file untouched, so the app that opened it keeps your text.
 With `--yes` the normal [exit codes](#exit-codes) apply. Options go before the file (that is how the apps
@@ -221,6 +239,9 @@ keeps your text.
 | `HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY`, `NO_PROXY` | Proxy for remote providers and for `cleanping update`. A proxy that is set but unusable is an error, never a silent direct connection. Local addresses are always reached directly |
 | `CLEANPING_KEYBIND` | The shell key. Set it before the `eval` line |
 | `CLEANPING_HIGHLIGHT` | zsh only: the style for changed words (default `standout`; empty turns it off) |
+| `CLEANPING_PROGRESS` | `off` (or `0`) hides the [progress line](#rewrite-text) shown on stderr while a slow rewrite waits |
+| `NO_COLOR` | Any value that is not empty: the progress line is drawn without color |
+| `LC_ALL`, `LC_CTYPE`, `LANG`, `TERM` | The first locale variable that is set decides the progress line's characters: `▰▱` for UTF-8, ASCII otherwise and with `TERM=dumb` |
 | `VISUAL` | Read by Claude Code and Codex, not by CleanPing: `export VISUAL="cleanping edit"` |
 | `SHELL` | `cleanping setup` uses it to show the right profile file |
 | `PATH` | Searched for the `ollama` program, to tell "not installed" from "not running" when a local server does not answer |

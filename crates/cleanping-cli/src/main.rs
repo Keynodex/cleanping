@@ -15,6 +15,7 @@ mod keys;
 mod marks;
 mod no_history;
 mod output;
+mod progress;
 mod prompt;
 mod rewrite;
 mod secret_input;

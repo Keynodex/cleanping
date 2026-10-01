@@ -1,6 +1,8 @@
 //! What the edit screen shows and how keys act on it. Pure: no terminal, no network, so every
 //! state can be tested by looking at plain lines.
 
+use std::time::Duration;
+
 use cleanping_core::domain::diff::Diff;
 
 /// How a piece of text is drawn; the terminal layer maps these to colors.
@@ -69,6 +71,8 @@ pub struct View {
     pub provider: String,
     pub phase: Phase,
     pub scroll: usize,
+    /// How long the reply has been awaited; the estimate shows once it is long enough.
+    pub waited: Duration,
 }
 
 impl View {
@@ -78,6 +82,7 @@ impl View {
             provider,
             phase,
             scroll: 0,
+            waited: Duration::ZERO,
         }
     }
 

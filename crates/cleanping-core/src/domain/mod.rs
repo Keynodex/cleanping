@@ -9,6 +9,7 @@ pub mod draft_frame;
 pub mod errors;
 pub mod local_server;
 pub mod models;
+pub mod progress;
 pub mod prompt_presets;
 pub mod provider_extras;
 pub mod providers;

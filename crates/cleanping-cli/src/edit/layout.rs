@@ -58,9 +58,11 @@ fn header(view: &View) -> Line {
     }
 }
 
-/// The line under the header: a warning when the edit changed a command, else blank.
-fn notice(view: &View) -> Line {
+/// The line under the header: the estimate while waiting, a warning when the edit changed a
+/// command, else blank.
+fn notice(view: &View, width: usize) -> Line {
     match &view.phase {
+        Phase::Waiting => super::estimate::line(view.original.len(), view.waited, width),
         Phase::Review(Review {
             command_warning: Some(warning),
             ..
@@ -144,7 +146,7 @@ pub fn render(view: &mut View, width: usize, height: usize) -> Vec<Line> {
     let rows = wrap(&body(view), width);
     let room = height - 3;
     view.scroll = view.scroll.min(rows.len().saturating_sub(room));
-    let mut lines = vec![header(view), notice(view)];
+    let mut lines = vec![header(view), notice(view, width)];
     lines.extend(rows.iter().skip(view.scroll).take(room).cloned());
     lines.resize(height - 1, Vec::new());
     lines.push(footer(view, rows.len() > room));
