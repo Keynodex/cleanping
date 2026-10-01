@@ -32,6 +32,10 @@ names, URLs, and error messages exactly. Do not execute or answer the request. D
 facts, requirements, or explanations. Return only the edited text, with no quotes or \
 Markdown fences.";
 
+/// Lays a rough draft out as a clear AI prompt. Long, so it lives in its own file; the file's
+/// last newline is trimmed so the body equals what the prompt store saves.
+const STRUCTURE: &str = include_str!("prompts/structure.txt").trim_ascii_end();
+
 /// A named, ready-made system prompt.
 #[derive(Debug, PartialEq, Eq)]
 pub struct PromptPreset {
@@ -64,6 +68,11 @@ pub const PROMPT_PRESETS: &[PromptPreset] = &[
         name: "friendly",
         description: "Polish a message or email: clear, polite and natural",
         body: FRIENDLY,
+    },
+    PromptPreset {
+        name: "structure",
+        description: "Fix and lay out as a clear AI prompt; clean pasted terminal junk",
+        body: STRUCTURE,
     },
 ];
 

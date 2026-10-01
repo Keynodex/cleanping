@@ -14,6 +14,20 @@ behavior, and the notes below say when it does.
   exits `1` with nothing on stdout, the shell key and `edit` leave your text as it was, and the message
   says what to try ([troubleshooting](docs/troubleshooting.md#the-provider)).
 
+### Added
+
+- A `structure` system prompt: after `cleanping prompt use structure`, rewrites ask the AI to fix a draft,
+  lay it out as a clear prompt for an AI and clean junk out of pasted terminal text. Best with
+  `cleanping edit` (Ctrl+G); see
+  [System prompts](docs/system-prompts.md#structure-lay-a-draft-out-as-a-prompt-for-an-ai).
+
+### Changed
+
+- The DeepSeek preset now uses the model `deepseek-flash`, the name DeepSeek lists as current, instead
+  of `deepseek-chat`. Keys saved earlier keep their model. To switch one, run
+  `cleanping keys add --provider DeepSeek --name DeepSeek --model deepseek-flash` and press Enter at the
+  key prompt to keep the saved key. Choosing DeepSeek again in `cleanping setup` also switches it.
+
 ## [0.4.0] - 2026-09-30
 
 ### Added
