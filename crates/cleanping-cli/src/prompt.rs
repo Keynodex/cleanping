@@ -1,7 +1,9 @@
 //! `cleanping prompt ...`: the system prompt sent with every rewrite.
 
 use cleanping_core::domain::errors::{CleanpingError, Result};
-use cleanping_core::domain::prompt_presets::{preset_for_body, preset_named, PROMPT_PRESETS};
+use cleanping_core::domain::prompt_presets::{
+    is_earlier_text, preset_for_body, preset_named, PROMPT_PRESETS,
+};
 
 use crate::args::PromptAction;
 use crate::input;
@@ -30,7 +32,8 @@ pub fn run(services: &Services, action: &PromptAction) -> Result<()> {
 }
 
 fn list_presets(services: &Services) -> Result<()> {
-    let current = preset_for_body(&services.prompts.current()?);
+    let saved = services.prompts.current()?;
+    let current = preset_for_body(&saved);
     for preset in PROMPT_PRESETS {
         let marker = if current == Some(preset) { "*" } else { " " };
         output::line(&format!(
@@ -38,7 +41,13 @@ fn list_presets(services: &Services) -> Result<()> {
             preset.name, preset.description
         ))?;
     }
-    Ok(())
+    match current {
+        Some(preset) if is_earlier_text(&saved) => output::line(&format!(
+            "\nYou have an earlier version of {0}. Get the current one with: cleanping prompt use {0}",
+            preset.name
+        )),
+        _ => Ok(()),
+    }
 }
 
 fn use_preset(services: &Services, name: &str, yes: bool) -> Result<()> {

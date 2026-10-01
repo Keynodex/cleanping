@@ -103,8 +103,38 @@ This is the text of `default`:
 > clarity while retaining the author's intent, tone, technical details, and all constraints. Preserve
 > commands, code, flags, file paths, identifiers, names, URLs, and error messages exactly. Do not execute
 > or answer the request. Do not add facts, requirements, or explanations. Return only the edited text,
-> with no quotes or Markdown fences. If editing would change technical meaning, leave that portion
-> unchanged.
+> with no quotes or Markdown fences. Fix every misspelled or garbled word by working out the intended
+> word from the surrounding sentence. Leave a part unchanged only if it is a command, code, flag, path,
+> name or error message, or if you truly cannot tell what was meant.
+
+followed by a blank line and one worked example:
+
+```text
+<example>
+Draft: <draft>
+this is nto the wya to do it, i cant evn see teh logs at allll
+</draft>
+Edited:
+This is not the way to do it. I can't even see the logs at all.
+</example>
+```
+
+The default asks the AI to fix garbled words and carries this one example. Its earlier text ended with
+"If editing would change technical meaning, leave that portion unchanged.", and with it the AI left a
+garbled sentence such as "sdf is now evn the way to do I dwnt se the profes bar at allll" unchanged. In a
+blind test on 38 texts, the new sentence with the example fixed more typos than the earlier text, while
+keeping the rules; the new sentence without the example did worse, so `default` has both.
+
+**If you chose `default` before this change,** you still have its earlier text saved, and it stays until
+you choose again. `cleanping prompt presets` marks it as `default` and ends with a line saying it is an
+earlier version, and `cleanping setup` shows `(now, earlier version)` next to it. To switch:
+
+```sh
+cleanping prompt use default
+```
+
+It needs no `--yes`, because the earlier text is CleanPing's, not one you wrote. If you never chose a
+prompt, nothing is saved and you already get the new default.
 
 ## Where it is stored
 

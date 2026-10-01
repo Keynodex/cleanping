@@ -111,3 +111,36 @@ fn the_structure_prompt_is_a_numbered_choice_after_friendly() {
     assert_eq!(services.prompts.current().unwrap(), body("structure"));
     assert!(said.contains("\u{201c}structure\u{201d} preset"), "{said}");
 }
+
+/// The `default` text before 2026-10-01: the current opening, then the sentence it ended with.
+fn earlier_default() -> String {
+    let opening = body("default")
+        .split(" Fix every misspelled")
+        .next()
+        .unwrap();
+    format!("{opening} If editing would change technical meaning, leave that portion unchanged.")
+}
+
+#[test]
+fn choosing_default_replaces_the_earlier_default_without_asking() {
+    let (_dir, services) = temp_services();
+    services.prompts.save(&earlier_default()).unwrap();
+    let mut console = ScriptedConsole::new(&[&number("default")]);
+    run(&mut console, &services).unwrap();
+    assert_eq!(services.prompts.current().unwrap(), body("default"));
+    assert_eq!(console.questions.len(), 1, "{:?}", console.questions);
+}
+
+#[test]
+fn the_earlier_default_is_marked_as_an_earlier_version_and_enter_keeps_it() {
+    let (_dir, services) = temp_services();
+    services.prompts.save(&earlier_default()).unwrap();
+    let mut console = ScriptedConsole::new(&[""]);
+    run(&mut console, &services).unwrap();
+    assert_eq!(services.prompts.current().unwrap(), earlier_default());
+    let said = console.said_text();
+    let marked: Vec<&str> = said.lines().filter(|l| l.contains("(now")).collect();
+    assert_eq!(marked.len(), 1, "{said}");
+    assert!(marked[0].contains("default"), "{said}");
+    assert!(marked[0].ends_with("(now, earlier version)"), "{said}");
+}

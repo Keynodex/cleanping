@@ -1,7 +1,7 @@
 //! Step 2: choose how the AI should edit the text.
 
 use cleanping_core::domain::errors::Result;
-use cleanping_core::domain::prompt_presets::{preset_for_body, PROMPT_PRESETS};
+use cleanping_core::domain::prompt_presets::{is_earlier_text, preset_for_body, PROMPT_PRESETS};
 
 use super::ask::{choose, confirm};
 use super::console::Console;
@@ -10,10 +10,15 @@ use crate::services::Services;
 pub fn run(console: &mut dyn Console, services: &Services) -> Result<()> {
     let current = services.prompts.current()?;
     let in_use = preset_for_body(&current);
+    let now_mark = if is_earlier_text(&current) {
+        " (now, earlier version)"
+    } else {
+        " (now)"
+    };
     let mut options: Vec<String> = PROMPT_PRESETS
         .iter()
         .map(|preset| {
-            let now = if in_use == Some(preset) { " (now)" } else { "" };
+            let now = if in_use == Some(preset) { now_mark } else { "" };
             format!("{:<9} {}{now}", preset.name, preset.description)
         })
         .collect();
