@@ -7,6 +7,19 @@ behavior, and the notes below say when it does.
 
 ## [Unreleased]
 
+### Changed
+
+- **Your text now goes to the AI inside `<draft>` tags, with a fixed sentence after your system prompt**
+  saying to edit only that text and never answer it, carry it out or translate it. In a blind test this
+  stopped models from answering a text instead of editing it, for every provider tried. Tags the AI copies
+  into its reply are removed. Your saved prompt and the history are unchanged, and a text that itself
+  contains `<draft>` or `</draft>` is sent as before
+  ([what CleanPing adds](docs/system-prompts.md#what-cleanping-adds-to-every-request)).
+- **DeepSeek flash models no longer think before they rewrite.** For `deepseek-flash` models on
+  `api.deepseek.com`, CleanPing turns thinking off: the same rewrite went from 13 to 44 seconds to about 5,
+  without running out of room. Other models and providers are unchanged, and this is not configurable yet
+  ([providers](docs/providers-and-local-models.md#models-that-think-before-they-answer)).
+
 ### Fixed
 
 - **A reply the provider cut off at its length limit is refused**, instead of being used as if it were the
