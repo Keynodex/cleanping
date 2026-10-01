@@ -25,6 +25,9 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y zsh
       - name: Test release notes
         run: bash .github/scripts/release-notes-test.sh
+      # Serves fake releases on 127.0.0.1 only; nothing is downloaded from the internet.
+      - name: Test the Mac installer
+        run: bash .github/scripts/install-mac-test.sh
       - run: cargo fmt --all -- --check
       - run: cargo clippy --workspace --all-targets --locked -- -D warnings
       - run: cargo test --workspace --locked
