@@ -8,7 +8,9 @@ pub fn code_for(error: &CleanpingError) -> i32 {
     match error {
         CleanpingError::Validation(_) => 2,
         CleanpingError::MissingCredential(_) | CleanpingError::NotFound(_) => 3,
-        CleanpingError::Rewrite(_) | CleanpingError::Storage(_) => 1,
+        CleanpingError::Rewrite(_)
+        | CleanpingError::Storage(_)
+        | CleanpingError::UpdateCheck(_) => 1,
     }
 }
 

@@ -21,6 +21,7 @@ mod rewrite;
 mod secret_input;
 mod services;
 mod setup;
+mod update;
 mod writer;
 
 use clap::Parser;
@@ -35,6 +36,8 @@ fn execute(cli: &Cli) -> Result<()> {
         Some(Command::Init { shell }) => output::write(init::script(*shell)),
         Some(Command::Edit(args)) => edit::run(&Services::open()?, args),
         Some(Command::Writer) => writer::run().map(|never| match never {}),
+        // Only checks: no database, no files. `--check` is today's only behavior.
+        Some(Command::Update(_)) => update::run(),
         Some(Command::Setup) => setup::run(&Services::open()?),
         Some(Command::Keys { action }) => keys::run(&Services::open()?, action),
         Some(Command::Prompt { action }) => prompt::run(&Services::open()?, action),

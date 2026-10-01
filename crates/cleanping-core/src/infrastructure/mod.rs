@@ -5,6 +5,7 @@ mod chat_request;
 pub mod clock;
 #[cfg(test)]
 mod fake_api;
+pub mod github_releases;
 pub mod http_rewriter;
 pub mod ollama;
 pub mod paths;

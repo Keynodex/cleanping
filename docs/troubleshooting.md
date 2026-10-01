@@ -64,6 +64,19 @@ For a local Ollama it also says whether to install it, start it, or download the
 | The edit screen says **Check the command: ...** | The edit [changed a command](privacy-and-safety.md#a-reply-that-changes-a-command) in your text, for example closed a quote. Press O to compare with your original; Enter still accepts the edit, N keeps your text |
 | The edit screen says **Could not edit** | The reason is shown on the screen and your text is unchanged. Any key returns you to the app |
 
+## Checking for updates
+
+| Message | What it means and what to do |
+|---|---|
+| `Could not check for updates: GitHub could not be reached. Check your connection and try again.` [1] | No connection to `api.github.com`: network down, a firewall, or a proxy in the way |
+| `Could not check for updates: GitHub did not answer within 15 seconds.` [1] | The connection is slow or blocked. Try again later |
+| `Could not check for updates: GitHub answered with HTTP 403.` (or another code) [1] | GitHub refused the request. Unsigned requests are limited per hour per IP address, so 403 or 429 usually clears by itself; wait and try again |
+| `Could not check for updates: GitHub redirected the request; refusing to follow it.` [1] | Something between you and GitHub sent you elsewhere. CleanPing never follows redirects |
+| `Could not check for updates: the reply from GitHub was not understood.` [1] | The reply had no plain version number such as `v0.5.0` (a pre-release tag counts as not understood). Check the [releases page](https://github.com/Keynodex/cleanping/releases) yourself |
+| `Could not check for updates: the reply from GitHub was too large.` [1] | The reply was over 256 KB, which a real one never is. Check the releases page yourself |
+| `Could not check for updates: Your proxy setting NAME cannot be used ...` [1] | As for a provider: fix or unset that proxy variable. Nothing was sent |
+| `CleanPing X is newer than the latest release (Y), so this is a development build.` [0] | You built CleanPing from newer source than the last release. Nothing to do |
+
 ## Still stuck?
 
 `cleanping COMMAND --help` describes every option. If you think you have found a bug, open an issue at

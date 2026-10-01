@@ -9,6 +9,19 @@ behavior, and the notes below say when it does.
 
 ### Added
 
+- `cleanping update` tells you whether a newer CleanPing release exists and how to install it: on a Mac,
+  the two installer commands from the latest release, then the manual archive steps as the alternative;
+  elsewhere, the release page and the README install steps. It only checks and prints: nothing is downloaded, installed or changed. Installing the update for
+  you is planned. It contacts GitHub only when you run it, never by itself, and sends nothing but a
+  `User-Agent: cleanping/VERSION` header; see
+  [Privacy and safety](docs/privacy-and-safety.md#checking-for-updates). `cleanping update --check` does
+  the same and will keep doing so when installing is added.
+
+### Changed
+
+- **`update` is now a command word**, like `writer` and `edit`. Text that starts with it must be given
+  after `--` or piped in: `cleanping -- update the docs`.
+
 - **A reply that changes a command is caught.** Models asked to fix spelling often "fix" a command too,
   most often by closing a quote you left open, which hides the very bug you were asking about. CleanPing
   now compares the commands in your text with the reply: a quote closed or opened, a flag dropped or

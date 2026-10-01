@@ -40,6 +40,11 @@ Minimum Rust is 1.89 (`rust-version`, checked in CI).
   and start advice only for the standard Ollama address, port 11434); `infrastructure/ollama.rs` asks
   `GET /api/tags` on a loopback address only (no redirects, no proxy, 3 s, 1 MB). `keys test` sends fixed
   words only (`ConnectionCheck`), never the user's text, and never saves to the history.
+- `cleanping update` (`cli/src/update.rs`) only checks and prints: `domain/release.rs` (versions,
+  compare) and `domain/update_source.rs` (the address; `CLEANPING_UPDATE_URL` only for plain `http://`
+  loopback, for tests) are pure, `application/update_check.rs` + `update_text.rs` decide what to say
+  (the OS is passed in), `infrastructure/github_releases.rs` is the one GET (User-Agent only, no
+  redirects, HTTPS, 15 s, 256 KB). It runs only when asked, opens no files, and tests use a fake server.
 - `crates/cleanping-cli/src/edit` — `cleanping edit FILE` (the `$VISUAL` screen): `view` + `layout` + `wrap`
   are pure (state and keys in, styled lines out), `terminal` is crossterm on `/dev/tty` only (never
   stdin/stdout: a host app pipes them), `session` is the key/reply loop, `job` the background request

@@ -21,6 +21,9 @@ pub enum CleanpingError {
     /// A local store (database or secret file) could not be read or written.
     #[error("{0}")]
     Storage(String),
+    /// Checking for a newer release failed (safe message only, never the server's reply).
+    #[error("{0}")]
+    UpdateCheck(String),
 }
 
 /// Result type used throughout the crate.
