@@ -7,6 +7,14 @@ behavior, and the notes below say when it does.
 
 ## [Unreleased]
 
+### Added
+
+- A Mac installer on every release. Download `install-cleanping-mac.sh` from the latest release and run it
+  with `sh install-cleanping-mac.sh`. It picks the build for your Mac and checks its SHA-256 checksum,
+  installing nothing if the checksum does not match. It installs `cleanping` into `~/.local/bin` and adds
+  one `PATH` line to `~/.zshrc` if that line is not already there. It comes with its own `.sha256` file and
+  a build-provenance attestation. See [Install](README.md#install).
+
 ## [0.4.0] - 2026-09-30
 
 ### Added

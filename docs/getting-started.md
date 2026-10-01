@@ -4,8 +4,21 @@ About five minutes, from nothing to your first rewrite.
 
 ## 1. Install
 
-Follow the [Install section of the README](../README.md#install): a prebuilt binary for Linux and macOS,
-or `cargo install` from source. Then check that it runs:
+On a Mac, the easy way is the installer from the latest release. Download it first, then run it, as two
+separate steps:
+
+```sh
+curl -fsSLO https://github.com/Keynodex/cleanping/releases/latest/download/install-cleanping-mac.sh
+sh install-cleanping-mac.sh
+```
+
+It downloads the build for your Mac and checks its SHA-256 checksum. If the checksum does not match it
+installs nothing. It puts `cleanping` in `~/.local/bin` and adds one `PATH` line to `~/.zshrc` if that
+line is not already there. Open a new Terminal window afterwards so that the new line takes effect. The
+CleanPing page on keynodex.com shows the same steps.
+
+Otherwise, follow the [Install section of the README](../README.md#install): a prebuilt binary for Linux
+and macOS installed by hand, or `cargo install` from source. Then check that it runs:
 
 ```console
 $ cleanping --version

@@ -51,6 +51,10 @@ Minimum Rust is 1.89 (`rust-version`, checked in CI).
   under the data folder on every start), `launch` (PATH and the `exec` of `zsh -d -i`; `-f` would skip the
   private `.zshrc` too). It never edits the user's files. It is a guard
   against accidents, not a sandbox; `tests/writer*.rs` drive it in a terminal with a fake clipboard tool.
+- `scripts/install-cleanping-mac.sh` — the Mac installer (POSIX sh) that every release carries. Its version
+  is the placeholder `RELEASE_VERSION='@VERSION@'`, which `.github/scripts/installer-for-release.sh` fills
+  in from the tag in `release.yml`. `.github/scripts/install-mac-test.sh` tests it against fake releases on
+  127.0.0.1 (CI, Ubuntu and macOS). Never document it as `curl ... | sh`: download first, then run it.
 
 Dependencies point inward: infrastructure -> application -> domain. Keep files under ~150 lines.
 

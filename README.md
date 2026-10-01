@@ -20,7 +20,16 @@ Works on Linux and macOS. Windows is not supported yet.
 
 ## Install
 
-**Prebuilt binary** (Linux x86_64, macOS Apple silicon and Intel): download the archive for your system from the [latest release](https://github.com/Keynodex/cleanping/releases/latest), then check it and put it on your `PATH`:
+**On a Mac, the easy way:** download the installer from the latest release, then run it. These are two separate steps, so you can read the file before you run it:
+
+```sh
+curl -fsSLO https://github.com/Keynodex/cleanping/releases/latest/download/install-cleanping-mac.sh
+sh install-cleanping-mac.sh
+```
+
+It picks the build for your Mac (Apple silicon or Intel), downloads it from the same release, and checks it against its SHA-256 checksum. If the checksum does not match it stops and installs nothing. It installs `cleanping` into `~/.local/bin` and adds one line to `~/.zshrc` so that new Terminal windows can find it (only if the line is not already there). It changes nothing else. Then open a new Terminal window and run `cleanping setup`. Each release has the installer with its `.sha256` file and a build-provenance attestation. The CleanPing page on keynodex.com shows the same two steps.
+
+**Prebuilt binary by hand** (Linux x86_64, macOS Apple silicon and Intel): download the archive for your system from the [latest release](https://github.com/Keynodex/cleanping/releases/latest), then check it and put it on your `PATH`:
 
 ```sh
 sha256sum -c cleanping-v0.4.0-x86_64-unknown-linux-gnu.tar.gz.sha256   # macOS: shasum -a 256 -c
