@@ -5,13 +5,12 @@
 
 use std::time::Duration;
 
-use serde_json::{json, Value};
+use serde_json::json;
 
 use crate::application::ports::{RewriteRequest, Rewriter};
 use crate::domain::errors::{CleanpingError, Result};
-use crate::domain::sanitize::clean_reply;
 use crate::domain::validation::{is_local_url, validate_api_url};
-use crate::infrastructure::proxy_env;
+use crate::infrastructure::{chat_reply, proxy_env};
 
 /// A rewrite is short text; anything bigger is refused, not read into memory.
 pub const MAX_RESPONSE_BYTES: u64 = 1_000_000;
@@ -108,20 +107,7 @@ impl Rewriter for OpenAiRewriter {
                 )),
                 _ => rewrite_error("API response could not be read."),
             })?;
-        let edited = serde_json::from_str::<Value>(&body)
-            .ok()
-            .and_then(|v| {
-                v["choices"][0]["message"]["content"]
-                    .as_str()
-                    .map(clean_reply)
-            })
-            .ok_or_else(|| rewrite_error("API response did not contain edited text."))?;
-        if edited.is_empty() {
-            return Err(rewrite_error(
-                "API returned an empty edit; nothing was copied.",
-            ));
-        }
-        Ok(edited)
+        chat_reply::edited_text(&body)
     }
 }
 
