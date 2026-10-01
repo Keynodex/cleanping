@@ -153,7 +153,7 @@ fn keys_test_gives_no_install_advice_on_an_address_that_is_not_the_default() {
 fn prompt_presets_lists_every_preset_and_marks_the_one_in_use() {
     let out = Sandbox::new().run(&["prompt", "presets"], None);
     assert_eq!(out.code, 0, "{}", out.stderr);
-    for name in ["default", "typos", "concise", "friendly"] {
+    for name in ["default", "typos", "concise", "friendly", "structure"] {
         assert!(out.stdout.contains(name), "{}", out.stdout);
     }
     let marked: Vec<&str> = out.stdout.lines().filter(|l| l.starts_with('*')).collect();

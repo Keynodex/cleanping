@@ -43,6 +43,7 @@ The number in brackets is the [exit code](commands.md#exit-codes).
 | `API response did not contain edited text.` / `API response could not be read.` [1] | The address is not an OpenAI-compatible chat-completions endpoint |
 | `API response was too large (limit 1000000 bytes).` [1] | The provider sent more than 1 MB. CleanPing refuses it |
 | `API returned an empty edit; nothing was copied.` [1] | The model answered with nothing. Try again, or a different model or [system prompt](system-prompts.md) |
+| `The reply was cut off at the provider's length limit, so it was not used. Try a shorter text, or a model or setting that thinks less.` [1] | The provider stopped at its limit on how long a reply may be, so only part of the rewrite came back. CleanPing never uses part of a rewrite, so your text is unchanged. Models that think before they answer spend much of that limit on thinking. Rewrite less at a time, or pick a model that does not think first, or a lower thinking setting if your provider offers one ([more](providers-and-local-models.md#models-that-think-before-they-answer)) |
 
 `cleanping keys test` checks a key without using your text and tells you how long the provider took.
 For a local Ollama it also says whether to install it, start it, or download the model

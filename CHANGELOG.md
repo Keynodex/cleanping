@@ -19,6 +19,46 @@ behavior, and the notes below say when it does.
   net with false negatives and a few false positives, not a proof; see
   [Privacy and safety](docs/privacy-and-safety.md#a-reply-that-changes-a-command).
 
+- A Mac installer on every release. Download `install-cleanping-mac.sh` from the latest release and run it
+  with `sh install-cleanping-mac.sh`. It picks the build for your Mac and checks its SHA-256 checksum,
+  installing nothing if the checksum does not match. It installs `cleanping` into `~/.local/bin` and adds
+  one `PATH` line to `~/.zshrc` if that line is not already there. It comes with its own `.sha256` file and
+  a build-provenance attestation. See [Install](README.md#install).
+
+### Changed
+
+- **Your text now goes to the AI inside `<draft>` tags, with a fixed sentence after your system prompt**
+  saying to edit only that text and never answer it, carry it out or translate it. In a blind test this
+  stopped models from answering a text instead of editing it, for every provider tried. Tags the AI copies
+  into its reply are removed. Your saved prompt and the history are unchanged, and a text that itself
+  contains `<draft>` or `</draft>` is sent as before
+  ([what CleanPing adds](docs/system-prompts.md#what-cleanping-adds-to-every-request)).
+- **DeepSeek flash models no longer think before they rewrite.** For `deepseek-flash` models on
+  `api.deepseek.com`, CleanPing turns thinking off: the same rewrite went from 13 to 44 seconds to about 5,
+  without running out of room. Other models and providers are unchanged, and this is not configurable yet
+  ([providers](docs/providers-and-local-models.md#models-that-think-before-they-answer)).
+
+### Fixed
+
+- **A reply the provider cut off at its length limit is refused**, instead of being used as if it were the
+  whole rewrite. This happened most with models that think before they answer, on long texts. The command
+  exits `1` with nothing on stdout, the shell key and `edit` leave your text as it was, and the message
+  says what to try ([troubleshooting](docs/troubleshooting.md#the-provider)).
+
+### Added
+
+- A `structure` system prompt: after `cleanping prompt use structure`, rewrites ask the AI to fix a draft,
+  lay it out as a clear prompt for an AI and clean junk out of pasted terminal text. Best with
+  `cleanping edit` (Ctrl+G); see
+  [System prompts](docs/system-prompts.md#structure-lay-a-draft-out-as-a-prompt-for-an-ai).
+
+### Changed
+
+- The DeepSeek preset now uses the model `deepseek-flash`, the name DeepSeek lists as current, instead
+  of `deepseek-chat`. Keys saved earlier keep their model. To switch one, run
+  `cleanping keys add --provider DeepSeek --name DeepSeek --model deepseek-flash` and press Enter at the
+  key prompt to keep the saved key. Choosing DeepSeek again in `cleanping setup` also switches it.
+
 ## [0.4.0] - 2026-09-30
 
 ### Added

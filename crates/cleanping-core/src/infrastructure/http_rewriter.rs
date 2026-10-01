@@ -5,12 +5,10 @@
 
 use std::time::Duration;
 
-use serde_json::{json, Value};
-
 use crate::application::ports::{RewriteRequest, Rewriter};
 use crate::domain::errors::{CleanpingError, Result};
-use crate::domain::sanitize::clean_reply;
 use crate::domain::validation::{is_local_url, validate_api_url};
+use crate::infrastructure::chat_request::ChatRequest;
 use crate::infrastructure::proxy_env;
 
 /// A rewrite is short text; anything bigger is refused, not read into memory.
@@ -48,11 +46,7 @@ fn rewrite_error(message: impl Into<String>) -> CleanpingError {
 impl Rewriter for OpenAiRewriter {
     fn rewrite(&self, request: &RewriteRequest<'_>) -> Result<String> {
         let RewriteRequest {
-            text,
-            instructions,
-            api_url,
-            api_key,
-            model,
+            api_url, api_key, ..
         } = *request;
         let url = validate_api_url(api_url)?; // never send the key to a URL the domain rejects
         if api_key.chars().any(char::is_control) {
@@ -73,19 +67,13 @@ impl Rewriter for OpenAiRewriter {
         }
         let config = builder.build();
         let agent = ureq::Agent::new_with_config(config);
-        let payload = json!({
-            "model": model,
-            "messages": [
-                {"role": "system", "content": instructions},
-                {"role": "user", "content": text},
-            ],
-        });
+        let chat = ChatRequest::new(request);
         let mut request = agent.post(&url);
         if !api_key.is_empty() {
             request = request.header("Authorization", format!("Bearer {api_key}"));
         }
         let mut response = request
-            .send_json(&payload)
+            .send_json(chat.body())
             .map_err(|e| rewrite_error(format!("Could not reach the API: {e}.")))?;
         let code = response.status().as_u16();
         if (300..400).contains(&code) {
@@ -108,23 +96,14 @@ impl Rewriter for OpenAiRewriter {
                 )),
                 _ => rewrite_error("API response could not be read."),
             })?;
-        let edited = serde_json::from_str::<Value>(&body)
-            .ok()
-            .and_then(|v| {
-                v["choices"][0]["message"]["content"]
-                    .as_str()
-                    .map(clean_reply)
-            })
-            .ok_or_else(|| rewrite_error("API response did not contain edited text."))?;
-        if edited.is_empty() {
-            return Err(rewrite_error(
-                "API returned an empty edit; nothing was copied.",
-            ));
-        }
-        Ok(edited)
+        chat.edited_text(&body)
     }
 }
 
 #[cfg(test)]
 #[path = "http_rewriter_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "http_rewriter_frame_tests.rs"]
+mod frame_tests;

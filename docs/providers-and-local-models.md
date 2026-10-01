@@ -7,7 +7,7 @@ is no CleanPing account and no CleanPing server.
 
 | Provider (`--provider`) | Address it fills in | Default model |
 |---|---|---|
-| `DeepSeek` | `https://api.deepseek.com/v1/chat/completions` | `deepseek-chat` |
+| `DeepSeek` | `https://api.deepseek.com/v1/chat/completions` | `deepseek-flash` |
 | `OpenAI` | `https://api.openai.com/v1/chat/completions` | `gpt-4o-mini` |
 | `OpenRouter` | `https://openrouter.ai/api/v1/chat/completions` | `openai/gpt-4o-mini` |
 | `Ollama (local)` | `http://127.0.0.1:11434/v1/chat/completions` | `qwen2.5:7b` |
@@ -19,6 +19,13 @@ cleanping keys add --provider OpenAI --model gpt-4o
 
 The defaults are starting points, not recommendations: pick the model that suits your budget and quality
 needs with `--model`.
+
+A saved key keeps its model when a default changes. To change the model of a saved key, add it again
+with the same name and a new `--model`, and press Enter at the key prompt to keep the saved key:
+
+```sh
+cleanping keys add --provider DeepSeek --name DeepSeek --model deepseek-flash
+```
 
 ## Any other provider
 
@@ -95,6 +102,20 @@ only, no redirects, no proxy) and looks for an `ollama` program on your `PATH`.
 
 The first request after Ollama loads a model into memory can take much longer than the ones after it. A
 rewrite gives up after 180 seconds; `keys test` after 60.
+
+## Models that think before they answer
+
+Some models think before they answer, and that thinking counts toward the provider's limit on how long a
+reply may be. With a long text, such a model can run out of room before the rewrite is complete. When the
+provider says it stopped at that limit, CleanPing refuses the reply instead of using part of a rewrite, and
+your text stays as it was ([what to do](troubleshooting.md#the-provider)).
+
+**DeepSeek flash models think by default; CleanPing turns that off.** For a key whose address is
+`api.deepseek.com` and whose model name starts with `deepseek-flash`, every request asks the model not to
+think (`"thinking": {"type": "disabled"}`). Rewriting does not need it: in a test on 2026-10-01, thinking
+took 13 to 44 seconds on a long text and sometimes ran out of room, while the same job without it took
+about 5 seconds. Other DeepSeek models (such as `deepseek-chat`), other addresses and other
+providers get nothing extra. This is not configurable yet.
 
 ## Limits
 

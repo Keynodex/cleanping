@@ -25,6 +25,11 @@ Minimum Rust is 1.89 (`rust-version`, checked in CI).
   the "reply changed a command" check in `command_change` + `command_lines` + `command_pairs` + `command_match` + `shell_words`)
 - `crates/cleanping-core/src/application` — use cases and ports (traits); fakes live in `test_support.rs`
 - `crates/cleanping-core/src/infrastructure` — SQLite, secrets file, HTTP (ureq), paths, clock
+- Request framing: `domain/draft_frame.rs` (the `<draft>` tags, the fixed sentence, stripping echoed tags;
+  a draft holding a tag is sent unframed) and `domain/provider_extras.rs` (DeepSeek flash on
+  `api.deepseek.com` only: thinking off) are pure; `infrastructure/chat_request.rs` builds the body from
+  them and `chat_reply.rs` reads the reply. Framing lives only in the HTTP adapter: history, `--keep-shape`
+  and the secret guard always use the original text and saved prompt.
 - `crates/cleanping-cli` — the `cleanping` binary: `args`, `rewrite`, `keys`, `prompt`, `history`, `init`
   (shell scripts in `shell/`), `guard` (the refuse-if-it-looks-like-a-secret check), `marks` (hidden
   `--marks`, see below), `connection` (`keys test`); all stdout goes through `output` (a closed pipe
@@ -52,6 +57,10 @@ Minimum Rust is 1.89 (`rust-version`, checked in CI).
   under the data folder on every start), `launch` (PATH and the `exec` of `zsh -d -i`; `-f` would skip the
   private `.zshrc` too). It never edits the user's files. It is a guard
   against accidents, not a sandbox; `tests/writer*.rs` drive it in a terminal with a fake clipboard tool.
+- `scripts/install-cleanping-mac.sh` — the Mac installer (POSIX sh) that every release carries. Its version
+  is the placeholder `RELEASE_VERSION='@VERSION@'`, which `.github/scripts/installer-for-release.sh` fills
+  in from the tag in `release.yml`. `.github/scripts/install-mac-test.sh` tests it against fake releases on
+  127.0.0.1 (CI, Ubuntu and macOS). Never document it as `curl ... | sh`: download first, then run it.
 
 Dependencies point inward: infrastructure -> application -> domain. Keep files under ~150 lines.
 

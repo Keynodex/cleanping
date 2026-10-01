@@ -153,7 +153,7 @@ The system prompt is the instruction sent with every rewrite. See [System prompt
 |---|---|
 | `cleanping prompt show` | Print the current system prompt |
 | `cleanping prompt set [TEXT]` | Replace it with `TEXT`, or with stdin when `TEXT` is left out and input is piped |
-| `cleanping prompt presets` | List the ready-made prompts (`default`, `typos`, `concise`, `friendly`); `*` marks the one in use |
+| `cleanping prompt presets` | List the ready-made prompts (`default`, `typos`, `concise`, `friendly`, `structure`); `*` marks the one in use |
 | `cleanping prompt use NAME [--yes]` | Switch to a preset. Replacing a prompt you wrote yourself needs `--yes` |
 
 ## `history`
@@ -183,7 +183,7 @@ Prints the shell integration. Add `eval "$(cleanping init zsh)"` to `~/.zshrc`, 
 | Code | Meaning |
 |---|---|
 | `0` | Success |
-| `1` | The request failed: network, provider or storage |
+| `1` | The request failed: network, provider (including a reply the provider cut off at its length limit) or storage |
 | `2` | Bad input: empty or too long text, an invalid address or option, text refused by `--refuse-secrets`, or `setup` or `writer` without a terminal |
 | `3` | No usable key: none saved, several saved and none selected, or the name you gave does not exist |
 

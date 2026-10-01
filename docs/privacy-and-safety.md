@@ -10,8 +10,8 @@ To report a security problem privately, see [SECURITY.md](../SECURITY.md).
 
 | When | What is sent, and to whom |
 |---|---|
-| You rewrite text (`cleanping`, `cleanping edit`, the shell key, Ctrl+G in `cleanping writer`) | Your text and the [system prompt](system-prompts.md), over an encrypted (TLS) connection, to the provider address you saved, together with your key for that provider |
-| `cleanping keys test` | One fixed word (`ping`) with a fixed instruction, to that provider. Never your text, history or saved system prompt |
+| You rewrite text (`cleanping`, `cleanping edit`, the shell key, Ctrl+G in `cleanping writer`) | Your text and the [system prompt](system-prompts.md), plus the `<draft>` tags and the fixed sentence CleanPing adds ([what it adds](system-prompts.md#what-cleanping-adds-to-every-request)), over an encrypted (TLS) connection, to the provider address you saved, together with your key for that provider |
+| `cleanping keys test` | One fixed word (`ping`) with a fixed instruction, framed the same way, to that provider. Never your text, history or saved system prompt |
 | You use a local model | To an address on your own machine only. Nothing leaves it |
 | `cleanping setup`, local model | A request to the local server's model list (`GET /api/tags`) on a loopback address, and, only if you say yes, Ollama's own `ollama pull` |
 
