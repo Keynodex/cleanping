@@ -7,6 +7,13 @@ behavior, and the notes below say when it does.
 
 ## [Unreleased]
 
+### Added
+
+- A `structure` system prompt: after `cleanping prompt use structure`, rewrites ask the AI to fix a draft,
+  lay it out as a clear prompt for an AI and clean junk out of pasted terminal text. Best with
+  `cleanping edit` (Ctrl+G); see
+  [System prompts](docs/system-prompts.md#structure-lay-a-draft-out-as-a-prompt-for-an-ai).
+
 ### Changed
 
 - The DeepSeek preset now uses the model `deepseek-flash`, the name DeepSeek lists as current, instead

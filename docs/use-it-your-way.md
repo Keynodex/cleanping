@@ -70,6 +70,10 @@ inside the value.
 `$VISUAL` too. For example, git uses it when no other editor is set, so it would open CleanPing when you
 write a commit message. If you do not want that, use option A.
 
+To also have Ctrl+G lay your message out as a clear prompt, switch the system prompt with
+`cleanping prompt use structure` (it then applies to every rewrite; see
+[System prompts](system-prompts.md#structure-lay-a-draft-out-as-a-prompt-for-an-ai)).
+
 More in [Claude Code and Codex](claude-code-and-codex.md).
 
 ## 4. Copy the result
