@@ -7,6 +7,8 @@ pub mod history;
 pub mod polisher;
 pub mod ports;
 pub mod prompts;
+pub mod update_check;
+pub mod update_text;
 
 #[cfg(test)]
 mod test_support;

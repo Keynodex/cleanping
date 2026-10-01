@@ -82,3 +82,23 @@ pub trait StateRepository {
     /// Save `value` under `key`, replacing any earlier value.
     fn set(&self, key: &str, value: &str) -> Result<()>;
 }
+
+/// What the release server said about the newest published release. Both fields are untrusted
+/// text from the network: the use case validates them before anything is shown.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct LatestRelease {
+    /// The release's tag, for example `v0.5.0`.
+    pub tag_name: String,
+    /// The release's web page, if the reply named one.
+    pub html_url: Option<String>,
+}
+
+/// Asks where CleanPing is published for its newest release.
+///
+/// Implementations must send nothing about the user (no ids, history, keys or text), must not
+/// follow redirects, must limit the size of the reply and must keep its body out of error
+/// messages. Report every failure as `CleanpingError::UpdateCheck`.
+pub trait ReleaseSource {
+    /// The newest published release.
+    fn latest(&self) -> Result<LatestRelease>;
+}
