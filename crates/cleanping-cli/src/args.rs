@@ -81,6 +81,9 @@ pub enum Command {
     /// A text-only terminal mode: type text, press Ctrl+G to fix it, press Enter to copy it.
     /// Nothing you type there is ever run. Needs zsh.
     Writer,
+    /// Check whether a newer CleanPing release exists and show how to install it. It asks
+    /// GitHub only when you run it, and downloads, installs and changes nothing.
+    Update(UpdateArgs),
     /// Print shell integration: add `eval "$(cleanping init zsh)"` to your shell's rc file.
     Init {
         #[arg(value_enum)]
@@ -99,6 +102,14 @@ pub struct EditArgs {
     /// like it holds a secret is still never sent.
     #[arg(long)]
     pub yes: bool,
+}
+
+#[derive(Args)]
+pub struct UpdateArgs {
+    /// Only check and print how to install (what `update` does today; kept so scripts stay
+    /// valid when installing for you is added).
+    #[arg(long)]
+    pub check: bool,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, ValueEnum)]

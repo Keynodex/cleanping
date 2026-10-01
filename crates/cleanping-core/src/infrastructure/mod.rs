@@ -1,6 +1,7 @@
 //! Adapters for the ports: files, SQLite, HTTP. No business rules here.
 
 pub mod clock;
+pub mod github_releases;
 pub mod http_rewriter;
 pub mod ollama;
 pub mod paths;
