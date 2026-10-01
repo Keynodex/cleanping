@@ -14,17 +14,22 @@ pub struct Progress {
 /// The estimate stops here and waits for the reply, however long it takes.
 pub const HELD_AT: u8 = 95;
 
-/// The timing guesses behind the estimate, in one place so they can be tuned. They are a
-/// guess, not a measurement: tune them from real timings. Most of the wait is the model writing
-/// its reply, which is about as long as the text.
+/// The timing guesses behind the estimate, in one place so they can be tuned. They are still a
+/// guess: retune them from real timings. Most of the wait is the model writing its reply, which
+/// is about as long as the text.
+///
+/// Measured 2026-10-01 with a fast provider (DeepSeek flash, thinking off): a 5,934-character
+/// text took 4.8 to 5.1 s and a short one 0.5 to 0.7 s, about 0.6 s plus 0.7 s a kilobyte. These
+/// add some room to that, so the 5,934-byte text is expected in about 6.4 s. A slower provider
+/// (a thinking model, a local one) waits longer at the hold.
 pub mod timing {
     use std::time::Duration;
 
     /// Connecting and the model's first word, whatever the size of the text. With this, a
-    /// short text is a bit over half way after 1.5 s and at the hold after 6 s.
-    pub const BASE: Duration = Duration::from_secs(3);
-    /// About 250 bytes a second (roughly 60 tokens a second), a typical hosted model.
-    pub const PER_KILOBYTE: Duration = Duration::from_secs(4);
+    /// short text is past 90 % when the line first shows at 1.5 s.
+    pub const BASE: Duration = Duration::from_secs(1);
+    /// About 1,100 bytes a second, a fast hosted model.
+    pub const PER_KILOBYTE: Duration = Duration::from_millis(900);
     /// No request waits longer than the HTTP timeout (`http_rewriter::DEFAULT_TIMEOUT`).
     pub const LONGEST: Duration = Duration::from_secs(180);
 }
