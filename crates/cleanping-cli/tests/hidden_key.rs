@@ -93,6 +93,40 @@ fn enter_alone_skips_the_key_for_a_local_model() {
     assert!(!sandbox.has_secret("Ollama (local)"));
 }
 
+/// The way the changelog tells people to switch a saved key to a new model.
+#[test]
+fn enter_alone_keeps_a_saved_key_while_its_model_changes() {
+    let sandbox = Sandbox::new();
+    let first = sandbox.run(
+        &[
+            "keys",
+            "add",
+            "--provider",
+            "DeepSeek",
+            "--model",
+            "old-model",
+            "--key-stdin",
+        ],
+        Some(&format!("{SECRET}\n")),
+    );
+    assert_eq!(first.code, 0, "{}", first.stderr);
+    let switch = "cleanping keys add --provider DeepSeek --name DeepSeek --model deepseek-flash";
+    let mut screen = at_the_key_prompt(&sandbox, switch);
+    screen.send("\r");
+    assert!(
+        screen.wait_for_text("Saved", LIMIT),
+        "{}",
+        screen.plain_screen()
+    );
+    assert_eq!(screen.finish(LIMIT), 0);
+    assert_eq!(sandbox.secret_value("DeepSeek").as_deref(), Some(SECRET));
+    let listed = sandbox.run(&["keys", "list"], None).stdout;
+    assert!(
+        listed.contains("deepseek-flash") && !listed.contains("old-model"),
+        "{listed}"
+    );
+}
+
 /// Ctrl-C at the prompt must end the command cleanly (not by a signal) and give the terminal
 /// back with typing switched on. `stty -a` afterwards shows whether echo is on.
 #[test]

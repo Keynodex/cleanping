@@ -7,7 +7,7 @@ is no CleanPing account and no CleanPing server.
 
 | Provider (`--provider`) | Address it fills in | Default model |
 |---|---|---|
-| `DeepSeek` | `https://api.deepseek.com/v1/chat/completions` | `deepseek-chat` |
+| `DeepSeek` | `https://api.deepseek.com/v1/chat/completions` | `deepseek-flash` |
 | `OpenAI` | `https://api.openai.com/v1/chat/completions` | `gpt-4o-mini` |
 | `OpenRouter` | `https://openrouter.ai/api/v1/chat/completions` | `openai/gpt-4o-mini` |
 | `Ollama (local)` | `http://127.0.0.1:11434/v1/chat/completions` | `qwen2.5:7b` |
@@ -19,6 +19,13 @@ cleanping keys add --provider OpenAI --model gpt-4o
 
 The defaults are starting points, not recommendations: pick the model that suits your budget and quality
 needs with `--model`.
+
+A saved key keeps its model when a default changes. To change the model of a saved key, add it again
+with the same name and a new `--model`, and press Enter at the key prompt to keep the saved key:
+
+```sh
+cleanping keys add --provider DeepSeek --name DeepSeek --model deepseek-flash
+```
 
 ## Any other provider
 

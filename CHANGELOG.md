@@ -14,6 +14,13 @@ behavior, and the notes below say when it does.
   `cleanping edit` (Ctrl+G); see
   [System prompts](docs/system-prompts.md#structure-lay-a-draft-out-as-a-prompt-for-an-ai).
 
+### Changed
+
+- The DeepSeek preset now uses the model `deepseek-flash`, the name DeepSeek lists as current, instead
+  of `deepseek-chat`. Keys saved earlier keep their model. To switch one, run
+  `cleanping keys add --provider DeepSeek --name DeepSeek --model deepseek-flash` and press Enter at the
+  key prompt to keep the saved key. Choosing DeepSeek again in `cleanping setup` also switches it.
+
 ## [0.4.0] - 2026-09-30
 
 ### Added
