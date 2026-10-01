@@ -111,12 +111,14 @@ cannot change that attribution.
 3. Push a tag `vX.Y.Z` on that commit. `.github/workflows/release.yml` refuses a tag that is not on `main`,
    that does not match the version in `Cargo.toml`, or whose commit has no successful CI run. It then builds
    Linux (x86_64) and macOS (Apple silicon and Intel) archives with SHA-256 checksums and build-provenance
-   attestations, and creates a **draft** release.
-4. Read the draft, then publish it.
+   attestations. It also writes the Mac installer (`scripts/install-cleanping-mac.sh`) with the tag filled
+   in, with its own checksum and attestation, and creates a **draft** release.
+4. Read the draft, then publish it. Publishing it makes it the latest release, so the installer link on the
+   CleanPing page on keynodex.com (`releases/latest/download/install-cleanping-mac.sh`) serves the new copy.
 
 After any change to `.github/workflows/release.yml`, wait for CI to pass, then run **Actions → Release →
-Run workflow** on the changed branch. This dry run builds and checks the archives, but does not exercise
-the publish job. The script itself is tested in CI; the first real proof of the publish step is the next
+Run workflow** on the changed branch. This dry run builds and checks the archives and the installer copy,
+but does not exercise the publish job. The script itself is tested in CI; the first real proof of the publish step is the next
 release.
 
 ## License
