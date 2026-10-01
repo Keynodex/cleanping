@@ -67,7 +67,8 @@ fn it_matches_the_measured_fast_provider() {
         just_started < 30,
         "the 5,934-byte text at 0.5 s should have just started, not {just_started}%"
     );
-    let short_on_show = at(100, 1_500);
+    // The line first shows at 0.5 s (`progress::bar::SHOW_AFTER` in the CLI).
+    let short_on_show = at(100, 500);
     assert!(
         short_on_show > 50,
         "a short text should be over half way when the line first shows, not {short_on_show}%"

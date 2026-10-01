@@ -17,6 +17,13 @@ fn columns(text: &str) -> usize {
     text.chars().count()
 }
 
+/// A 700-character rewrite that took 1.0 to 1.4 s never showed the line when it waited 1.5 s,
+/// so it looked broken. The plain command, the edit screen and `edit --yes` all use this.
+#[test]
+fn the_line_appears_after_half_a_second() {
+    assert_eq!(SHOW_AFTER, Duration::from_millis(500));
+}
+
 #[test]
 fn a_wide_terminal_gets_the_words_a_bar_of_twenty_and_the_estimate() {
     assert_eq!(

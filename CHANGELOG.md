@@ -32,7 +32,7 @@ behavior, and the notes below say when it does.
   net with false negatives and a few false positives, not a proof; see
   [Privacy and safety](docs/privacy-and-safety.md#a-reply-that-changes-a-command).
 - **You can see a slow rewrite working.** A long text can take the AI a while, and nothing showed. Now,
-  after 1.5 seconds, a line on stderr shows `Fixing your text… ▰▰▰▰▱▱▱▱ about 40% 12s`, and
+  after half a second, a line on stderr shows `Fixing your text… ▰▰▰▰▱▱▱▱ about 40% 12s`, and
   `cleanping edit` shows the same bar under its title. The provider answers all at once, so the percent
   is an estimate from the length of your text; it stops at 95% until the reply arrives, and the seconds
   are real. The line is erased before the result or an error, never goes to stdout, and is not shown in
