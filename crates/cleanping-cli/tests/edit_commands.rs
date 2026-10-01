@@ -59,6 +59,13 @@ fn an_unchanged_command_shows_no_warning() {
     let (sandbox, file) = setup(reply);
     let mut screen = screen(&sandbox, &file);
     assert!(screen.wait_for_text("Text edit complete", LIMIT));
+    // The warning line sits above the footer, which is drawn last: wait for the footer so the
+    // check below sees the whole screen.
+    assert!(
+        screen.wait_for_text("Enter accept", LIMIT),
+        "{}",
+        screen.plain_screen()
+    );
     assert!(!screen.plain_screen().contains("Check the command"));
     screen.send("n");
     assert_eq!(screen.finish(LIMIT), 0);

@@ -74,7 +74,12 @@ fn enter_accepts_the_edited_text() {
         "{}",
         screen.plain_screen()
     );
-    assert!(screen.plain_screen().contains("Enter accept"));
+    // The footer is drawn after the header, in later writes, so wait for it too.
+    assert!(
+        screen.wait_for_text("Enter accept", LIMIT),
+        "{}",
+        screen.plain_screen()
+    );
     screen.send(ENTER);
     assert_eq!(screen.finish(LIMIT), 0);
     assert_eq!(contents(&s), format!("{CLEAN}\n"));
@@ -149,6 +154,12 @@ fn a_failure_is_shown_and_the_text_is_left_alone() {
         "{}",
         screen.plain_screen()
     );
+    // Wait for the footer, the last line drawn, so the check below covers the whole screen.
+    assert!(
+        screen.wait_for_text("Press any key to keep your text as it is", LIMIT),
+        "{}",
+        screen.plain_screen()
+    );
     assert!(!screen.plain_screen().contains("provider-said-boom"));
     screen.send("x");
     assert_eq!(screen.finish(LIMIT), 0);
@@ -181,7 +192,18 @@ fn text_that_looks_like_a_secret_is_not_sent() {
         "{}",
         screen.plain_screen()
     );
-    assert!(screen.plain_screen().contains("an API key or token"));
+    // The screen arrives in many small writes: the header first, then the body, then the
+    // footer, the last line drawn. Wait for each text before relying on it.
+    assert!(
+        screen.wait_for_text("an API key or token", LIMIT),
+        "{}",
+        screen.plain_screen()
+    );
+    assert!(
+        screen.wait_for_text("any other key keeps your text", LIMIT),
+        "{}",
+        screen.plain_screen()
+    );
     assert!(!screen.plain_screen().contains(FAKE_KEY));
     screen.send("x");
     assert_eq!(screen.finish(LIMIT), 0);
@@ -249,7 +271,11 @@ fn a_long_text_can_be_scrolled() {
     let s = setup(vec![ok_reply(&text)], &text);
     let mut screen = edit(&s);
     assert!(screen.wait_for_text("Text edit complete", LIMIT));
-    assert!(screen.plain_screen().contains("scroll"));
+    assert!(
+        screen.wait_for_text("scroll", LIMIT),
+        "{}",
+        screen.plain_screen()
+    );
     screen.send("\x1b[6~"); // Page Down
     assert!(
         screen.wait_for_text("line number 30", LIMIT),

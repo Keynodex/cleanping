@@ -84,12 +84,14 @@ fn the_screen_shows_the_lines_to_add_and_changes_no_file() {
     answer(&mut screen, "Step 2:", "\n");
     answer(&mut screen, "Step 3:", "y\n");
     assert!(screen.wait_for_text("All set", LIMIT));
-    let text = screen.plain_screen();
-    assert!(text.contains("export VISUAL=\"cleanping edit\""), "{text}");
-    assert!(
-        text.contains("~/.zshrc") && text.contains("init zsh"),
-        "{text}"
-    );
+    // The lines to add come after "All set", each in its own write: wait for every one.
+    for wanted in ["export VISUAL=\"cleanping edit\"", "~/.zshrc", "init zsh"] {
+        assert!(
+            screen.wait_for_text(wanted, LIMIT),
+            "missing {wanted:?}: {}",
+            screen.plain_screen()
+        );
+    }
     assert_eq!(screen.finish(LIMIT), 0);
     let profile = std::fs::read_to_string(sandbox.dir.path().join(".zshrc")).unwrap();
     assert_eq!(profile, "# mine\n", "setup must not edit the profile");
@@ -145,7 +147,12 @@ fn running_it_again_shows_the_menu_and_enter_leaves() {
         "{}",
         screen.plain_screen()
     );
-    assert!(screen.plain_screen().contains("\u{201c}Local\u{201d}"));
+    // The options are printed after the title, one line at a time.
+    assert!(
+        screen.wait_for_text("\u{201c}Local\u{201d}", LIMIT),
+        "{}",
+        screen.plain_screen()
+    );
     screen.send("\n");
     assert_eq!(screen.finish(LIMIT), 0);
 }
