@@ -50,16 +50,25 @@ fn mac_target(os: &str, arch: &str) -> Option<&'static str> {
     }
 }
 
-/// The README's prebuilt-binary steps, with the Mac checksum tool, for the archive `name`.
+/// How to install on this Mac: the installer from the release first (two plain commands, never a
+/// download-and-run one-liner), then the manual archive steps for `name` as the alternative.
 fn mac_steps(name: &str) -> String {
     format!(
-        "To install it on this Mac, download {name}.tar.gz and {name}.tar.gz.sha256 from the \
-         release page into one folder, then run these commands in that folder:\n\n  \
+        "To install it on this Mac, run these two commands (the first downloads the installer \
+         from the latest release, the second runs it):\n\n  \
+         curl -fsSLO {INSTALLER_URL}\n  \
+         sh install-cleanping-mac.sh\n\n\
+         To check the files yourself instead, download {name}.tar.gz and {name}.tar.gz.sha256 \
+         from the release page into one folder, then run these commands in that folder:\n\n  \
          shasum -a 256 -c {name}.tar.gz.sha256\n  \
          tar xzf {name}.tar.gz\n  \
          install {name}/cleanping ~/.local/bin/\n"
     )
 }
+
+/// The Mac installer attached to every release; the same address the CleanPing page on keynodex.com uses.
+const INSTALLER_URL: &str =
+    "https://github.com/Keynodex/cleanping/releases/latest/download/install-cleanping-mac.sh";
 
 #[cfg(test)]
 #[path = "update_text_tests.rs"]

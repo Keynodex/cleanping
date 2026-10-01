@@ -3,9 +3,9 @@
 mod chat_reply;
 mod chat_request;
 pub mod clock;
-pub mod github_releases;
 #[cfg(test)]
 mod fake_api;
+pub mod github_releases;
 pub mod http_rewriter;
 pub mod ollama;
 pub mod paths;

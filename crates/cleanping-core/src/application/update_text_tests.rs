@@ -41,6 +41,31 @@ fn on_linux_a_newer_version_points_to_the_page_and_the_readme() {
 }
 
 #[test]
+fn on_a_mac_the_installer_commands_come_first() {
+    let text = update_text(&available(), "macos", "aarch64");
+    let download = "  curl -fsSLO https://github.com/Keynodex/cleanping/releases/latest/download/install-cleanping-mac.sh\n";
+    let run = "  sh install-cleanping-mac.sh\n";
+    let (d, r) = (text.find(download), text.find(run));
+    assert!(
+        d.is_some() && r.is_some(),
+        "installer commands missing in {text}"
+    );
+    assert!(d < r, "download before run: {text}");
+    assert!(
+        text.find("shasum -a 256 -c") > r,
+        "the manual archive steps are the alternative, after the installer: {text}"
+    );
+    assert!(
+        !text.contains("| sh"),
+        "never a download-and-run line: {text}"
+    );
+    assert!(
+        !text.contains("install-cleanping-mac.sh v"),
+        "the installer takes no version argument: {text}"
+    );
+}
+
+#[test]
 fn on_a_mac_a_newer_version_shows_the_readme_commands_for_its_archive() {
     let text = update_text(&available(), "macos", "aarch64");
     let name = "cleanping-v0.5.0-aarch64-apple-darwin";
@@ -53,10 +78,6 @@ fn on_a_mac_a_newer_version_shows_the_readme_commands_for_its_archive() {
     }
     assert!(text.contains(&format!("Release page: {PAGE}\n")), "{text}");
     assert!(text.trim_end().ends_with(UNCHANGED), "{text}");
-    assert!(
-        !text.contains("curl"),
-        "never a download-and-run line: {text}"
-    );
     assert!(
         !text.contains("| sh"),
         "never a download-and-run line: {text}"

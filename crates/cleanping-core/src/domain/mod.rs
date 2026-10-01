@@ -16,7 +16,7 @@ pub mod release;
 pub mod sanitize;
 pub mod secret_scan;
 pub mod shape;
-pub mod update_source;
 pub mod shell_words;
+pub mod update_source;
 pub mod validation;
 pub mod versions;
