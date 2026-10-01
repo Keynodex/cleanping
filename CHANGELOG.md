@@ -16,12 +16,20 @@ behavior, and the notes below say when it does.
   `User-Agent: cleanping/VERSION` header; see
   [Privacy and safety](docs/privacy-and-safety.md#checking-for-updates). `cleanping update --check` does
   the same and will keep doing so when installing is added.
+- A Mac installer on every release. Download `install-cleanping-mac.sh` from the latest release and run it
+  with `sh install-cleanping-mac.sh`. It picks the build for your Mac and checks its SHA-256 checksum,
+  installing nothing if the checksum does not match. It installs `cleanping` into `~/.local/bin` and adds
+  one `PATH` line to `~/.zshrc` if that line is not already there. It comes with its own `.sha256` file and
+  a build-provenance attestation. See [Install](README.md#install).
+- A `structure` system prompt: after `cleanping prompt use structure`, rewrites ask the AI to fix a draft,
+  lay it out as a clear prompt for an AI and clean junk out of pasted terminal text. Best with
+  `cleanping edit` (Ctrl+G); see
+  [System prompts](docs/system-prompts.md#structure-lay-a-draft-out-as-a-prompt-for-an-ai).
 
 ### Changed
 
 - **`update` is now a command word**, like `writer` and `edit`. Text that starts with it must be given
   after `--` or piped in: `cleanping -- update the docs`.
-
 - **A reply that changes a command is caught.** Models asked to fix spelling often "fix" a command too,
   most often by closing a quote you left open, which hides the very bug you were asking about. CleanPing
   now compares the commands in your text with the reply: a quote closed or opened, a flag dropped or
@@ -47,15 +55,6 @@ behavior, and the notes below say when it does.
   out each intended word from the sentence around it, and carries one worked example. If you already have
   the old default saved, run `cleanping prompt use default` to switch (no `--yes` needed);
   `cleanping prompt presets` reminds you ([the default prompt](docs/system-prompts.md#the-default-prompt)).
-
-- A Mac installer on every release. Download `install-cleanping-mac.sh` from the latest release and run it
-  with `sh install-cleanping-mac.sh`. It picks the build for your Mac and checks its SHA-256 checksum,
-  installing nothing if the checksum does not match. It installs `cleanping` into `~/.local/bin` and adds
-  one `PATH` line to `~/.zshrc` if that line is not already there. It comes with its own `.sha256` file and
-  a build-provenance attestation. See [Install](README.md#install).
-
-### Changed
-
 - **Your text now goes to the AI inside `<draft>` tags, with a fixed sentence after your system prompt**
   saying to edit only that text and never answer it, carry it out or translate it. In a blind test this
   stopped models from answering a text instead of editing it, for every provider tried. Tags the AI copies
@@ -66,6 +65,10 @@ behavior, and the notes below say when it does.
   `api.deepseek.com`, CleanPing turns thinking off: the same rewrite went from 13 to 44 seconds to about 5,
   without running out of room. Other models and providers are unchanged, and this is not configurable yet
   ([providers](docs/providers-and-local-models.md#models-that-think-before-they-answer)).
+- The DeepSeek preset now uses the model `deepseek-flash`, the name DeepSeek lists as current, instead
+  of `deepseek-chat`. Keys saved earlier keep their model. To switch one, run
+  `cleanping keys add --provider DeepSeek --name DeepSeek --model deepseek-flash` and press Enter at the
+  key prompt to keep the saved key. Choosing DeepSeek again in `cleanping setup` also switches it.
 
 ### Fixed
 
@@ -73,20 +76,6 @@ behavior, and the notes below say when it does.
   whole rewrite. This happened most with models that think before they answer, on long texts. The command
   exits `1` with nothing on stdout, the shell key and `edit` leave your text as it was, and the message
   says what to try ([troubleshooting](docs/troubleshooting.md#the-provider)).
-
-### Added
-
-- A `structure` system prompt: after `cleanping prompt use structure`, rewrites ask the AI to fix a draft,
-  lay it out as a clear prompt for an AI and clean junk out of pasted terminal text. Best with
-  `cleanping edit` (Ctrl+G); see
-  [System prompts](docs/system-prompts.md#structure-lay-a-draft-out-as-a-prompt-for-an-ai).
-
-### Changed
-
-- The DeepSeek preset now uses the model `deepseek-flash`, the name DeepSeek lists as current, instead
-  of `deepseek-chat`. Keys saved earlier keep their model. To switch one, run
-  `cleanping keys add --provider DeepSeek --name DeepSeek --model deepseek-flash` and press Enter at the
-  key prompt to keep the saved key. Choosing DeepSeek again in `cleanping setup` also switches it.
 
 ## [0.4.0] - 2026-09-30
 
