@@ -1,7 +1,7 @@
 //! The edit screen's loop: show the view, read keys, and pick up the reply when it arrives.
 
 use std::sync::mpsc::{Receiver, TryRecvError};
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use cleanping_core::domain::command_change::{command_changes, summary};
 use cleanping_core::domain::diff::highlight_changes;
@@ -59,7 +59,13 @@ pub fn run(
     };
     let mut view = View::new(text.to_string(), provider, phase);
     let mut dirty = true;
+    let mut asked = Instant::now();
     loop {
+        if matches!(view.phase, Phase::Waiting) {
+            // The estimate under the header moves with the time waited.
+            view.waited = asked.elapsed();
+            dirty = true;
+        }
         if dirty {
             let (width, height) = screen.size();
             screen.paint(&view.render(width, height))?;
@@ -74,6 +80,7 @@ pub fn run(
                     Action::SendAnyway => {
                         if let Some(prepared) = prepared.take() {
                             view.phase = start(prepared, &mut pending);
+                            asked = Instant::now();
                         }
                     }
                     Action::Continue => {}

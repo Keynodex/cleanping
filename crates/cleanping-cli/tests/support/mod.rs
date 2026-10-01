@@ -1,6 +1,7 @@
 //! Test harness: an isolated environment for the real binary plus a fake local API server.
 #![allow(dead_code)]
 
+pub mod lines;
 pub mod pty;
 pub mod shell;
 pub mod writer;
@@ -307,18 +308,32 @@ pub fn status_reply(code: u16, body: &str) -> String {
     )
 }
 
+/// What the server waits for between reading a request and answering it.
+enum Hold {
+    Nothing,
+    /// Until the test fires the sender.
+    Gate(std::sync::mpsc::Receiver<()>),
+    /// A slow model: this long after the request arrived.
+    Delay(std::time::Duration),
+}
+
 /// One canned response per incoming connection, in order.
 pub fn serve(responses: Vec<String>) -> FakeServer {
-    serve_gated(responses, None)
+    serve_gated(responses, Hold::Nothing)
 }
 
 /// A server that reads the request but holds its reply until the returned sender fires.
 pub fn serve_held(response: String) -> (FakeServer, std::sync::mpsc::Sender<()>) {
     let (release, gate) = std::sync::mpsc::channel();
-    (serve_gated(vec![response], Some(gate)), release)
+    (serve_gated(vec![response], Hold::Gate(gate)), release)
 }
 
-fn serve_gated(responses: Vec<String>, gate: Option<std::sync::mpsc::Receiver<()>>) -> FakeServer {
+/// A slow server: it answers `delay` after the request arrived.
+pub fn serve_slow(response: String, delay: std::time::Duration) -> FakeServer {
+    serve_gated(vec![response], Hold::Delay(delay))
+}
+
+fn serve_gated(responses: Vec<String>, hold: Hold) -> FakeServer {
     let listener = TcpListener::bind("127.0.0.1:0").unwrap();
     let url = format!(
         "http://127.0.0.1:{}/v1/chat/completions",
@@ -357,8 +372,12 @@ fn serve_gated(responses: Vec<String>, gate: Option<std::sync::mpsc::Receiver<()
             seen.lock()
                 .unwrap()
                 .push(String::from_utf8_lossy(&buffer).to_string());
-            if let Some(gate) = &gate {
-                let _ = gate.recv();
+            match &hold {
+                Hold::Nothing => {}
+                Hold::Gate(gate) => {
+                    let _ = gate.recv();
+                }
+                Hold::Delay(delay) => std::thread::sleep(*delay),
             }
             let _ = stream.write_all(response.as_bytes());
         }
