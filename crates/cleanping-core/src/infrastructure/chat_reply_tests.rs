@@ -98,3 +98,48 @@ fn the_cut_off_message_says_what_to_do() {
     assert!(text.contains("not used"), "{text}");
     assert!(text.contains("shorter text"), "{text}");
 }
+
+// A framed request sent the draft inside `<draft>` tags; some models echo them back.
+
+fn content(text: &str) -> String {
+    body(serde_json::json!({"message": {"content": text}}))
+}
+
+#[test]
+fn echoed_draft_tags_are_removed_from_a_framed_reply() {
+    let reply = content("<draft>\nFixed text.\n</draft>");
+    assert_eq!(edited_draft(&reply).unwrap(), "Fixed text.");
+}
+
+#[test]
+fn a_framed_reply_without_tags_is_unchanged() {
+    assert_eq!(
+        edited_draft(&content("  Fixed\ntext.  ")).unwrap(),
+        "Fixed\ntext."
+    );
+}
+
+#[test]
+fn invisible_characters_cannot_hide_an_echoed_tag() {
+    let reply = content("<dr\u{200b}aft>Fixed text.</draft\u{1b}>");
+    assert_eq!(edited_draft(&reply).unwrap(), "Fixed text.");
+}
+
+#[test]
+fn a_framed_reply_that_is_only_the_tags_is_refused_as_empty() {
+    let reply = content("<draft>\n \n</draft>");
+    assert!(message(edited_draft(&reply)).contains("empty edit"));
+}
+
+#[test]
+fn a_framed_reply_cut_off_at_the_limit_is_still_refused() {
+    let reply = finished("length".into(), "<draft>\nThe first half".into());
+    assert_cut_off(edited_draft(&reply));
+}
+
+#[test]
+fn an_unframed_reply_keeps_tags_the_user_wrote() {
+    // Text holding a tag is sent without framing, so tags in the reply are the user's own.
+    let reply = content("<draft>my tag</draft>");
+    assert_eq!(edited_text(&reply).unwrap(), "<draft>my tag</draft>");
+}
