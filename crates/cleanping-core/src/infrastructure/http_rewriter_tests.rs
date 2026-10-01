@@ -50,13 +50,14 @@ fn sends_the_system_prompt_user_text_and_bearer_key() {
     let body: serde_json::Value =
         serde_json::from_str(request.split("\r\n\r\n").nth(1).unwrap()).unwrap();
     assert_eq!(body["model"], "m");
-    assert_eq!(
-        body["messages"][0],
-        serde_json::json!({"role": "system", "content": "Fix it."})
-    );
+    assert_eq!(body["messages"][0]["role"], "system");
+    assert!(body["messages"][0]["content"]
+        .as_str()
+        .unwrap()
+        .starts_with("Fix it.\n\n"));
     assert_eq!(
         body["messages"][1],
-        serde_json::json!({"role": "user", "content": "  pleae fix  "})
+        serde_json::json!({"role": "user", "content": "<draft>\n  pleae fix  \n</draft>"})
     );
 }
 
