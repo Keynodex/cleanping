@@ -27,8 +27,14 @@ const LEAVE_UNCHANGED: &str =
 
 #[test]
 fn the_default_asks_to_fix_garbled_words_and_shows_one_example() {
-    assert!(DEFAULT_INSTRUCTIONS.contains(FIX_GARBLED), "{DEFAULT_INSTRUCTIONS}");
-    assert!(DEFAULT_INSTRUCTIONS.ends_with(EXAMPLE), "{DEFAULT_INSTRUCTIONS}");
+    assert!(
+        DEFAULT_INSTRUCTIONS.contains(FIX_GARBLED),
+        "{DEFAULT_INSTRUCTIONS}"
+    );
+    assert!(
+        DEFAULT_INSTRUCTIONS.ends_with(EXAMPLE),
+        "{DEFAULT_INSTRUCTIONS}"
+    );
     assert!(!DEFAULT_INSTRUCTIONS.contains(LEAVE_UNCHANGED));
 }
 
@@ -38,4 +44,26 @@ fn the_default_is_this_text_byte_for_byte() {
     assert_eq!(DEFAULT_INSTRUCTIONS, expected);
     assert_eq!(preset_named("default").unwrap().body, expected);
     assert_eq!(PROMPT_PRESETS[0].name, "default");
+}
+
+/// The `default` text saved by anyone who chose it before 2026-10-01.
+fn earlier_default() -> String {
+    format!("{OPENING} {LEAVE_UNCHANGED}")
+}
+
+#[test]
+fn the_earlier_default_text_is_still_recognised_as_default() {
+    assert_eq!(preset_for_body(&earlier_default()).unwrap().name, "default");
+    let saved = format!("{}\n", earlier_default());
+    assert_eq!(preset_for_body(&saved).unwrap().name, "default");
+}
+
+#[test]
+fn every_earlier_text_names_a_preset_and_differs_from_every_current_text() {
+    assert_eq!(EARLIER_BODIES.len(), 1);
+    assert_eq!(EARLIER_BODIES[0].1, earlier_default());
+    for (name, text) in EARLIER_BODIES {
+        assert!(preset_named(name).is_some(), "{name}");
+        assert!(PROMPT_PRESETS.iter().all(|p| p.body != *text), "{name}");
+    }
 }

@@ -96,10 +96,33 @@ pub fn preset_named(name: &str) -> Option<&'static PromptPreset> {
         .find(|preset| preset.name.eq_ignore_ascii_case(wanted))
 }
 
-/// The preset whose text this saved prompt is (ignoring blanks at the ends), if any.
+/// Earlier texts of a preset, as `(preset name, text)`. Someone who chose the preset back then
+/// still has that text saved, and it is still ours, not a prompt they wrote: it is recognised as
+/// the preset, so switching away needs no `--yes`. They keep it until they choose again.
+const EARLIER_BODIES: &[(&str, &str)] = &[(
+    // `default` until 2026-10-01, replaced because its last sentence made the model leave
+    // garbled words unchanged.
+    "default",
+    "You are a precise copy editor for a software developer's terminal prompts. \
+Fix spelling, grammar, and clarity while retaining the author's intent, tone, \
+technical details, and all constraints. Preserve commands, code, flags, file \
+paths, identifiers, names, URLs, and error messages exactly. Do not execute \
+or answer the request. Do not add facts, requirements, or explanations. \
+Return only the edited text, with no quotes or Markdown fences. \
+If editing would change technical meaning, leave that portion unchanged.",
+)];
+
+/// The preset whose text, current or earlier, this saved prompt is (ignoring blanks at the
+/// ends), if any.
 pub fn preset_for_body(body: &str) -> Option<&'static PromptPreset> {
     let wanted = body.trim();
-    PROMPT_PRESETS.iter().find(|preset| preset.body == wanted)
+    PROMPT_PRESETS
+        .iter()
+        .find(|preset| preset.body == wanted)
+        .or_else(|| {
+            let (name, _) = EARLIER_BODIES.iter().find(|(_, text)| *text == wanted)?;
+            preset_named(name)
+        })
 }
 
 #[cfg(test)]
