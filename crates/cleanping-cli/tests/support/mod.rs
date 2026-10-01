@@ -256,7 +256,21 @@ impl FakeServer {
 }
 
 pub fn ok_reply(content: &str) -> String {
-    let body = serde_json::json!({"choices": [{"message": {"content": content}}]}).to_string();
+    json_reply(serde_json::json!({"message": {"content": content}}))
+}
+
+/// A reply that says why the provider stopped (`finish_reason`).
+pub fn finished_reply(content: &str, reason: &str) -> String {
+    json_reply(serde_json::json!({"message": {"content": content}, "finish_reason": reason}))
+}
+
+/// A reply the provider stopped at its output limit, holding only the start of the text.
+pub fn cut_off_reply(content: &str) -> String {
+    finished_reply(content, "length")
+}
+
+fn json_reply(choice: serde_json::Value) -> String {
+    let body = serde_json::json!({ "choices": [choice] }).to_string();
     format!(
         "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",
         body.len()

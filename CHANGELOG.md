@@ -7,6 +7,13 @@ behavior, and the notes below say when it does.
 
 ## [Unreleased]
 
+### Fixed
+
+- **A reply the provider cut off at its length limit is refused**, instead of being used as if it were the
+  whole rewrite. This happened most with models that think before they answer, on long texts. The command
+  exits `1` with nothing on stdout, the shell key and `edit` leave your text as it was, and the message
+  says what to try ([troubleshooting](docs/troubleshooting.md#the-provider)).
+
 ### Added
 
 - A `structure` system prompt: after `cleanping prompt use structure`, rewrites ask the AI to fix a draft,
