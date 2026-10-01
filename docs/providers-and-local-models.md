@@ -96,6 +96,13 @@ only, no redirects, no proxy) and looks for an `ollama` program on your `PATH`.
 The first request after Ollama loads a model into memory can take much longer than the ones after it. A
 rewrite gives up after 180 seconds; `keys test` after 60.
 
+## Models that think before they answer
+
+Some models think before they answer, and that thinking counts toward the provider's limit on how long a
+reply may be. With a long text, such a model can run out of room before the rewrite is complete. When the
+provider says it stopped at that limit, CleanPing refuses the reply instead of using part of a rewrite, and
+your text stays as it was ([what to do](troubleshooting.md#the-provider)).
+
 ## Limits
 
 A reply larger than 1 MB is refused, and input above 200,000 bytes is refused before anything is sent.

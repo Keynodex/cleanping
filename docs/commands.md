@@ -166,7 +166,7 @@ Prints the shell integration. Add `eval "$(cleanping init zsh)"` to `~/.zshrc`, 
 | Code | Meaning |
 |---|---|
 | `0` | Success |
-| `1` | The request failed: network, provider or storage |
+| `1` | The request failed: network, provider (including a reply the provider cut off at its length limit) or storage |
 | `2` | Bad input: empty or too long text, an invalid address or option, text refused by `--refuse-secrets`, or `setup` or `writer` without a terminal |
 | `3` | No usable key: none saved, several saved and none selected, or the name you gave does not exist |
 
