@@ -33,7 +33,7 @@ Minimum Rust is 1.89 (`rust-version`, checked in CI).
 - `crates/cleanping-cli` — the `cleanping` binary: `args`, `rewrite`, `keys`, `prompt`, `history`, `init`
   (shell scripts in `shell/`), `guard` (the refuse-if-it-looks-like-a-secret check), `marks` (hidden
   `--marks`, see below), `connection` (`keys test`), `progress` (the estimate on stderr while a rewrite
-  waits: only when stderr is a terminal, after 1.5 s, erased before anything else is printed; the
+  waits: only when stderr is a terminal, after 0.5 s (`progress::bar::SHOW_AFTER`), erased before anything else is printed; the
   percent comes from `domain/progress.rs`, a guess held at 95 until the reply arrives); all stdout goes through `output` (a closed pipe
   is not a panic)
 - Local models: `domain/local_server.rs` decides what to suggest (install, start, pull the model; install

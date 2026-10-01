@@ -26,7 +26,7 @@ pub mod timing {
     use std::time::Duration;
 
     /// Connecting and the model's first word, whatever the size of the text. With this, a
-    /// short text is past 90 % when the line first shows at 1.5 s.
+    /// short text is just over half way when the line first shows at 0.5 s.
     pub const BASE: Duration = Duration::from_secs(1);
     /// About 1,100 bytes a second, a fast hosted model.
     pub const PER_KILOBYTE: Duration = Duration::from_millis(900);

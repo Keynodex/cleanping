@@ -14,8 +14,10 @@ use support::*;
 const LIMIT: Duration = Duration::from_secs(20);
 const ROUGH: &str = "pls fix teh login";
 const CLEAN: &str = "Please fix the login.";
-/// Longer than the delay before the line appears (1.5 s), so a slow reply shows it.
-const SLOW: Duration = Duration::from_millis(2500);
+/// The delay before the line appears (`progress::bar::SHOW_AFTER` in the binary).
+const SHOW_AFTER: Duration = Duration::from_millis(500);
+/// Three times [`SHOW_AFTER`], so a slow reply would show the line if nothing hid it.
+const SLOW: Duration = Duration::from_millis(1500);
 
 fn terminal(sandbox: &Sandbox, command: &str, extra: &[(&str, &str)]) -> Pty {
     let mut variables = vec![("TERM", "xterm"), ("LANG", "C.UTF-8")];
@@ -56,7 +58,7 @@ fn slow_run(reply: String, command: &str, last: &str) -> Vec<String> {
         "no estimate: {:?}",
         screen.plain_screen()
     );
-    assert!(started.elapsed() >= Duration::from_millis(1500), "too soon");
+    assert!(started.elapsed() >= SHOW_AFTER, "too soon");
     let drawn = screen.plain_screen();
     assert!(drawn.contains("Fixing your text\u{2026} "), "{drawn:?}");
     assert!(drawn.contains('\u{25b1}'), "a bar: {drawn:?}");
@@ -112,6 +114,9 @@ fn the_line_is_erased_before_a_refusal() {
     assert_no_bar(&lines);
 }
 
+/// The fake server answers at once on 127.0.0.1, a few milliseconds, far under [`SHOW_AFTER`].
+/// The whole output is checked, not only what is left on screen: an erased line would leave
+/// nothing on screen either, so only this proves it was never drawn.
 #[test]
 fn a_quick_reply_shows_nothing() {
     let server = serve(vec![ok_reply(CLEAN)]);
@@ -119,9 +124,31 @@ fn a_quick_reply_shows_nothing() {
     let mut screen = terminal(&sandbox, &format!("cleanping '{ROUGH}'"), &[]);
     assert_eq!(screen.wait_for_exit(LIMIT), Some(0));
     assert!(screen.wait_for_text(CLEAN, LIMIT));
-    let lines = shown_lines(&screen.plain_screen());
+    let raw = screen.plain_screen();
+    assert!(
+        !raw.contains("about ") && !raw.contains("Fixing"),
+        "{raw:?}"
+    );
+    let lines = shown_lines(&raw);
     assert!(lines.contains(&CLEAN.to_string()), "{lines:?}");
-    assert_no_bar(&lines);
+}
+
+#[test]
+fn the_line_never_reaches_stdout() {
+    let (server, release) = serve_held(ok_reply(CLEAN));
+    let sandbox = with_server(&server);
+    let command = format!("cleanping '{ROUGH}' > \"$HOME/out.txt\"");
+    let mut screen = terminal(&sandbox, &command, &[]);
+    assert!(
+        screen.wait_until(LIMIT, || has_estimate(&screen.plain_screen())),
+        "positive control, the line is on the terminal: {:?}",
+        screen.plain_screen()
+    );
+    release.send(()).unwrap();
+    assert_eq!(screen.wait_for_exit(LIMIT), Some(0));
+    let stdout = std::fs::read_to_string(sandbox.dir.path().join("out.txt")).unwrap();
+    assert_eq!(stdout, format!("{CLEAN}\n"));
+    assert_no_bar(&shown_lines(&screen.plain_screen()));
 }
 
 #[test]

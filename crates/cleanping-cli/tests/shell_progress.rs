@@ -12,8 +12,8 @@ use support::shell::*;
 use support::writer;
 use support::*;
 
-/// Longer than the delay before the line would appear (1.5 s).
-const SLOW: Duration = Duration::from_millis(2500);
+/// Three times the delay before the line would appear (0.5 s, `progress::bar::SHOW_AFTER`).
+const SLOW: Duration = Duration::from_millis(1500);
 const TYPED: &str = "pleae fix this";
 const FIXED: &str = "Please fix this.";
 /// A UTF-8 terminal, where the line would be drawn if it were shown.

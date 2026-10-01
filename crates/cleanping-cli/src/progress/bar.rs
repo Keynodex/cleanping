@@ -4,8 +4,14 @@ use std::time::Duration;
 
 use cleanping_core::domain::progress::Progress;
 
-/// Quick rewrites show nothing: the line appears only after this long.
-pub const SHOW_AFTER: Duration = Duration::from_millis(1500);
+/// Quick rewrites show nothing: the line appears only after this long. The one place the delay
+/// is set: the plain command, `edit --yes` and the edit screen all wait this long.
+///
+/// Measured 2026-10-01 with a fast provider (DeepSeek flash, thinking off): a 700-character text
+/// took 1.0 to 1.4 s, under the old 1.5 s, so the line never showed and the wait looked broken.
+/// A short text takes 0.5 to 0.7 s, so at 0.5 s the line often shows for a moment; it is erased
+/// before the result, so that is a brief flash and nothing is left on screen.
+pub const SHOW_AFTER: Duration = Duration::from_millis(500);
 
 const GREEN: &str = "\u{1b}[32m";
 const RESET: &str = "\u{1b}[0m";

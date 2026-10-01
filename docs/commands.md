@@ -48,7 +48,7 @@ go to a provider you did not pick.
 
 Input is limited to 200,000 bytes and is checked before any request is made.
 
-**While it waits.** A long text can take the AI a while. When a rewrite takes more than 1.5 seconds and
+**While it waits.** A long text can take the AI a while. When a rewrite takes more than half a second and
 stderr is a terminal, a line on stderr shows how it is going:
 
 ```console
@@ -94,7 +94,7 @@ Claude Code and Codex open it with Ctrl+G. The full guide is
 When the edit changes a command in your text, the screen says `Check the command: ...` under the title
 (Enter still accepts it), and `--yes` prints the same as a `cleanping: warning:` line on stderr.
 
-While the edit is on its way, after 1.5 seconds the screen shows the same
+While the edit is on its way, after half a second the screen shows the same
 [estimate](#rewrite-text) under the title: a green bar and `about 40% 12s`. `--yes` in a terminal shows
 the line on stderr and erases it before anything else is printed.
 

@@ -53,15 +53,15 @@ fn without_a_changed_command_the_line_stays_blank() {
     assert_eq!(text(&lines[1]), "");
 }
 
-fn waiting(seconds: u64) -> View {
+fn waiting(millis: u64) -> View {
     let mut view = View::new("pls fix teh login".into(), "Local".into(), Phase::Waiting);
-    view.waited = std::time::Duration::from_secs(seconds);
+    view.waited = std::time::Duration::from_millis(millis);
     view
 }
 
 #[test]
 fn a_slow_edit_shows_the_estimate_under_the_header() {
-    let lines = render(&mut waiting(4), 80, 10);
+    let lines = render(&mut waiting(4_000), 80, 10);
     assert!(text(&lines[0]).contains("editing with Local"));
     let notice = text(&lines[1]);
     assert!(notice.starts_with('\u{25b0}'), "{notice}");
@@ -82,13 +82,20 @@ fn a_slow_edit_shows_the_estimate_under_the_header() {
 
 #[test]
 fn a_quick_edit_shows_no_estimate() {
-    let lines = render(&mut waiting(1), 80, 10);
+    let lines = render(&mut waiting(400), 80, 10);
     assert_eq!(text(&lines[1]), "");
 }
 
 #[test]
+fn the_estimate_shows_from_half_a_second() {
+    let lines = render(&mut waiting(500), 80, 10);
+    let notice = text(&lines[1]);
+    assert!(notice.ends_with("% 0s"), "estimate at 0.5 s: {notice:?}");
+}
+
+#[test]
 fn the_estimate_fits_a_narrow_screen() {
-    let lines = render(&mut waiting(4), 20, 10);
+    let lines = render(&mut waiting(4_000), 20, 10);
     let notice = text(&lines[1]);
     assert!(notice.contains("% 4s"), "{notice}");
     assert!(notice.contains('\u{25b0}'), "{notice}");
