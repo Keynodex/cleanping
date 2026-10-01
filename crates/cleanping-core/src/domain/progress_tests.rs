@@ -42,7 +42,7 @@ fn it_is_held_at_95_and_never_says_100() {
 #[test]
 fn it_moves_from_the_first_second() {
     assert!(at(40, 1_000) > 0, "{}", at(40, 1_000));
-    assert!(at(40, 1_500) < at(40, 3_000));
+    assert!(at(2_000, 1_500) < at(2_000, 3_000));
 }
 
 #[test]
@@ -51,6 +51,27 @@ fn it_is_most_of_the_way_at_the_expected_time_and_full_at_twice_that() {
     let there = estimate_progress(2_000, expected).percent;
     assert!((80..=86).contains(&there), "{there}");
     assert_eq!(estimate_progress(2_000, expected * 2).percent, HELD_AT);
+}
+
+/// Measured 2026-10-01 with a fast provider (DeepSeek flash, thinking off): a 5,934-character
+/// text took 4.8 to 5.1 s, and a short one 0.5 to 0.7 s.
+#[test]
+fn it_matches_the_measured_fast_provider() {
+    let nearly_done = at(5_934, 5_000);
+    assert!(
+        (70..HELD_AT).contains(&nearly_done),
+        "the 5,934-byte text at 5 s should be nearly done, not {nearly_done}%"
+    );
+    let just_started = at(5_934, 500);
+    assert!(
+        just_started < 30,
+        "the 5,934-byte text at 0.5 s should have just started, not {just_started}%"
+    );
+    let short_on_show = at(100, 1_500);
+    assert!(
+        short_on_show > 50,
+        "a short text should be over half way when the line first shows, not {short_on_show}%"
+    );
 }
 
 #[test]
