@@ -49,6 +49,8 @@ pub struct Review {
     pub edited: String,
     pub diff: Option<Diff>,
     pub showing_original: bool,
+    /// How the edit changed a command in the text, in words, if it did.
+    pub command_warning: Option<String>,
 }
 
 #[derive(Clone, Debug)]

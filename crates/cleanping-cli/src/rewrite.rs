@@ -9,6 +9,7 @@ use cleanping_core::infrastructure::sqlite_repositories::SqliteRunRepository;
 
 use crate::args::Cli;
 use crate::clipboard;
+use crate::command_warnings;
 use crate::guard;
 use crate::hints;
 use crate::input;
@@ -82,6 +83,10 @@ pub fn run(cli: &Cli, services: &Services) -> Result<()> {
     match (result.output_text, result.error_message) {
         (Some(output), _) => {
             output::line(&output)?;
+            // With --keep-shape a changed command was already refused.
+            if !cli.keep_shape {
+                command_warnings::warn_about(&text, &output);
+            }
             if cli.copy && !clipboard::copy(&output) {
                 output::warn(&format!(
                     "warning: could not copy to the clipboard (tried {}).",

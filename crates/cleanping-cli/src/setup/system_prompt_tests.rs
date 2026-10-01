@@ -98,3 +98,16 @@ fn it_says_how_to_write_your_own() {
         console.said_text()
     );
 }
+
+#[test]
+fn the_structure_prompt_is_a_numbered_choice_after_friendly() {
+    let (_dir, services) = temp_services();
+    let after_friendly = (number("friendly").parse::<usize>().unwrap() + 1).to_string();
+    let mut console = ScriptedConsole::new(&[&after_friendly]);
+    run(&mut console, &services).unwrap();
+    let said = console.said_text();
+    let line = format!("  {after_friendly}) structure Fix and lay out");
+    assert!(said.contains(&line), "no structure preset in: {said}");
+    assert_eq!(services.prompts.current().unwrap(), body("structure"));
+    assert!(said.contains("\u{201c}structure\u{201d} preset"), "{said}");
+}

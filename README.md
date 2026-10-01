@@ -20,7 +20,16 @@ Works on Linux and macOS. Windows is not supported yet.
 
 ## Install
 
-**Prebuilt binary** (Linux x86_64, macOS Apple silicon and Intel): download the archive for your system from the [latest release](https://github.com/Keynodex/cleanping/releases/latest), then check it and put it on your `PATH`:
+**On a Mac, the easy way:** download the installer from the latest release, then run it. These are two separate steps, so you can read the file before you run it:
+
+```sh
+curl -fsSLO https://github.com/Keynodex/cleanping/releases/latest/download/install-cleanping-mac.sh
+sh install-cleanping-mac.sh
+```
+
+It picks the build for your Mac (Apple silicon or Intel), downloads it from the same release, and checks it against its SHA-256 checksum. If the checksum does not match it stops and installs nothing. It installs `cleanping` into `~/.local/bin` and adds one line to `~/.zshrc` so that new Terminal windows can find it (only if the line is not already there). It changes nothing else. Then open a new Terminal window and run `cleanping setup`. Each release has the installer with its `.sha256` file and a build-provenance attestation. The CleanPing page on keynodex.com shows the same two steps.
+
+**Prebuilt binary by hand** (Linux x86_64, macOS Apple silicon and Intel): download the archive for your system from the [latest release](https://github.com/Keynodex/cleanping/releases/latest), then check it and put it on your `PATH`:
 
 ```sh
 sha256sum -c cleanping-v0.4.0-x86_64-unknown-linux-gnu.tar.gz.sha256   # macOS: shasum -a 256 -c
@@ -144,7 +153,7 @@ It works with Claude Code and Codex, as tested. Other apps that run `$VISUAL FIL
 | `cleanping keys use NAME` / `remove NAME` | Choose the default key / delete one |
 | `cleanping keys test [NAME]` | Send one tiny fixed request to check that a key works. Exit `0` if it answered, `1` if not, `3` if no key is saved |
 | `cleanping prompt show` / `set [TEXT]` | Read or change the system prompt sent with every rewrite |
-| `cleanping prompt presets` / `use NAME` | List the ready-made system prompts (`default`, `typos`, `concise`, `friendly`) / switch to one. Replacing a prompt you wrote yourself needs `--yes` |
+| `cleanping prompt presets` / `use NAME` | List the ready-made system prompts (`default`, `typos`, `concise`, `friendly`, `structure`) / switch to one. Replacing a prompt you wrote yourself needs `--yes` |
 | `cleanping history list [--limit N]` | Show your newest rewrites, one line each |
 | `cleanping history clear --yes` | Delete every saved rewrite |
 | `cleanping history purge --older-than DAYS` | Delete rewrites older than DAYS days |

@@ -1,7 +1,7 @@
 //! Turns the state of the edit screen into lines: a header, the text, and a footer of keys.
 
 use super::view::{Line, Phase, Review, Span, Style, View};
-use super::wrap::{cells, clip, wrap, Cell};
+use super::wrap::{cells, clip, printable, wrap, Cell};
 
 fn span(text: impl Into<String>, style: Style) -> Span {
     Span {
@@ -55,6 +55,20 @@ fn header(view: &View) -> Line {
         ],
         Phase::Failed(_) => vec![title(), span("  Could not edit", Style::Bad)],
         Phase::Refused(_) => vec![title(), span("  Not sent", Style::Bad)],
+    }
+}
+
+/// The line under the header: a warning when the edit changed a command, else blank.
+fn notice(view: &View) -> Line {
+    match &view.phase {
+        Phase::Review(Review {
+            command_warning: Some(warning),
+            ..
+        }) => vec![span(
+            printable(&format!("Check the command: {warning}")).replace('\n', " "),
+            Style::Bad,
+        )],
+        _ => Vec::new(),
     }
 }
 
@@ -130,9 +144,13 @@ pub fn render(view: &mut View, width: usize, height: usize) -> Vec<Line> {
     let rows = wrap(&body(view), width);
     let room = height - 3;
     view.scroll = view.scroll.min(rows.len().saturating_sub(room));
-    let mut lines = vec![header(view), Vec::new()];
+    let mut lines = vec![header(view), notice(view)];
     lines.extend(rows.iter().skip(view.scroll).take(room).cloned());
     lines.resize(height - 1, Vec::new());
     lines.push(footer(view, rows.len() > room));
     lines.into_iter().map(|line| clip(line, width)).collect()
 }
+
+#[cfg(test)]
+#[path = "layout_tests.rs"]
+mod tests;
