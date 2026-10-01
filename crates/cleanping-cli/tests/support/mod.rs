@@ -11,6 +11,7 @@ use std::process::{Command, Stdio};
 use std::sync::{Arc, Mutex};
 
 use cleanping_core::application::ports::{CredentialRepository, SecretStore};
+use cleanping_core::domain::draft_frame::DRAFT_INSTRUCTIONS;
 use cleanping_core::domain::models::CredentialInput;
 use cleanping_core::infrastructure::secrets_file::JsonSecretStore;
 use cleanping_core::infrastructure::sqlite_db::Database;
@@ -240,17 +241,39 @@ impl FakeServer {
     }
 
     /// The user message of the n-th request, as the API would see it.
-    pub fn user_text(&self, n: usize) -> String {
+    pub fn raw_user_text(&self, n: usize) -> String {
         self.body(n)["messages"][1]["content"]
             .as_str()
             .unwrap()
             .to_string()
     }
 
+    /// The text the n-th request asked to edit: its user message without the `<draft>` tags
+    /// CleanPing puts around it. Panics when the message is not framed.
+    pub fn user_text(&self, n: usize) -> String {
+        let raw = self.raw_user_text(n);
+        raw.strip_prefix("<draft>\n")
+            .and_then(|rest| rest.strip_suffix("\n</draft>"))
+            .unwrap_or_else(|| panic!("the draft was not framed: {raw:?}"))
+            .to_string()
+    }
+
+    /// The system message of the n-th request, as the API would see it.
     pub fn system_text(&self, n: usize) -> String {
         self.body(n)["messages"][0]["content"]
             .as_str()
             .unwrap()
+            .to_string()
+    }
+
+    /// The saved prompt the n-th request carried: its system message without the fixed sentence
+    /// CleanPing adds. Panics when the sentence is missing.
+    pub fn saved_prompt(&self, n: usize) -> String {
+        let system = self.system_text(n);
+        system
+            .strip_suffix(DRAFT_INSTRUCTIONS)
+            .and_then(|rest| rest.strip_suffix("\n\n"))
+            .unwrap_or_else(|| panic!("the fixed sentence is missing: {system:?}"))
             .to_string()
     }
 }

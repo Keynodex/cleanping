@@ -59,6 +59,6 @@ fn a_rewrite_sends_the_structure_prompt_to_the_provider() {
     assert_eq!(sandbox.run(&["prompt", "use", "structure"], None).code, 0);
     let out = sandbox.run(&["fix teh build"], None);
     assert_eq!(out.code, 0, "{}", out.stderr);
-    assert_eq!(server.system_text(0), STRUCTURE_FILE.trim_end());
+    assert_eq!(server.saved_prompt(0), STRUCTURE_FILE.trim_end());
     assert_eq!(server.user_text(0), "fix teh build");
 }

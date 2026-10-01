@@ -24,6 +24,11 @@ Minimum Rust is 1.89 (`rust-version`, checked in CI).
 - `crates/cleanping-core/src/domain` — entities and invariants, no I/O (`VersionStack`, URL rules, presets)
 - `crates/cleanping-core/src/application` — use cases and ports (traits); fakes live in `test_support.rs`
 - `crates/cleanping-core/src/infrastructure` — SQLite, secrets file, HTTP (ureq), paths, clock
+- Request framing: `domain/draft_frame.rs` (the `<draft>` tags, the fixed sentence, stripping echoed tags;
+  a draft holding a tag is sent unframed) and `domain/provider_extras.rs` (DeepSeek flash on
+  `api.deepseek.com` only: thinking off) are pure; `infrastructure/chat_request.rs` builds the body from
+  them and `chat_reply.rs` reads the reply. Framing lives only in the HTTP adapter: history, `--keep-shape`
+  and the secret guard always use the original text and saved prompt.
 - `crates/cleanping-cli` — the `cleanping` binary: `args`, `rewrite`, `keys`, `prompt`, `history`, `init`
   (shell scripts in `shell/`), `guard` (the refuse-if-it-looks-like-a-secret check), `marks` (hidden
   `--marks`, see below), `connection` (`keys test`); all stdout goes through `output` (a closed pipe
