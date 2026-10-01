@@ -139,8 +139,10 @@ fn ctrl_c_at_the_key_prompt_saves_nothing_and_restores_typing() {
         "{}",
         screen.plain_screen()
     );
+    // `stty -a` prints a line at a time, and "speed" is on its first line. The local flags come
+    // last, with `echoke` (or `-echoke`) after `echo`, so wait for that before checking echo.
     assert!(
-        screen.wait_for_text("speed", LIMIT),
+        screen.wait_for_text("echoke", LIMIT),
         "{}",
         screen.plain_screen()
     );

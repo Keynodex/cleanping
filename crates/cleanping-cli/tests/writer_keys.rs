@@ -103,6 +103,12 @@ fn a_blank_line_copies_nothing() {
 
     screen.send(ENTER);
     wait_for_file(&screen, &rig.record, "x");
+    // The message is printed after the copy, then the prompt comes back: wait for the prompt.
+    assert!(
+        screen.wait_until(LIMIT, || screen.plain_screen().ends_with(PROMPT)),
+        "{}",
+        screen.plain_screen()
+    );
     assert_eq!(screen.plain_screen().matches("Copied.").count(), 1);
 }
 

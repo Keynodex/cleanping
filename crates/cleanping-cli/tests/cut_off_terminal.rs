@@ -71,6 +71,13 @@ fn the_edit_screen_says_why_and_keeps_the_text() {
         "the cut-off reply was used: {}",
         screen.plain_screen()
     );
+    // The header comes first, in its own writes; the footer is the last line drawn, so once it
+    // is there the message and the text above it are too.
+    assert!(
+        screen.wait_for_text("Press any key to keep your text as it is", WAIT),
+        "{}",
+        screen.plain_screen()
+    );
     let shown = screen.plain_screen();
     assert!(shown.contains("The reply was cut off"), "{shown}");
     assert!(
