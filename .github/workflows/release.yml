@@ -1,8 +1,9 @@
 name: Release
 
 # Runs when a version tag such as v0.2.0 is pushed. Checks the tag, builds the CLI for each
-# target, packs it with a SHA-256 checksum and a build-provenance attestation, and creates a
-# DRAFT release that a person reviews and publishes.
+# target, packs it with a SHA-256 checksum and a build-provenance attestation, writes the Mac
+# installer with the tag filled in (same checksum and attestation), and creates a DRAFT release
+# that a person reviews and publishes.
 #
 # Run it by hand (Actions tab -> Release -> Run workflow) for a dry run: everything is built
 # and checked, nothing is attested or published.
@@ -98,10 +99,44 @@ jobs:
             cleanping-*.tar.gz
             cleanping-*.tar.gz.sha256
 
+  # The Mac installer that keynodex.com links to as releases/latest/download/install-cleanping-mac.sh,
+  # so every release must carry it. Handled like the archives: checksum, attestation, artifact.
+  installer:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write # to sign the build-provenance attestation
+      attestations: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # On a tag push, verify has already checked that the tag is exactly v<Cargo version>;
+      # installer-for-release.sh also refuses anything but vX.Y.Z before it substitutes.
+      - name: Fill in the version
+        env:
+          VERSION: ${{ needs.verify.outputs.version }}
+        run: |
+          bash .github/scripts/installer-for-release.sh "v${VERSION}" scripts/install-cleanping-mac.sh install-cleanping-mac.sh
+          shasum -a 256 install-cleanping-mac.sh > install-cleanping-mac.sh.sha256
+      - name: Attest build provenance
+        if: github.event_name == 'push'
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: install-cleanping-mac.sh
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: install-cleanping-mac
+          path: |
+            install-cleanping-mac.sh
+            install-cleanping-mac.sh.sha256
+
   publish:
     # Only a real tag push creates anything; a manual run stops after the build.
     if: github.event_name == 'push'
-    needs: [verify, build]
+    needs: [verify, build, installer]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
