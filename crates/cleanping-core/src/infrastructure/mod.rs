@@ -2,6 +2,8 @@
 
 mod chat_reply;
 pub mod clock;
+#[cfg(test)]
+mod fake_api;
 pub mod http_rewriter;
 pub mod ollama;
 pub mod paths;
