@@ -42,6 +42,11 @@ behavior, and the notes below say when it does.
   kilobyte of text, from timings measured with DeepSeek flash (thinking off). Before, it guessed a slow
   provider, so a quick rewrite finished while the bar showed under 20%. It is still an estimate: with a
   slower provider (a thinking model, a local model) the bar waits longer at 95%.
+- **The `default` system prompt now fixes garbled and badly misspelled words** that it used to leave
+  alone, such as "sdf is now evn the way to do I dwnt se the profes bar at allll". It asks the AI to work
+  out each intended word from the sentence around it, and carries one worked example. If you already have
+  the old default saved, run `cleanping prompt use default` to switch (no `--yes` needed);
+  `cleanping prompt presets` reminds you ([the default prompt](docs/system-prompts.md#the-default-prompt)).
 
 - A Mac installer on every release. Download `install-cleanping-mac.sh` from the latest release and run it
   with `sh install-cleanping-mac.sh`. It picks the build for your Mac and checks its SHA-256 checksum,
