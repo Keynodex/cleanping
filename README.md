@@ -14,7 +14,7 @@ Please fix the login page; the buttons are too small.
 - **A key for your shell.** Type a rough command line, press one key, get it rewritten in place. Press again to restore your original.
 - **Fix your message inside Claude Code and Codex.** Press their edit key (Ctrl+G), see the changed words highlighted, and press Enter to accept or N to keep yours.
 - **A writing mode for people who never use a shell.** `cleanping writer` opens a window where nothing you type is ever run: Ctrl+G fixes your text, Enter copies it.
-- **Private by default.** Your API key stays in a file only you can read and is never printed or passed on a command line. Text goes only to the provider you configured.
+- **Your key stays private.** Your API key stays in a file only you can read and is never printed or passed on a command line. Text goes only to the provider you configured, and that provider can read it.
 
 Works on Linux and macOS. Windows is not supported yet.
 
@@ -27,17 +27,17 @@ curl -fsSLO https://github.com/Keynodex/cleanping/releases/latest/download/insta
 sh install-cleanping-mac.sh
 ```
 
-It picks the build for your Mac (Apple silicon or Intel), downloads it from the same release, and checks it against its SHA-256 checksum. If the checksum does not match it stops and installs nothing. It installs `cleanping` into `~/.local/bin` and adds one line to `~/.zshrc` so that new Terminal windows can find it (only if the line is not already there). It changes nothing else. Then open a new Terminal window and run `cleanping setup`. Each release has the installer with its `.sha256` file and a build-provenance attestation. The CleanPing page on keynodex.com shows the same two steps.
+It picks the build for your Mac (Apple silicon or Intel), downloads it from the same release, and checks it against its SHA-256 checksum. If the checksum does not match it stops and installs nothing. It installs `cleanping` into `~/.local/bin` and adds one line to `~/.zshrc` so that new Terminal windows can find it (only if the line is not already there). It changes nothing else. Then open a new Terminal window and run `cleanping setup`. From v0.5.0 on, each release has the installer with its `.sha256` file and a build-provenance attestation (the v0.4.0 installer was uploaded by hand and has neither). The CleanPing page on keynodex.com shows the same two steps.
 
 **Prebuilt binary by hand** (Linux x86_64, macOS Apple silicon and Intel): download the archive for your system from the [latest release](https://github.com/Keynodex/cleanping/releases/latest), then check it and put it on your `PATH`:
 
 ```sh
-sha256sum -c cleanping-v0.4.0-x86_64-unknown-linux-gnu.tar.gz.sha256   # macOS: shasum -a 256 -c
-tar xzf cleanping-v0.4.0-x86_64-unknown-linux-gnu.tar.gz
-install cleanping-v0.4.0-x86_64-unknown-linux-gnu/cleanping ~/.local/bin/
+sha256sum -c cleanping-v0.5.0-x86_64-unknown-linux-gnu.tar.gz.sha256   # macOS: shasum -a 256 -c
+tar xzf cleanping-v0.5.0-x86_64-unknown-linux-gnu.tar.gz
+install cleanping-v0.5.0-x86_64-unknown-linux-gnu/cleanping ~/.local/bin/
 ```
 
-(Replace `v0.4.0` with the version you downloaded.) The Linux build needs glibc 2.34 or newer (Ubuntu 22.04+, Debian 12+). The macOS builds are not signed or notarized by Apple, so macOS may ask you to allow them. Each archive has a build-provenance attestation from this repository's release workflow.
+(Replace `v0.5.0` with the version you downloaded.) The Linux build needs glibc 2.34 or newer (Ubuntu 22.04+, Debian 12+). The macOS builds are not signed or notarized by Apple, so macOS may ask you to allow them. Each archive has a build-provenance attestation from this repository's release workflow.
 
 **From source** (needs [Rust](https://rustup.rs) 1.89 or newer):
 
