@@ -28,6 +28,13 @@ behavior, and the notes below say when it does.
 
 ### Changed
 
+- **Enter in `cleanping writer` can copy through your terminal.** When there is no clipboard tool, or it
+  fails (an `xclip` with no display over SSH, a server with no clipboard tool), the writer now asks your
+  terminal to copy the text (the OSC 52 escape sequence) and says `Sent to your terminal's clipboard.` A
+  terminal never answers, so CleanPing cannot confirm it worked: if pasting does not, select the text on
+  screen and copy it yourself. Most current terminals support it; inside tmux you may need
+  `set -g set-clipboard on`. The text goes only to your terminal, over the connection you are already
+  using. See [Use it your way](docs/use-it-your-way.md#5-writing-mode-for-text-only).
 - **`update` is now a command word**, like `writer` and `edit`. Text that starts with it must be given
   after `--` or piped in: `cleanping -- update the docs`.
 - **A reply that changes a command is caught.** Models asked to fix spelling often "fix" a command too,

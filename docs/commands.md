@@ -122,7 +122,8 @@ cleanping writer
 
 A text-only mode for people who have never used a shell: an interactive zsh where typed text is never
 run. **Ctrl+G** fixes the line in place, **Enter** copies it to the clipboard (with `pbcopy`, `wl-copy`,
-`xclip` or `xsel`, the first one found), **Ctrl+D** on an empty line leaves. It needs a terminal for both
+`xclip` or `xsel`, the first one found; if none works it asks your terminal to copy, which also works over
+SSH), **Ctrl+D** on an empty line leaves. It needs a terminal for both
 input and output (exit `2` without one) and zsh (exit `1` without it). It starts zsh with `-d -i` and a
 private `.zshrc` in `writer/` in the data folder, rewritten on every start, so none of your own zsh startup
 files are read. The exit status is zsh's. It never edits your files. It is a guard against accidents, not a
