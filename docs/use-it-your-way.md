@@ -98,7 +98,7 @@ It shows three lines of help and a `> ` prompt. Then:
 |---|---|
 | Type or paste | Your text goes on the line. Pasting several lines works |
 | **Ctrl+G** | Fixes the text in place. Press Ctrl+G again, without editing, to get your own text back |
-| **Enter** | Copies all of the text to the clipboard and says `Copied.` Your text stays on screen above that message and the line is cleared for the next one. Enter on an empty line does nothing |
+| **Enter** | Copies all of the text to the clipboard and says `Copied.` (or, over SSH or with no clipboard tool, asks your terminal to copy and says `Sent to your terminal's clipboard.`) Your text stays on screen above that message and the line is cleared for the next one. Enter on an empty line does nothing |
 | **Ctrl+D** on an empty line | Leaves |
 
 Paste the copied text where you need it: **Cmd+V** on a Mac, **Ctrl+V** elsewhere.
@@ -125,9 +125,15 @@ stays an ordinary terminal instead of closing.
 - **No highlight.** The fixed line replaces your text, but the changed words are not lit up here: they would
   stay lit on lines that have scrolled away.
 - **zsh only.** There is no bash version.
-- **Copying needs a clipboard tool:** `pbcopy` (macOS), `wl-copy`, `xclip` or `xsel`. Without one, or if it
-  fails, you see `Could not copy (no clipboard tool found). Select the text above and copy it yourself.`
-  Over SSH the clipboard is the one on the machine where CleanPing runs.
+- **Copying uses a clipboard tool, or your terminal.** First it tries `pbcopy` (macOS), `wl-copy`, `xclip`
+  or `xsel`. Without one, or if it fails (for example `xclip` with no display over SSH), it asks your
+  terminal to copy the text (the OSC 52 escape sequence) and says
+  `Sent to your terminal's clipboard. If pasting does not work, select the text above and copy it yourself.`
+  Over SSH this reaches the clipboard on the machine you are sitting at, in terminals that allow it. A
+  terminal never answers, so CleanPing cannot tell whether it worked: if Ctrl+V pastes something else,
+  select the text on screen and copy it yourself (some terminals and multiplexers block it; inside tmux try
+  `set -g set-clipboard on`). If even that is impossible (`base64` or `tr` is missing, or the text is very
+  long) you see `Could not copy (no clipboard tool found). Select the text above and copy it yourself.`
 - **A guard against accidents, not a security sandbox.** It stops a typed line from running by mistake. It
   is still a zsh underneath, and someone who knows zsh well can find a way to run a command.
 - **It does not read your own zsh startup files** (such as `~/.zshrc`), so your prompt, aliases and

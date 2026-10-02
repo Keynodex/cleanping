@@ -18,7 +18,9 @@ To report a security problem privately, see [SECURITY.md](../SECURITY.md).
 
 CleanPing itself makes no other network connections: it never checks for updates by itself and sends no
 usage data. The only programs it starts are your clipboard tool (with `--copy`, and on Enter in `cleanping writer`),
-zsh (for `cleanping writer`) and `ollama pull` (with your yes).
+zsh (for `cleanping writer`) and `ollama pull` (with your yes). When no clipboard tool works, Enter in
+`cleanping writer` also starts `base64` and `tr` to encode a copy request, which it writes to your own
+terminal (over the SSH connection you are already using, if you have one) and nowhere else.
 
 ## What is stored on your computer
 

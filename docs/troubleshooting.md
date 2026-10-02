@@ -58,7 +58,8 @@ For a local Ollama it also says whether to install it, start it, or download the
 | `There is no terminal to show the edit on. Run it from a terminal, or add --yes ...` [1] | `cleanping edit` needs a terminal for its screen. Add `--yes` to edit the file without one |
 | `cleanping writer needs a terminal for its input and its output. ...` [2] | `cleanping writer` is for a terminal window. It cannot run in a script or with its input or output redirected |
 | `cleanping writer needs zsh, and zsh was not found. ...` [1] | Writing mode runs in zsh. Install it with your system's package manager (macOS and most Linux systems have it) |
-| `Could not copy (no clipboard tool found). ...` (shown inside the writer) | No `pbcopy`, `wl-copy`, `xclip` or `xsel` was found, or it failed. Select the text on screen and copy it yourself |
+| `Sent to your terminal's clipboard. ...` (shown inside the writer) | No clipboard tool worked, so CleanPing asked your terminal to copy the text. A terminal never answers, so this cannot be confirmed. If pasting does not work, your terminal may block it (inside tmux try `set -g set-clipboard on`): select the text on screen and copy it yourself |
+| `Could not copy (no clipboard tool found). ...` (shown inside the writer) | No `pbcopy`, `wl-copy`, `xclip` or `xsel` worked and the terminal could not be asked either (`base64` or `tr` is missing, or the text is too long). Select the text on screen and copy it yourself |
 | `Could not read the file to edit.` [2] | The file path is wrong or unreadable |
 | `Could not write the edited text back to the file.` | The file is not writable. Check its permissions |
 | The edit screen says **Check the command: ...** | The edit [changed a command](privacy-and-safety.md#a-reply-that-changes-a-command) in your text, for example closed a quote. Press O to compare with your original; Enter still accepts the edit, N keeps your text |

@@ -13,7 +13,22 @@ CLEANPING_KEYBIND='^G'
 CLEANPING_HIGHLIGHT=''
 eval "$(command cleanping init zsh)"
 
-# Copy $1 with the first clipboard tool found. Fails when there is none or it fails.
+# Ask the terminal itself to copy $1 (the OSC 52 escape sequence). It reaches your own clipboard
+# over SSH or on a server with no clipboard tool. The terminal never answers, so the caller can
+# only say the request was sent. Fails when `base64` or `tr` is missing, or the text is too long
+# for a request (many terminals refuse more than about 75 kB).
+_cleanping_writer_ask_terminal() {
+  emulate -L zsh
+  local encoded
+  whence -p -- base64 >/dev/null 2>&1 && whence -p -- tr >/dev/null 2>&1 || return 1
+  encoded=$(printf '%s' "$1" | command base64 | command tr -d '\n') || return 1
+  [[ -n $encoded ]] && (( ${#encoded} <= 74000 )) || return 1
+  print -rn -- $'\e]52;c;'"$encoded"$'\a'
+}
+
+# Copy $1 with the first clipboard tool found. Returns 0 when a tool copied it. When there is
+# no tool, or it fails (an `xclip` with no display over SSH), it asks the terminal to copy
+# instead and returns 2: that request cannot be confirmed. Returns 1 when nothing could be done.
 _cleanping_writer_copy() {
   emulate -L zsh
   local candidate
@@ -21,9 +36,12 @@ _cleanping_writer_copy() {
   for candidate in 'pbcopy' 'wl-copy' 'xclip -selection clipboard' 'xsel --clipboard --input'; do
     tool=( ${=candidate} )
     whence -p -- ${tool[1]} >/dev/null 2>&1 || continue
-    printf '%s' "$1" | command ${tool[@]} >/dev/null 2>&1
-    return
+    if printf '%s' "$1" | command ${tool[@]} >/dev/null 2>&1; then
+      return 0
+    fi
+    break
   done
+  _cleanping_writer_ask_terminal "$1" && return 2
   return 1
 }
 
@@ -32,12 +50,13 @@ _cleanping_writer_enter() {
   emulate -L zsh
   [[ -z ${BUFFER//[[:space:]]/} ]] && return 0
   local message
-  if _cleanping_writer_copy "$BUFFER"; then
-    message='Copied. Paste it anywhere (Cmd+V on a Mac, Ctrl+V elsewhere).'
-  else
-    message='Could not copy (no clipboard tool found). Select the text above and copy it yourself.'
-  fi
   zle -I
+  _cleanping_writer_copy "$BUFFER"
+  case $? in
+    0) message='Copied. Paste it anywhere (Cmd+V on a Mac, Ctrl+V elsewhere).' ;;
+    2) message="Sent to your terminal's clipboard. If pasting does not work, select the text above and copy it yourself." ;;
+    *) message='Could not copy (no clipboard tool found). Select the text above and copy it yourself.' ;;
+  esac
   # The blank line matters: the prompt redraw moves up one line and clears below, so a message on
   # the line just above the prompt would be wiped at once and nobody would see it.
   print -r -- $message

@@ -15,6 +15,14 @@ use support::*;
 const COPIED: &str = "Copied. Paste it anywhere (Cmd+V on a Mac, Ctrl+V elsewhere).";
 const NOT_COPIED: &str =
     "Could not copy (no clipboard tool found). Select the text above and copy it yourself.";
+/// What it says when it could only ask the terminal to copy: the terminal never answers.
+const SENT: &str = "Sent to your terminal's clipboard. If pasting does not work, select the text above and copy it yourself.";
+
+/// The terminal copy request (OSC 52) for text whose base64 is `encoded`, as it appears on the
+/// raw screen.
+fn osc52(encoded: &str) -> String {
+    format!("\x1b]52;c;{encoded}\x07")
+}
 
 /// A sandbox whose PATH starts with a fake `pbcopy` that exits `status` after saving its input.
 struct Rig {
@@ -76,6 +84,8 @@ fn enter_copies_the_text_exactly_and_keeps_it_on_screen() {
     let shown = screen.plain_screen();
     assert!(shown.find("say hello").unwrap() < shown.find(COPIED).unwrap());
     assert!(screen.wait_until(LIMIT, || screen.plain_screen().ends_with(PROMPT)));
+    // A clipboard tool that worked means the terminal is not asked to copy as well.
+    assert!(!screen.screen().contains("\x1b]52"), "{}", screen.screen());
 }
 
 #[test]
@@ -121,10 +131,16 @@ fn a_failing_clipboard_tool_is_reported_and_the_line_is_cleared() {
     let mut screen = open(&rig);
     screen.send("say hello");
     screen.send(ENTER);
+    // A tool that fails (an `xclip` with no display over SSH, say) falls back to the terminal.
     assert!(
-        screen.wait_for_text(NOT_COPIED, LIMIT),
+        screen.wait_for_text(SENT, LIMIT),
         "a failed copy must be reported: {}",
         screen.plain_screen()
+    );
+    assert!(
+        screen.screen().contains(&osc52("c2F5IGhlbGxv")),
+        "{}",
+        screen.screen()
     );
     assert!(!screen.plain_screen().contains("Copied."));
     // The next line is copied on its own, so the failed one is gone from the buffer.
@@ -163,6 +179,78 @@ fn with_no_clipboard_tool_it_says_so_and_carries_on() {
     screen.send("next");
     screen.send(ENTER);
     wait_for_file(&screen, &record, "next");
+}
+
+#[test]
+fn a_failing_tool_and_no_way_to_ask_the_terminal_is_reported() {
+    if !available("zsh") {
+        return;
+    }
+    let sandbox = Sandbox::new();
+    let bare = bare_dir(&sandbox, &["script", "zsh", "cat"]);
+    let record = sandbox.dir.path().join("clipboard.txt");
+    stub_tool(&bare, "pbcopy", &record, 1);
+    let binary = sandbox.path_with_binary();
+    let path = format!("{}:{}", binary.split(':').next().unwrap(), bare.display());
+    let mut screen = start(&sandbox, &path, &[]);
+    wait_for_prompt(&screen);
+    screen.send("say hello");
+    screen.send(ENTER);
+    assert!(
+        screen.wait_for_text(NOT_COPIED, LIMIT),
+        "{}",
+        screen.plain_screen()
+    );
+    assert!(!screen.screen().contains("\x1b]52"), "{}", screen.screen());
+}
+
+#[test]
+fn with_no_clipboard_tool_it_asks_the_terminal_to_copy() {
+    if !available("zsh") {
+        return;
+    }
+    let sandbox = Sandbox::new();
+    let bare = bare_dir(&sandbox, &["script", "zsh", "cat", "base64", "tr"]);
+    let binary = sandbox.path_with_binary();
+    let path = format!("{}:{}", binary.split(':').next().unwrap(), bare.display());
+    let mut screen = start(&sandbox, &path, &[]);
+    wait_for_prompt(&screen);
+    screen.send("say hello");
+    screen.send(ENTER);
+    assert!(
+        screen.wait_for_screen(&osc52("c2F5IGhlbGxv"), LIMIT),
+        "{}",
+        screen.screen()
+    );
+    assert!(
+        screen.wait_for_text(SENT, LIMIT),
+        "{}",
+        screen.plain_screen()
+    );
+    assert!(!screen.plain_screen().contains("Could not copy"));
+    // The line is cleared and the writer carries on.
+    assert!(screen.wait_until(LIMIT, || screen.plain_screen().ends_with(PROMPT)));
+}
+
+#[test]
+fn a_pasted_paragraph_is_sent_to_the_terminal_whole() {
+    if !available("zsh") {
+        return;
+    }
+    let sandbox = Sandbox::new();
+    let bare = bare_dir(&sandbox, &["script", "zsh", "cat", "base64", "tr"]);
+    let binary = sandbox.path_with_binary();
+    let path = format!("{}:{}", binary.split(':').next().unwrap(), bare.display());
+    let mut screen = start(&sandbox, &path, &[]);
+    wait_for_prompt(&screen);
+    screen.send("\x1b[200~line one\nline two\x1b[201~");
+    screen.send(ENTER);
+    // One request, with the newline inside it and no line breaks in the encoding.
+    assert!(
+        screen.wait_for_screen(&osc52("bGluZSBvbmUKbGluZSB0d28="), LIMIT),
+        "{}",
+        screen.screen()
+    );
 }
 
 #[test]
