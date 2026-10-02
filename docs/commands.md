@@ -138,8 +138,8 @@ cleanping update [--check]
 Asks GitHub's public API for the newest CleanPing release and compares it with the version you are
 running. It prints one of:
 
-- `CleanPing 0.4.0 is the latest version.`
-- `CleanPing 0.5.0 is available (you have 0.4.0).`, the release page, the commands to install it on a Mac
+- `CleanPing 0.5.0 is the latest version.`
+- `CleanPing 0.6.0 is available (you have 0.5.0).`, the release page, the commands to install it on a Mac
   (the [README](../README.md#install) steps for your Mac's archive, with `shasum -a 256 -c`) or, on other
   systems, a pointer to the README install section, and `Nothing was changed: this command only checks
   for a newer version.`
