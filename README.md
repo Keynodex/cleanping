@@ -1,4 +1,4 @@
-# CleanPing
+# term-clean
 
 Rewrite rough text into clean, clear text with any OpenAI-compatible API, from your terminal.
 
@@ -27,7 +27,7 @@ curl -fsSLO https://github.com/Keynodex/cleanping/releases/latest/download/insta
 sh install-cleanping-mac.sh
 ```
 
-It picks the build for your Mac (Apple silicon or Intel), downloads it from the same release, and checks it against its SHA-256 checksum. If the checksum does not match it stops and installs nothing. It installs `cleanping` into `~/.local/bin` and adds one line to `~/.zshrc` so that new Terminal windows can find it (only if the line is not already there). It changes nothing else. Then open a new Terminal window and run `cleanping setup`. From v0.5.0 on, each release has the installer with its `.sha256` file and a build-provenance attestation (the v0.4.0 installer was uploaded by hand and has neither). The CleanPing page on keynodex.com shows the same two steps.
+It picks the build for your Mac (Apple silicon or Intel), downloads it from the same release, and checks it against its SHA-256 checksum. If the checksum does not match it stops and installs nothing. It installs `cleanping` into `~/.local/bin` and adds one line to `~/.zshrc` so that new Terminal windows can find it (only if the line is not already there). It changes nothing else. Then open a new Terminal window and run `cleanping setup`. From v0.5.0 on, each release has the installer with its `.sha256` file and a build-provenance attestation (the v0.4.0 installer was uploaded by hand and has neither).
 
 **Prebuilt binary by hand** (Linux x86_64, macOS Apple silicon and Intel): download the archive for your system from the [latest release](https://github.com/Keynodex/cleanping/releases/latest), then check it and put it on your `PATH`:
 
@@ -53,7 +53,7 @@ This installs a `cleanping` binary into `~/.cargo/bin`. An `npm` package is plan
 cleanping update
 ```
 
-This asks GitHub for the newest release and says whether you have it. If a newer one exists, it prints the release page and the commands to install it (on a Mac, the three commands above for your Mac's archive; elsewhere, a pointer to this section). It only checks: nothing is downloaded or changed, and installing the update for you is planned for a later version. CleanPing contacts GitHub only when you run this command, never by itself, and sends nothing but its version (see [Privacy and safety](docs/privacy-and-safety.md#checking-for-updates)).
+This asks GitHub for the newest release and says whether you have it. If a newer one exists, it prints the release page and the commands to install it (on a Mac, the three commands above for your Mac's archive; elsewhere, a pointer to this section). It only checks: nothing is downloaded or changed, and installing the update for you is planned for a later version. This tool contacts GitHub only when you run this command, never by itself, and sends nothing but its version (see [Privacy and safety](docs/privacy-and-safety.md#checking-for-updates)).
 
 ## First run
 
@@ -103,7 +103,7 @@ cleanping --copy "rough text"      # also copies to the clipboard (wl-copy, xcli
 
 Text that starts with a word that is also a command (`keys`, `prompt`, `history`, `edit`, `setup`, `writer`, `update`, `init`) can be passed after `--`, or piped in. Any other text, including `help me fix this`, is rewritten as it is.
 
-If you have several keys, pick one with `cleanping keys use NAME` or `-c NAME`. CleanPing never guesses between keys, so your text cannot go to a provider you did not choose. With a single saved key it just uses it.
+If you have several keys, pick one with `cleanping keys use NAME` or `-c NAME`. This tool never guesses between keys, so your text cannot go to a provider you did not choose. With a single saved key it just uses it.
 
 ## The shell key (zsh and bash)
 
@@ -117,19 +117,19 @@ Type a rough line at the prompt (do not press Enter), then press **Ctrl-X Ctrl-P
 
 **What changed.** In zsh the words the AI changed are highlighted until you edit the line. Set `CLEANPING_HIGHLIGHT` to another zsh style (for example `'underline'` or `'bg=yellow'`), or to an empty value to turn it off. It needs zsh 5.3 or newer and a UTF-8 locale; without one the line is still rewritten, just not highlighted. Bash cannot highlight part of the command line, so it prints your original on its own line after the rewrite (`cleanping: was: ...`), for you to compare.
 
-The whole command line is sent to your AI provider when you press the key. A line that looks like it holds an API key, token, private key or password is not sent at all: you see a message and the line stays as it is. That check is a best guess and cannot catch everything, so still avoid the key on lines with secrets. The line is sent over stdin, never as a command-line argument, and nothing is written to CleanPing's history from the shell key.
+The whole command line is sent to your AI provider when you press the key. A line that looks like it holds an API key, token, private key or password is not sent at all: you see a message and the line stays as it is. That check is a best guess and cannot catch everything, so still avoid the key on lines with secrets. The line is sent over stdin, never as a command-line argument, and nothing is written to the tool's history from the shell key.
 
 **The reply has to look like what it replaces.** A reply is only put on your command line if it has no more lines than your text, is not much longer (about twice as long plus a short sentence), and does not pad itself with long runs of spaces or tabs. Otherwise the line is left alone and you see a message. This stops a reply from pushing a command out of sight above a harmless-looking end. It is still a rewrite by an AI, so read the line before you press Enter.
 
 ## Fix your message inside Claude Code and Codex
 
-Claude Code and Codex open the program named in `$VISUAL` when you press **Ctrl+G** ("edit in editor"). Point it at CleanPing, for example in `~/.zshrc` or `~/.bashrc`:
+Claude Code and Codex open the program named in `$VISUAL` when you press **Ctrl+G** ("edit in editor"). Point it at the CLI, for example in `~/.zshrc` or `~/.bashrc`:
 
 ```sh
 export VISUAL="cleanping edit"
 ```
 
-Type your message in the app and press Ctrl+G. CleanPing lights up your text while the AI works, then shows the result with the changed words highlighted:
+Type your message in the app and press Ctrl+G. The editor lights up your text while the AI works, then shows the result with the changed words highlighted:
 
 | Key | What it does |
 |---|---|
@@ -177,13 +177,13 @@ Exit codes: `0` ok, `1` the request failed (network, provider, storage), `2` bad
 
 Each rewrite is saved to a local history in the database above: your text, the result, the system prompt and the model, on your machine only. It has no expiry and is never trimmed automatically. Nothing is saved with `--no-history`, and never from the shell key or `cleanping edit`.
 
-Look at it with `cleanping history list`. Delete it with `cleanping history clear --yes`, or trim it with `cleanping history purge --older-than 30`. Deleted text is overwritten and the database file is rebuilt, so it cannot be read back from the file (backups and disk snapshots you made yourself are out of CleanPing's reach). Deleting a key does not delete the history that used it.
+Look at it with `cleanping history list`. Delete it with `cleanping history clear --yes`, or trim it with `cleanping history purge --older-than 30`. Deleted text is overwritten and the database file is rebuilt, so it cannot be read back from the file (backups and disk snapshots you made yourself are out of this tool's reach). Deleting a key does not delete the history that used it.
 
-If you delete the database file to start over, saved API keys stay in `secrets.json`. CleanPing will not reuse such a key for a new address without you typing it again; remove `~/.config/cleanping/secrets.json` as well for a fully clean slate.
+If you delete the database file to start over, saved API keys stay in `secrets.json`. This tool will not reuse such a key for a new address without you typing it again; remove `~/.config/cleanping/secrets.json` as well for a fully clean slate.
 
 ## Safety
 
-- Your text goes over an encrypted connection to the provider you chose, and that provider can read it. CleanPing is not end-to-end encrypted. If the text must never leave your computer, use a local model such as Ollama: then nothing is sent anywhere.
+- Your text goes over an encrypted connection to the provider you chose, and that provider can read it. This tool is not end-to-end encrypted. If the text must never leave your computer, use a local model such as Ollama: then nothing is sent anywhere.
 - API URLs must be `https://`; plain `http://` is accepted only for `localhost`, `127.0.0.1` and `::1`.
 - HTTP redirects are never followed, so a key and your text cannot be forwarded to another host.
 - Error messages never include the server's response body.
@@ -191,7 +191,7 @@ If you delete the database file to start over, saved API keys stay in `secrets.j
 - The shell key uses the same check through `--refuse-secrets`. Plain `cleanping "text"` does not run it unless you add that flag, because there you chose the text yourself.
 - Replies are cleaned before they are shown: terminal control characters, text-direction overrides and zero-width or other invisible characters are removed, so a reply cannot move your cursor, rewrite the screen or hide text in it.
 - Input is capped at 200,000 bytes, and refused before any request is made. A reply larger than 1 MB is refused.
-- `HTTP_PROXY`, `HTTPS_PROXY` and `ALL_PROXY` (and `NO_PROXY`) are honored for remote providers. Only `http://` and `https://` proxies are supported: if one of these variables is set to anything else (for example a `socks5://` address) or to something that does not parse, CleanPing stops and sends nothing, rather than quietly connecting without the proxy. Local providers are always reached directly, never through a proxy.
+- `HTTP_PROXY`, `HTTPS_PROXY` and `ALL_PROXY` (and `NO_PROXY`) are honored for remote providers. Only `http://` and `https://` proxies are supported: if one of these variables is set to anything else (for example a `socks5://` address) or to something that does not parse, This tool stops and sends nothing, rather than quietly connecting without the proxy. Local providers are always reached directly, never through a proxy.
 - `localhost` is trusted to mean this machine, as your system resolves it. Use `127.0.0.1` if you want to be sure.
 - TLS uses a built-in copy of Mozilla's root certificates, not your system's. A company proxy that inspects TLS with its own certificate authority will not be trusted.
 
